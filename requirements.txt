@@ -1,11 +1,11 @@
-pymupdf 
-pdfplumber 
-langchain 
-chromadb 
-llama-index 
-neo4j 
-sentence-transformers
-transformers 
-accelerate 
-bitsandbytes
-typing
+ transformers 
+ accelerate 
+ bitsandbytes
+ pymupdf 
+ pdfplumber 
+ langchain 
+ chromadb 
+ llama-index 
+ neo4j 
+ sentence-transformers
+ typing

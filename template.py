@@ -23,6 +23,7 @@ list_of_files = [
     "requirements.txt",
     "template.py",
     "setup.py",
+    "logs.py",
     "params.yaml",
     "templates/index.html",
     "config/config.yaml",

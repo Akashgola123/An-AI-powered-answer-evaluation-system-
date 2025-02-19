@@ -9,3 +9,5 @@
  neo4j 
  sentence-transformers
  typing
+ flask
+ DateTime

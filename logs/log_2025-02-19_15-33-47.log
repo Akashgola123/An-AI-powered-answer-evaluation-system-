@@ -1,0 +1,25 @@
+[2025-02-19 15:33:47,164] werkzeug - WARNING -  * Debugger is active!
+[2025-02-19 15:33:47,165] werkzeug - INFO -  * Debugger PIN: 127-047-125
+[2025-02-19 15:33:55,012] root - INFO - Error occurred in script: [/home/gola/Major_project/An-AI-powered-answer-evaluation-system-/exception.py] at line number: [11] error message: [This is a test exception]
+[2025-02-19 15:33:55,012] root - INFO - Home page accessed
+[2025-02-19 15:33:55,013] werkzeug - INFO - 127.0.0.1 - - [19/Feb/2025 15:33:55] "GET / HTTP/1.1" 200 -
+[2025-02-19 15:33:55,269] werkzeug - INFO - 127.0.0.1 - - [19/Feb/2025 15:33:55] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+[2025-02-19 15:35:05,045] root - INFO - Error occurred in script: [/home/gola/Major_project/An-AI-powered-answer-evaluation-system-/exception.py] at line number: [11] error message: [This is a test exception]
+[2025-02-19 15:35:05,045] root - INFO - Home page accessed
+[2025-02-19 15:35:05,045] werkzeug - INFO - 127.0.0.1 - - [19/Feb/2025 15:35:05] "GET / HTTP/1.1" 200 -
+[2025-02-19 15:35:06,759] root - INFO - Error occurred in script: [/home/gola/Major_project/An-AI-powered-answer-evaluation-system-/exception.py] at line number: [11] error message: [This is a test exception]
+[2025-02-19 15:35:06,759] root - INFO - Home page accessed
+[2025-02-19 15:35:06,759] werkzeug - INFO - 127.0.0.1 - - [19/Feb/2025 15:35:06] "GET / HTTP/1.1" 200 -
+[2025-02-19 15:35:07,873] root - INFO - Error occurred in script: [/home/gola/Major_project/An-AI-powered-answer-evaluation-system-/exception.py] at line number: [11] error message: [This is a test exception]
+[2025-02-19 15:35:07,874] root - INFO - Home page accessed
+[2025-02-19 15:35:07,874] werkzeug - INFO - 127.0.0.1 - - [19/Feb/2025 15:35:07] "GET / HTTP/1.1" 200 -
+[2025-02-19 15:35:08,132] root - INFO - Error occurred in script: [/home/gola/Major_project/An-AI-powered-answer-evaluation-system-/exception.py] at line number: [11] error message: [This is a test exception]
+[2025-02-19 15:35:08,132] root - INFO - Home page accessed
+[2025-02-19 15:35:08,132] werkzeug - INFO - 127.0.0.1 - - [19/Feb/2025 15:35:08] "GET / HTTP/1.1" 200 -
+[2025-02-19 15:35:08,340] root - INFO - Error occurred in script: [/home/gola/Major_project/An-AI-powered-answer-evaluation-system-/exception.py] at line number: [11] error message: [This is a test exception]
+[2025-02-19 15:35:08,340] root - INFO - Home page accessed
+[2025-02-19 15:35:08,340] werkzeug - INFO - 127.0.0.1 - - [19/Feb/2025 15:35:08] "GET / HTTP/1.1" 200 -
+[2025-02-19 15:35:09,180] root - INFO - Error occurred in script: [/home/gola/Major_project/An-AI-powered-answer-evaluation-system-/exception.py] at line number: [11] error message: [This is a test exception]
+[2025-02-19 15:35:09,181] root - INFO - Home page accessed
+[2025-02-19 15:35:09,181] werkzeug - INFO - 127.0.0.1 - - [19/Feb/2025 15:35:09] "GET / HTTP/1.1" 200 -
+[2025-02-19 15:35:12,153] werkzeug - INFO -  * Detected change in '/home/gola/Major_project/An-AI-powered-answer-evaluation-system-/exception.py', reloading

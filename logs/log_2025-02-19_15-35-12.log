@@ -1,0 +1,9 @@
+[2025-02-19 15:35:12,270] werkzeug - WARNING -  * Debugger is active!
+[2025-02-19 15:35:12,271] werkzeug - INFO -  * Debugger PIN: 127-047-125
+[2025-02-19 15:35:13,395] root - INFO - Error: This is a test exception
+[2025-02-19 15:35:13,397] werkzeug - INFO - 127.0.0.1 - - [19/Feb/2025 15:35:13] "[35m[1mGET / HTTP/1.1[0m" 500 -
+[2025-02-19 15:35:13,650] werkzeug - INFO - 127.0.0.1 - - [19/Feb/2025 15:35:13] "[36mGET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+[2025-02-19 15:35:13,723] werkzeug - INFO - 127.0.0.1 - - [19/Feb/2025 15:35:13] "[36mGET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+[2025-02-19 15:35:13,734] werkzeug - INFO - 127.0.0.1 - - [19/Feb/2025 15:35:13] "GET /?__debugger__=yes&cmd=resource&f=console.png&s=wmPZaZgnITWQIXl3Yf8Z HTTP/1.1" 200 -
+[2025-02-19 15:35:14,096] werkzeug - INFO - 127.0.0.1 - - [19/Feb/2025 15:35:14] "[36mGET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+[2025-02-19 15:37:07,334] werkzeug - INFO -  * Detected change in '/home/gola/Major_project/An-AI-powered-answer-evaluation-system-/exception.py', reloading

@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=64.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "AIAnswerEvaluationSystem"
+version = "0.0.1"
+authors = [
+    {name = "Akashgola123", email = "golaakash0@gmail.com"},
+]
+description = "An AI-powered answer evaluation system using RAG and LLMs"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "flask",
+]

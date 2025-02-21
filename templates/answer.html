@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Answer Submission</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">Student Answer Submission</h1>
+
+        <form id="answerForm">
+            <div class="mb-3">
+                <label class="form-label">Student Name:</label>
+                <input type="text" class="form-control" id="studentName" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Select Question:</label>
+                <select class="form-control" id="questionId" required>
+                    {% for question in questions %}
+                    <option value="{{ question.id }}">{{ question.text }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Your Answer:</label>
+                <textarea class="form-control" id="studentAnswer" rows="3" required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit Answer</button>
+        </form>
+
+        <div id="message" class="mt-3"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $("#answerForm").on("submit", function(e) {
+            e.preventDefault();
+            $.post("/submit_answer", JSON.stringify({
+                student_name: $("#studentName").val(),
+                question_id: $("#questionId").val(),
+                student_answer: $("#studentAnswer").val()
+            }), function(response) {
+                $("#message").html('<div class="alert alert-success">Answer submitted successfully!</div>');
+                $("#answerForm")[0].reset();
+            }).fail(function() {
+                $("#message").html('<div class="alert alert-danger">Error submitting answer.</div>');
+            });
+        });
+    </script>
+</body>
+</html>

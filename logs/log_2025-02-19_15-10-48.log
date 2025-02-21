@@ -1,0 +1,6 @@
+[2025-02-19 15:10:48,037] werkzeug - WARNING -  * Debugger is active!
+[2025-02-19 15:10:48,037] werkzeug - INFO -  * Debugger PIN: 127-047-125
+[2025-02-19 15:10:51,304] root - INFO - Home page accessed
+[2025-02-19 15:10:51,305] werkzeug - INFO - 127.0.0.1 - - [19/Feb/2025 15:10:51] "GET / HTTP/1.1" 200 -
+[2025-02-19 15:11:40,604] root - INFO - Home page accessed
+[2025-02-19 15:11:40,605] werkzeug - INFO - 127.0.0.1 - - [19/Feb/2025 15:11:40] "GET /?vscodeBrowserReqId=1739958100090 HTTP/1.1" 200 -

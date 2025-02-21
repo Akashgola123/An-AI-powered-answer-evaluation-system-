@@ -1,6 +1,7 @@
  transformers 
  accelerate 
  bitsandbytes
+ pipeline
  pymupdf 
  pdfplumber 
  langchain 
@@ -11,3 +12,8 @@
  typing
  flask
  DateTime
+ pillow 
+ requests
+ google-cloud-vision 
+ pymupdf
+

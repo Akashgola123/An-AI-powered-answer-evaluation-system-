@@ -7,7 +7,7 @@ __version__ = "0.0.1"
 
 REPO_NAME = "An-AI-powered-answer-evaluation-system-"
 AUTHOR_USER_NAME = "Akashgola123"
-SRC_REPO = "AI_Assisted_Assessment_System"  # Removed spaces
+SRC_REPO = "AIAnswerEvaluationSystem"  # Removed spaces
 AUTHOR_EMAIL = "golaakash0@gmail.com"
 
 setuptools.setup(

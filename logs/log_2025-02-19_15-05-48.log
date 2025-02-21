@@ -1,0 +1,7 @@
+[2025-02-19 15:05:48,594] werkzeug - WARNING -  * Debugger is active!
+[2025-02-19 15:05:48,604] werkzeug - INFO -  * Debugger PIN: 127-047-125
+[2025-02-19 15:06:06,779] root - INFO - Home page accessed
+[2025-02-19 15:06:06,779] werkzeug - INFO - 127.0.0.1 - - [19/Feb/2025 15:06:06] "GET / HTTP/1.1" 200 -
+[2025-02-19 15:06:07,081] werkzeug - INFO - 127.[2025-02-19 15:06:32,312] werkzeug - INFO -  * Restarting with stat
+" 404 -
+[2025-02-19 15:06:32,295] werkzeug - INFO -  * Detected change in '/home/gola/Major_project/An-AI-powered-answer-evaluation-system-/logs.py', reloading

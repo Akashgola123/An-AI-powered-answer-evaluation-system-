@@ -1,7 +1,5 @@
 # An-AI-powered-answer-evaluation-system-
 
-# Chicken-diese-project
-
 
 ## workflows
 

@@ -1,0 +1,17 @@
+[2025-03-28 00:18:53,157] werkzeug - WARNING -  * Debugger is active!
+[2025-03-28 00:18:53,157] werkzeug - INFO -  * Debugger PIN: 942-699-329
+[2025-03-28 00:19:21,136] root - INFO - Neo4j connection established successfully
+[2025-03-28 00:19:21,139] neo4j.pool - ERROR - Unable to retrieve routing information
+[2025-03-28 00:19:21,139] logs - ERROR - Neo4j query execution error: Unable to retrieve routing information
+[2025-03-28 00:19:21,139] root - INFO - Neo4j connection closed
+[2025-03-28 00:19:21,139] werkzeug - INFO - 127.0.0.1 - - [28/Mar/2025 00:19:21] "[35m[1mGET /neo4j/fetch_answers HTTP/1.1[0m" 500 -
+[2025-03-28 00:19:31,297] root - INFO - Neo4j connection established successfully
+[2025-03-28 00:19:31,298] logs - INFO - Neo4j connection established
+[2025-03-28 00:19:31,298] root - INFO - Neo4j connection closed
+[2025-03-28 00:19:31,298] werkzeug - INFO - 127.0.0.1 - - [28/Mar/2025 00:19:31] "GET /neo4j HTTP/1.1" 200 -
+[2025-03-28 00:19:40,412] root - INFO - Neo4j connection established successfully
+[2025-03-28 00:19:40,413] neo4j.pool - ERROR - Unable to retrieve routing information
+[2025-03-28 00:19:40,413] logs - ERROR - Neo4j query execution error: Unable to retrieve routing information
+[2025-03-28 00:19:40,413] root - INFO - Neo4j connection closed
+[2025-03-28 00:19:40,413] werkzeug - INFO - 127.0.0.1 - - [28/Mar/2025 00:19:40] "[35m[1mGET /neo4j/fetch_answers HTTP/1.1[0m" 500 -
+[2025-03-28 00:22:20,167] werkzeug - INFO -  * Detected change in '/home/gola/GRAPH_RAG/An-AI-powered-answer-evaluation-system-/src/AIAnswerEvaluationSystem/neo4j_Manager.py', reloading

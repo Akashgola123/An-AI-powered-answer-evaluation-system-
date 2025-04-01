@@ -1,0 +1,86 @@
+[2025-03-29 01:13:42,524] werkzeug - WARNING -  * Debugger is active!
+[2025-03-29 01:13:42,526] werkzeug - INFO -  * Debugger PIN: 858-209-888
+[2025-03-29 01:13:44,513] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:13:44] "GET / HTTP/1.1" 200 -
+[2025-03-29 01:13:52,569] AIAnswerEvaluationSystem.ocr - INFO - Sending request to Gemini API...
+[2025-03-29 01:13:52,569] google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+[2025-03-29 01:13:57,614] httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent "HTTP/1.1 200 OK"
+[2025-03-29 01:13:57,619] google_genai.models - INFO - AFC remote call 1 is done.
+[2025-03-29 01:13:57,619] AIAnswerEvaluationSystem.ocr - INFO - Extracted Text: Here is the text extracted from the image:
+
+# Image formation.
+-> When two or more reflected or refte refracted
+rays meet at a point then the image is
+formed.
+
+-> Types of image:-
+(i) Real image
+(ii) Virtual image.
+
+Real image
+-> when reflected or refracted rays mut
+at a point actually
+then real image is formed
+-> Real image is inverted always
+-> Real image is obtained on screen.
+
+Virtual image
+-> when reflected or refracta rays are appears to
+meet forme virtual image.
+-> Virtual image is creet always
+-> Virtual image Cunnet
+be takm on screen.
+[2025-03-29 01:13:57,620] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:13:57] "POST /extract-text HTTP/1.1" 200 -
+[2025-03-29 01:14:06,802] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:14:06] "[33mGET /llms HTTP/1.1[0m" 404 -
+[2025-03-29 01:14:20,103] root - INFO - LLMSS initialized successfully
+[2025-03-29 01:14:20,104] app - INFO - LLMSS initialized successfully
+[2025-03-29 01:14:20,105] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:14:20] "GET /llmss HTTP/1.1" 200 -
+[2025-03-29 01:14:25,249] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:14:25] "[33mGET /llms HTTP/1.1[0m" 404 -
+[2025-03-29 01:15:00,546] AIAnswerEvaluationSystem.ocr - INFO - Sending request to Gemini API...
+[2025-03-29 01:15:00,546] google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+[2025-03-29 01:15:05,328] httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent "HTTP/1.1 200 OK"
+[2025-03-29 01:15:05,333] google_genai.models - INFO - AFC remote call 1 is done.
+[2025-03-29 01:15:05,334] AIAnswerEvaluationSystem.ocr - INFO - Extracted Text: Here is the text extracted from the image:
+
+# Image formation.
+-> When two or more reflected or refte refracted rays meet at a point then the image is formed.
+
+-> Types of image:
+(i) Real image
+(ii) Virtual image.
+
+Real image
+-> When reflected or refracted rays meet at a point actually then real image is formed
+-> Real image is inverted always
+-> Real image is obtained on screen.
+
+Virtual image
+-> When reflected or refacta rays are appears to meet forme virtual image.
+Virtual image is creet always
+Virtual image cannot be takm on screen.
+
+[2025-03-29 01:15:05,334] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:15:05] "POST /extract-text HTTP/1.1" 200 -
+[2025-03-29 01:15:12,505] root - INFO - LLMSS initialized successfully
+[2025-03-29 01:15:12,505] app - INFO - LLMSS initialized successfully
+[2025-03-29 01:15:12,506] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:15:12] "GET /llmss HTTP/1.1" 200 -
+[2025-03-29 01:16:05,103] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:16:05] "[33mGET /fetch_answers HTTP/1.1[0m" 404 -
+[2025-03-29 01:16:22,376] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:16:22] "[33mGET /fetch_answers HTTP/1.1[0m" 404 -
+[2025-03-29 01:16:22,642] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:16:22] "[33mGET /fetch_answers HTTP/1.1[0m" 404 -
+[2025-03-29 01:16:48,021] root - INFO - ✅ Neo4j connection established successfully
+[2025-03-29 01:16:48,021] app - INFO - Neo4j connection established
+[2025-03-29 01:16:48,021] root - INFO - 🔒 Neo4j connection closed
+[2025-03-29 01:16:48,021] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:16:48] "GET /neo4j HTTP/1.1" 200 -
+[2025-03-29 01:16:51,203] root - INFO - ✅ Neo4j connection established successfully
+[2025-03-29 01:16:51,203] app - INFO - Neo4j connection established
+[2025-03-29 01:16:51,204] root - INFO - 🔒 Neo4j connection closed
+[2025-03-29 01:16:51,204] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:16:51] "GET /neo4j HTTP/1.1" 200 -
+[2025-03-29 01:17:50,195] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:17:50] "[33mGET /fetch_answers HTTP/1.1[0m" 404 -
+[2025-03-29 01:17:50,867] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:17:50] "[33mGET /fetch_answers HTTP/1.1[0m" 404 -
+[2025-03-29 01:17:52,214] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:17:52] "[33mGET /fetch_answers HTTP/1.1[0m" 404 -
+[2025-03-29 01:17:52,675] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:17:52] "[33mGET /fetch_answers HTTP/1.1[0m" 404 -
+[2025-03-29 01:17:53,470] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:17:53] "[33mGET /fetch_answers HTTP/1.1[0m" 404 -
+[2025-03-29 01:17:53,719] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:17:53] "[33mGET /fetch_answers HTTP/1.1[0m" 404 -
+[2025-03-29 01:17:53,998] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:17:53] "[33mGET /fetch_answers HTTP/1.1[0m" 404 -
+[2025-03-29 01:19:27,478] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:19:27] "[33mGET /fetch_answers HTTP/1.1[0m" 404 -
+[2025-03-29 01:19:28,108] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:19:28] "[33mGET /fetch_answers HTTP/1.1[0m" 404 -
+[2025-03-29 01:19:29,182] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:19:29] "[33mGET /fetch_answers HTTP/1.1[0m" 404 -
+[2025-03-29 01:19:59,441] werkzeug - INFO -  * Detected change in '/home/gola/GRAPH_RAG/An-AI-powered-answer-evaluation-system-/app.py', reloading

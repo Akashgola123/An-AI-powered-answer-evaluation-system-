@@ -1,0 +1,13 @@
+[2025-03-29 15:42:09,060] werkzeug - WARNING -  * Debugger is active!
+[2025-03-29 15:42:09,061] werkzeug - INFO -  * Debugger PIN: 883-443-999
+[2025-03-29 15:42:18,678] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:42:18] "GET / HTTP/1.1" 200 -
+[2025-03-29 15:42:19,235] AIAnswerEvaluationSystem.logger - ERROR - Error executing query: type object 'Neo4jManager' has no attribute 'execute_query'
+[2025-03-29 15:42:19,243] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:42:19] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+[2025-03-29 15:42:20,382] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:42:20] "OPTIONS /login_student HTTP/1.1" 200 -
+[2025-03-29 15:42:20,433] root - INFO - ✅ Neo4j connection established successfully
+[2025-03-29 15:42:20,712] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:42:20] "POST /login_student HTTP/1.1" 200 -
+[2025-03-29 15:44:55,002] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:44:55] "GET / HTTP/1.1" 200 -
+[2025-03-29 15:44:55,527] AIAnswerEvaluationSystem.logger - ERROR - Error executing query: type object 'Neo4jManager' has no attribute 'execute_query'
+[2025-03-29 15:44:55,530] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:44:55] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+[2025-03-29 15:44:57,161] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:44:57] "OPTIONS /login_student HTTP/1.1" 200 -
+[2025-03-29 15:44:57,367] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:44:57] "POST /login_student HTTP/1.1" 200 -

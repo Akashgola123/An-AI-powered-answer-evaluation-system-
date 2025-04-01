@@ -1,0 +1,23 @@
+[2025-03-29 15:01:47,839] werkzeug - WARNING -  * Debugger is active!
+[2025-03-29 15:01:47,841] werkzeug - INFO -  * Debugger PIN: 883-443-999
+[2025-03-29 15:01:51,598] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:01:51] "GET / HTTP/1.1" 200 -
+[2025-03-29 15:01:52,170] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:01:52] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+[2025-03-29 15:01:53,395] werkzeug - INFO - 127.0.0.1 - - [29[2025-03-29 15:40:51,874] werkzeug - INFO -  * Restarting with stat
+[2025-03-29 15:41:58,940] werkzeug - INFO -  * Restarting with stat
+[2025-03-29 15:42:08,114] werkzeug - INFO -  * Restarting with stat
+[29/Mar/2025 15:01:53] "POST /login_student HTTP/1.1" 200 -
+[2025-03-29 15:01:57,488] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:01:57] "GET / HTTP/1.1" 200 -
+[2025-03-29 15:01:57,733] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:01:57] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+[2025-03-29 15:35:03,743] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:35:03] "[33mGET /llmss HTTP/1.1[0m" 404 -
+[2025-03-29 15:35:06,288] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:35:06] "GET / HTTP/1.1" 200 -
+[2025-03-29 15:35:06,606] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:35:06] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+[2025-03-29 15:37:01,045] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:37:01] "GET / HTTP/1.1" 200 -
+[2025-03-29 15:37:01,496] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:37:01] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+[2025-03-29 15:37:05,878] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:37:05] "OPTIONS /login_student HTTP/1.1" 200 -
+[2025-03-29 15:37:06,105] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:37:06] "POST /login_student HTTP/1.1" 200 -
+[2025-03-29 15:39:41,687] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:39:41] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+[2025-03-29 15:39:41,970] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:39:41] "GET /subjects?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+[2025-03-29 15:39:42,023] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:39:42] "GET /subjects?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+[2025-03-29 15:39:42,066] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:39:42] "GET /subjects?__debugger__=yes&cmd=resource&f=console.png&s=KTe8EHYUrNEgq9S90s67 HTTP/1.1" 200 -
+[2025-03-29 15:39:42,468] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:39:42] "GET /subjects?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+[2025-03-29 15:40:51,661] werkzeug - INFO -  * Detected change in '/home/gola/GRAPH_RAG/An-AI-powered-answer-evaluation-system-/app.py', reloading

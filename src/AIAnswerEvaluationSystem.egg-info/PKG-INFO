@@ -1,4 +1,4 @@
-Metadata-Version: 2.2
+Metadata-Version: 2.4
 Name: AIAnswerEvaluationSystem
 Version: 0.0.1
 Summary: An AI-powered answer evaluation system using RAG and LLMs
@@ -11,10 +11,9 @@ License-File: LICENSE
 Requires-Dist: flask
 Dynamic: author
 Dynamic: home-page
+Dynamic: license-file
 
 # An-AI-powered-answer-evaluation-system-
-
-# Chicken-diese-project
 
 
 ## workflows

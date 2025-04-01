@@ -1,0 +1,24 @@
+[2025-03-29 13:59:09,746] werkzeug - WARNING -  * Debugger is active!
+[2025-03-29 13:59:09,746] werkzeug - INFO -  * Debugger PIN: 883-443-999
+[2025-03-29 13:59:12,236] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 13:59:12] "GET / HTTP/1.1" 200 -
+[2025-03-29 13:59:20,299] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 13:59:20] "OPTIONS /login_student HTTP/1.1" 200 -
+[2025-03-29 13:59:20,303] neo4j.pool - ERROR - Unable to retrieve routing information
+[2025-03-29 13:59:20,303] root - ERROR - ❌ Neo4j connection error: Unable to retrieve routing information
+[2025-03-29 13:59:20,303] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 13:59:20] "[35m[1mPOST /login_student HTTP/1.1[0m" 500 -
+[2025-03-29 13:59:27,981] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 13:59:27] "[33mGET /llmss HTTP/1.1[0m" 404 -
+[2025-03-29 14:00:27,718] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:00:27] "OPTIONS /login_student HTTP/1.1" 200 -
+[2025-03-29 14:00:27,772] root - INFO - ✅ Neo4j connection established successfully
+[2025-03-29 14:00:28,038] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:00:28] "POST /login_student HTTP/1.1" 200 -
+[2025-03-29 14:01:22,597] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:01:22] "GET / HTTP/1.1" 200 -
+[2025-03-29 14:01:43,085] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:01:43] "OPTIONS /register_student HTTP/1.1" 200 -
+[2025-03-29 14:01:43,143] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:01:43] "[31m[1mPOST /register_student HTTP/1.1[0m" 400 -
+[2025-03-29 14:01:50,868] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:01:50] "OPTIONS /register_student HTTP/1.1" 200 -
+[2025-03-29 14:01:50,877] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:01:50] "[31m[1mPOST /register_student HTTP/1.1[0m" 400 -
+[2025-03-29 14:03:46,174] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:03:46] "GET / HTTP/1.1" 200 -
+[2025-03-29 14:03:59,420] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:03:59] "OPTIONS /register_student HTTP/1.1" 200 -
+[2025-03-29 14:03:59,430] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:03:59] "[31m[1mPOST /register_student HTTP/1.1[0m" 400 -
+[2025-03-29 14:04:09,928] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:04:09] "OPTIONS /register_student HTTP/1.1" 200 -
+[2025-03-29 14:04:10,683] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:04:10] "POST /register_student HTTP/1.1" 200 -
+[2025-03-29 14:04:17,905] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:04:17] "OPTIONS /login_student HTTP/1.1" 200 -
+[2025-03-29 14:04:18,118] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:04:18] "POST /login_student HTTP/1.1" 200 -
+[2025-03-29 14:13:40,154] werkzeug - INFO -  * Detected change in '/home/gola/GRAPH_RAG/An-AI-powered-answer-evaluation-system-/src/AIAnswerEvaluationSystem/Fetching.py', reloading

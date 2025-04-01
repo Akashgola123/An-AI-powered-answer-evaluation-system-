@@ -1,0 +1,25 @@
+[2025-03-28 00:12:03,085] werkzeug - WARNING -  * Debugger is active!
+[2025-03-28 00:12:03,087] werkzeug - INFO -  * Debugger PIN: 942-699-329
+[2025-03-28 00:12:06,416] root - INFO - Neo4j connection established successfully
+[2025-03-28 00:12:06,416] logs - INFO - Neo4j connection established
+[2025-03-28 00:12:06,416] root - INFO - Neo4j connection closed
+[2025-03-28 00:12:06,416] werkzeug - INFO - 127.0.0.1 - - [28/Mar/2025 00:12:06] "GET /neo4j HTTP/1.1" 200 -
+[2025-03-28 00:12:14,204] logs - INFO - Home page accessed
+[2025-03-28 00:12:14,205] werkzeug - INFO - 127.0.0.1 - - [28/Mar/2025 00:12:14] "GET / HTTP/1.1" 200 -
+[2025-03-28 00:12:15,228] logs - INFO - Home page accessed
+[2025-03-28 00:12:15,229] werkzeug - INFO - 127.0.0.1 - - [28/Mar/2025 00:12:15] "GET / HTTP/1.1" 200 -
+[2025-03-28 00:12:15,933] logs - INFO - Home page accessed
+[2025-03-28 00:12:15,934] werkzeug - INFO - 127.0.0.1 - - [28/Mar/2025 00:12:15] "GET / HTTP/1.1" 200 -
+[2025-03-28 00:12:16,380] logs - INFO - Home page accessed
+[2025-03-28 00:12:16,381] werkzeug - INFO - 127.0.0.1 - - [28/Mar/2025 00:12:16] "GET / HTTP/1.1" 200 -
+[2025-03-28 00:12:16,605] logs - INFO - Home page accessed
+[2025-03-28 00:12:16,605] werkzeug - INFO - 127.0.0.1 - - [28/Mar/2025 00:12:16] "GET / HTTP/1.1" 200 -
+[2025-03-28 00:12:16,797] logs - INFO - Home page accessed
+[2025-03-28 00:12:16,797] werkzeug - INFO - 127.0.0.1 - - [28/Mar/2025 00:12:16] "GET / HTTP/1.1" 200 -
+[2025-03-28 00:12:16,986] logs - INFO - Home page accessed
+[2025-03-28 00:12:16,986] werkzeug - INFO - 127.0.0.1 - - [28/Mar/2025 00:12:16] "GET / HTTP/1.1" 200 -
+[2025-03-28 00:12:20,487] root - INFO - Neo4j connection established successfully
+[2025-03-28 00:12:20,488] logs - INFO - Neo4j connection established
+[2025-03-28 00:12:20,488] root - INFO - Neo4j connection closed
+[2025-03-28 00:12:20,488] werkzeug - INFO - 127.0.0.1 - - [28/Mar/2025 00:12:20] "GET /neo4j HTTP/1.1" 200 -
+[2025-03-28 00:16:25,960] werkzeug - INFO -  * Detected change in '/home/gola/GRAPH_RAG/An-AI-powered-answer-evaluation-system-/logs.py', reloading

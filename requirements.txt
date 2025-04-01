@@ -16,4 +16,10 @@
  requests
  google-cloud-vision 
  pymupdf
-
+ langchain
+ pydantic
+ bcrypt
+ ollama
+ langchain_ollama
+ langchain_neo4j
+ google-genai

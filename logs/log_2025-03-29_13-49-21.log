@@ -1,0 +1,16 @@
+[2025-03-29 13:49:23,139] werkzeug - WARNING -  * Debugger is active!
+[2025-03-29 13:49:23,140] werkzeug - INFO -  * Debugger PIN: 883-443-999
+[2025-03-29 13:49:34,195] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 13:49:34] "GET / HTTP/1.1" 200 -
+[2025-03-29 13:49:35,044] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 13:49:35] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+[2025-03-29 13:49:43,555] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 13:49:43] "[33mOPTIONS /login_student HTTP/1.1[0m" 404 -
+[2025-03-29 13:49:46,540] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 13:49:46] "[33mOPTIONS /login_student HTTP/1.1[0m" 404 -
+[2025-03-29 13:50:10,829] root - INFO - LLMSS initialized successfully
+[2025-03-29 13:50:10,829] app - INFO - LLMSS initialized successfully
+[2025-03-29 13:50:10,831] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 13:50:10] "GET /llmss HTTP/1.1" 200 -
+[2025-03-29 13:50:26,619] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 13:50:26] "GET / HTTP/1.1" 200 -
+[2025-03-29 13:50:37,102] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 13:50:37] "[33mOPTIONS /login_student HTTP/1.1[0m" 404 -
+[2025-03-29 13:51:49,028] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 13:51:49] "GET / HTTP/1.1" 200 -
+[2025-03-29 13:52:15,364] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 13:52:15] "OPTIONS /register_student HTTP/1.1" 200 -
+[2025-03-29 13:52:18,241] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 13:52:18] "OPTIONS /register_student HTTP/1.1" 200 -
+[2025-03-29 13:52:20,647] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 13:52:20] "OPTIONS /register_student HTTP/1.1" 200 -
+[2025-03-29 13:57:52,842] werkzeug - INFO -  * Detected change in '/home/gola/GRAPH_RAG/An-AI-powered-answer-evaluation-system-/app.py', reloading

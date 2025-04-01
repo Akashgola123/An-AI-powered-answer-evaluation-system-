@@ -1,0 +1,23 @@
+[2025-03-28 00:22:21,817] werkzeug - WARNING -  * Debugger is active!
+[2025-03-28 00:22:21,818] werkzeug - INFO -  * Debugger PIN: 942-699-329
+[2025-03-28 00:22:29,778] neo4j.pool - ERROR - Unable to retrieve routing information
+[2025-03-28 00:22:29,779] root - ERROR - ❌ Neo4j connection error: Unable to retrieve routing information
+[2025-03-28 00:22:29,779] logs - ERROR - Neo4j connection error: Neo4j connection failed. Check logs for details.
+[2025-03-28 00:22:29,779] werkzeug - INFO - 127.0.0.1 - - [28/Mar/2025 00:22:29] "[35m[1mGET /neo4j HTTP/1.1[0m" 500 -
+[2025-03-28 00:22:35,493] neo4j.pool - ERROR - Unable to retrieve routing information
+[2025-03-28 00:22:35,493] root - ERROR - ❌ Neo4j connection error: Unable to retrieve routing information
+[2025-03-28 00:22:35,493] logs - ERROR - Neo4j connection error: Neo4j connection failed. Check logs for details.
+[2025-03-28 00:22:35,493] werkzeug - INFO - 127.0.0.1 - - [28/Mar/2025 00:22:35] "[35m[1mGET /neo4j HTTP/1.1[0m" 500 -
+[2025-03-28 00:22:36,446] neo4j.pool - ERROR - Unable to retrieve routing information
+[2025-03-28 00:22:36,446] root - ERROR - ❌ Neo4j connection error: Unable to retrieve routing information
+[2025-03-28 00:22:36,447] logs - ERROR - Neo4j connection error: Neo4j connection failed. Check logs for details.
+[2025-03-28 00:22:36,447] werkzeug - INFO - 127.0.0.1 - - [28/Mar/2025 00:22:36] "[35m[1mGET /neo4j HTTP/1.1[0m" 500 -
+[2025-03-28 00:23:00,946] root - INFO - ✅ Neo4j connection established successfully
+[2025-03-28 00:23:00,946] logs - INFO - Neo4j connection established
+[2025-03-28 00:23:00,947] root - INFO - 🔒 Neo4j connection closed
+[2025-03-28 00:23:00,947] werkzeug - INFO - 127.0.0.1 - - [28/Mar/2025 00:23:00] "GET /neo4j HTTP/1.1" 200 -
+[2025-03-28 00:23:31,132] root - INFO - ✅ Neo4j connection established successfully
+[2025-03-28 00:23:31,263] logs - INFO - Query executed successfully
+[2025-03-28 00:23:31,264] root - INFO - 🔒 Neo4j connection closed
+[2025-03-28 00:23:31,264] werkzeug - INFO - 127.0.0.1 - - [28/Mar/2025 00:23:31] "GET /neo4j/fetch_answers HTTP/1.1" 200 -
+[2025-03-28 00:27:05,142] werkzeug - INFO -  * Detected change in '/home/gola/GRAPH_RAG/An-AI-powered-answer-evaluation-system-/src/AIAnswerEvaluationSystem/llmss.py', reloading

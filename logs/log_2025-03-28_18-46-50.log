@@ -1,0 +1,4 @@
+[2025-03-28 18:46:51,215] werkzeug - WARNING -  * Debugger is active!
+[2025-03-28 18:46:51,217] werkzeug - INFO -  * Debugger PIN: 247-098-580
+[2025-03-28 18:47:14,550] logs - INFO - Home page accessed
+[2025-03-28 18:47:14,550] werkzeug - INFO - 127.0.0.1 - - [28/Mar/2025 18:47:14] "GET / HTTP/1.1" 200 -

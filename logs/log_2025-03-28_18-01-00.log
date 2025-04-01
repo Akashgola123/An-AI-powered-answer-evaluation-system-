@@ -1,0 +1,13 @@
+[2025-03-28 18:01:01,818] werkzeug - WARNING -  * Debugger is active!
+[2025-03-28 18:01:01,819] werkzeug - INFO -  * Debugger PIN: 247-098-580
+[2025-03-28 18:01:09,139] logs - INFO - Home page accessed
+[2025-03-28 18:01:09,139] werkzeug - INFO - 127.0.0.1 - - [28/Mar/2025 18:01:09] "GET / HTTP/1.1" 200 -
+[2025-03-28 18:06:53,021] root - INFO - ✅ Neo4j connection established successfully
+[2025-03-28 18:06:53,022] logs - INFO - Neo4j connection established
+[2025-03-28 18:06:53,022] root - INFO - 🔒 Neo4j connection closed
+[2025-03-28 18:06:53,022] werkzeug - INFO - 127.0.0.1 - - [28/Mar/2025 18:06:53] "GET /neo4j HTTP/1.1" 200 -
+[2025-03-28 18:07:16,086] root - INFO - ✅ Neo4j connection established successfully
+[2025-03-28 18:07:16,137] logs - INFO - Query executed successfully
+[2025-03-28 18:07:16,139] root - INFO - 🔒 Neo4j connection closed
+[2025-03-28 18:07:16,139] werkzeug - INFO - 127.0.0.1 - - [28/Mar/2025 18:07:16] "GET /neo4j/fetch_answers HTTP/1.1" 200 -
+[2025-03-28 18:07:28,094] werkzeug - INFO - 127.0.0.1 - - [28/Mar/2025 18:07:28] "[33mGET /neo4j/fetch_answers/llms HTTP/1.1[0m" 404 -

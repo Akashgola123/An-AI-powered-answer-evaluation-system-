@@ -1,71 +1,1036 @@
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@17.0.2/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+</head>
+<body>
+    <div id="root" class="container mx-auto p-4"></div>
+    <script type="text/babel">
+        function App() {
+            const [view, setView] = React.useState('login');
+            const [subjects, setSubjects] = React.useState([]);
+            const [departments] = React.useState([
+                'Computer Science', 'Electrical Engineering', 
+                'Mechanical Engineering', 'Civil Engineering'
+            ]);
+            const [formData, setFormData] = React.useState({
+                name: '',
+                rollNo: '',
+                password: '',
+                department: '',
+                semester: 1,
+                subject: '',
+                questions: [],
+                answers: {}
+            });
+
+            const API_URL = "http://127.0.0.1:8000";
+
+            React.useEffect(() => {
+                fetchSubjects();
+            }, []);
+
+            const fetchSubjects = async () => {
+                try {
+                    const response = await fetch(`${API_URL}/subjects`);
+                    const fetchedSubjects = await response.json();
+                    setSubjects(fetchedSubjects);
+                } catch (error) {
+                    console.error('Error fetching subjects');
+                }
+            };
+
+            const handleInputChange = (e) => {
+                const { name, value } = e.target;
+                console.log(`Input change: ${name} = ${value}`); // Debug log
+                setFormData(prev => ({
+                    ...prev,
+                    [name]: name === 'semester' ? parseInt(value) : value
+                }));
+            };
+
+            const handleAnswerChange = (qid, value) => {
+                setFormData(prev => ({
+                    ...prev,
+                    answers: { ...prev.answers, [qid]: value }
+                }));
+            };
+
+            const handleRegister = async (e) => {
+                e.preventDefault();
+                console.log("Submitting registration with data:", formData); // Debug log
+                try {
+                    const response = await fetch(`${API_URL}/register_student`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            name: formData.name,
+                            roll_no: formData.rollNo,
+                            password: formData.password,
+                            department: formData.department,
+                            semester: formData.semester
+                        })
+                    });
+                    const result = await response.json();
+                    alert(result.message);
+                    setView('login');
+                } catch (error) {
+                    alert('Registration failed!');
+                }
+            };
+
+            const handleLogin = async (e) => {
+                e.preventDefault();
+                try {
+                    const response = await fetch(`${API_URL}/login_student`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            roll_no: formData.rollNo,
+                            password: formData.password
+                        })
+                    });
+                    const result = await response.json();
+                    alert(result.message);
+                    setView('subject_select');
+                } catch (error) {
+                    alert('Login failed!');
+                }
+            };
+
+            // const fetchQuestions = async () => {
+            //     try {
+            //         console.log("Fetching questions for subject:", formData.subject); 
+
+            //         const response = await fetch(`${API_URL}/questions?subject=${formData.subject}`);
+            //         if (!response.ok) {
+            //             throw new Error(`HTTP error! Status: ${response.status}`);
+            //         }
+
+            //         const data = await response.json();
+            //         console.log("Received data:", data);
+
+            //         if (!data.questions || !Array.isArray(data.questions) || data.questions.length === 0) {
+            //             alert("No questions available for this subject.");
+            //             return;
+            //         }
+
+            //         setFormData(prev => ({ ...prev, questions: data.questions })); 
+            //         setView('exam');
+
+            //     } catch (error) {
+            //         console.error("Error fetching questions:", error);
+            //         alert("Failed to fetch questions");
+            //     }
+            // };
+            const fetchQuestions = async () => {
+                try {
+                    console.log("Fetching questions for subject:", formData.subject);
+                    
+                    // Show loading state to user
+                    alert("Loading questions... Please wait.");
+                    
+                    const response = await fetch(`${API_URL}/questions?subject=${formData.subject}`);
+                    
+                    // Log detailed response info for debugging
+                    console.log("Response status:", response.status);
+                    console.log("Response headers:", Object.fromEntries([...response.headers]));
+                    
+                    if (!response.ok) {
+                        if (response.status === 500) {
+                            console.error("Server error (500) - likely an issue with the backend application");
+                            throw new Error(`Server error (500). There may be an issue with the database or the backend code.`);
+                        } else {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                    }
+
+                    let data;
+                    try {
+                        data = await response.json();
+                    } catch (parseError) {
+                        console.error("Error parsing JSON response:", parseError);
+                        throw new Error("Invalid response format from server");
+                    }
+                    
+                    console.log("Received data:", data);
+
+                    if (!data.questions || !Array.isArray(data.questions) || data.questions.length === 0) {
+                        alert("No questions available for this subject.");
+                        return;
+                    }
+
+                    setFormData(prev => ({ ...prev, questions: data.questions })); 
+                    setView('exam');
+
+                } catch (error) {
+                    console.error("Error fetching questions:", error);
+                    alert(`Failed to fetch questions: ${error.message}\n\nPlease check the server logs for more details.`);
+                }
+            };
+
+            const handleFileUpload = async (event, questionId) => {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const fileFormData = new FormData();
+                fileFormData.append("file", file);
+
+                try {
+                    const response = await fetch(`${API_URL}/upload-answer`, {
+                        method: "POST",
+                        body: fileFormData
+                    });
+
+                    const data = await response.json();
+                    console.log("Extracted text:", data);
+
+                    if (data.status === "success") {
+                        handleAnswerChange(questionId, data.extracted_text);
+                    } else {
+                        alert("Failed to extract text from file.");
+                    }
+
+                } catch (error) {
+                    console.error("Error uploading file:", error);
+                    alert("Error processing file.");
+                }
+            };
+
+            const submitExam = async (e) => {
+                e.preventDefault();
+                try {
+                    const response = await fetch(`${API_URL}/submit_exam`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            roll_no: formData.rollNo,
+                            subject: formData.subject,
+                            answers: formData.answers
+                        })
+                    });
+                    const result = await response.json();
+                    alert(result.message);
+                    setView('login');
+                } catch (error) {
+                    console.error('Error submitting exam');
+                    alert('Failed to submit exam');
+                }
+            };
+
+            const renderLogin = () => (
+                <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+                    <h2 className="text-2xl font-bold mb-6 text-center">Student Login</h2>
+                    <form onSubmit={handleLogin}>
+                        <input
+                            type="text"
+                            name="rollNo"
+                            placeholder="Roll Number"
+                            value={formData.rollNo}
+                            onChange={handleInputChange}
+                            className="w-full p-2 mb-4 border rounded"
+                            required
+                        />
+                        <input
+                            type="password"
+                            name="password"
+                            placeholder="Password"
+                            value={formData.password}
+                            onChange={handleInputChange}
+                            className="w-full p-2 mb-4 border rounded"
+                            required
+                        />
+                        <button 
+                            type="submit" 
+                            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                        >
+                            Login
+                        </button>
+                        <p className="text-center mt-4">
+                            Don't have an account? 
+                            <button 
+                                type="button"
+                                onClick={() => setView('register')}
+                                className="text-blue-500 ml-2"
+                            >
+                                Register
+                            </button>
+                        </p>
+                    </form>
+                </div>
+            );
+
+            const renderRegister = () => (
+                <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+                    <h2 className="text-2xl font-bold mb-6 text-center">Student Registration</h2>
+                    <form onSubmit={handleRegister}>
+                        <div className="mb-4">
+                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Full Name</label>
+                            <input
+                                id="name"
+                                type="text"
+                                name="name"
+                                placeholder="Full Name"
+                                value={formData.name}
+                                onChange={handleInputChange}
+                                className="w-full p-2 mt-1 border rounded"
+                                required
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="rollNo" className="block text-sm font-medium text-gray-700">Roll Number</label>
+                            <input
+                                id="rollNo"
+                                type="text"
+                                name="rollNo"
+                                placeholder="Roll Number"
+                                value={formData.rollNo}
+                                onChange={handleInputChange}
+                                className="w-full p-2 mt-1 border rounded"
+                                required
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+                            <input
+                                id="password"
+                                type="password"
+                                name="password"
+                                placeholder="Password"
+                                value={formData.password}
+                                onChange={handleInputChange}
+                                className="w-full p-2 mt-1 border rounded"
+                                required
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="department" className="block text-sm font-medium text-gray-700">Department</label>
+                            <select
+                                id="department"
+                                name="department"
+                                value={formData.department}
+                                onChange={handleInputChange}
+                                className="w-full p-2 mt-1 border rounded"
+                                required
+                            >
+                                <option value="">Select Department</option>
+                                {departments.map(dept => (
+                                    <option key={dept} value={dept}>{dept}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="semester" className="block text-sm font-medium text-gray-700">Semester</label>
+                            <select
+                                id="semester"
+                                name="semester"
+                                value={formData.semester}
+                                onChange={handleInputChange}
+                                className="w-full p-2 mt-1 border rounded"
+                                required
+                            >
+                                {[1,2,3,4,5,6,7,8].map(sem => (
+                                    <option key={sem} value={sem}>Semester {sem}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <button
+                            type="submit"
+                            className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600"
+                        >
+                            Register
+                        </button>
+                        <p className="text-center mt-4">
+                            Already have an account? 
+                            <button 
+                                type="button"
+                                onClick={() => setView('login')}
+                                className="text-blue-500 ml-2"
+                            >
+                                Login
+                            </button>
+                        </p>
+                    </form>
+                </div>
+            );
+
+            const renderSubjectSelect = () => (
+                <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+                    <h2 className="text-2xl font-bold mb-6 text-center">Select Subject</h2>
+                    <select 
+                        name="subject" 
+                        value={formData.subject} 
+                        onChange={handleInputChange} 
+                        className="w-full p-2 mb-4 border rounded" 
+                        required
+                    >
+                        <option value="">Select a Subject</option>
+                        {subjects.map(subject => (
+                            <option key={subject.name} value={subject.name}>
+                                {subject.name} ({subject.department})
+                            </option>
+                        ))}
+                    </select>
+                    <button
+                        onClick={fetchQuestions}
+                        className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                        disabled={!formData.subject}
+                    >
+                        Start Exam
+                    </button>
+                </div>
+            );
+
+            const renderExam = () => (
+                <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+                    <h2 className="text-2xl font-bold mb-6 text-center">Exam: {formData.subject}</h2>
+                    <form onSubmit={submitExam}>
+                        {formData.questions.map((q) => (
+                            <div key={q.id} className="mb-6 p-4 border rounded">
+                                <p className="font-bold mb-2">
+                                    Q{q.id}: {q.question} ({q.marks} Marks)
+                                </p>
+                                <textarea
+                                    className="w-full p-2 border rounded"
+                                    placeholder="Type your answer here"
+                                    value={formData.answers[q.id] || ""}
+                                    onChange={(e) => handleAnswerChange(q.id, e.target.value)}
+                                    required
+                                />
+                                <div className="mt-2">
+                                    <p className="text-sm text-gray-600 mb-1">Or upload an image/PDF with your answer:</p>
+                                    <input 
+                                        type="file" 
+                                        accept="image/*,application/pdf" 
+                                        onChange={(e) => handleFileUpload(e, q.id)} 
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                        <button
+                            type="submit"
+                            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                        >
+                            Submit Exam
+                        </button>
+                    </form>
+                </div>
+            );
+
+            return (
+                <div className="min-h-screen bg-gray-100">
+                    {view === 'login' && renderLogin()}
+                    {view === 'register' && renderRegister()}
+                    {view === 'subject_select' && renderSubjectSelect()}
+                    {view === 'exam' && renderExam()}
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html> -->
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Answer Evaluation System</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #f8f9fa; padding: 20px; }
-        .container { background-color: white; border-radius: 10px; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        .form-label { font-weight: bold; }
-    </style>
+    <title>Exam Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@17.0.2/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1 class="text-center mb-4">Question Management System</h1>
-        
-        <form id="questionForm">
-            <div class="mb-3">
-                <label class="form-label">Question ID:</label>
-                <input type="text" class="form-control" id="questionId" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Question Type:</label>
-                <select class="form-control" id="questionType" required>
-                    <option value="General Knowledge">General Knowledge</option>
-                    <option value="Mathematics">Mathematics</option>
-                    <option value="Science">Science</option>
-                    <option value="Programming">Programming</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Question Text:</label>
-                <textarea class="form-control" id="questionText" rows="3" required></textarea>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Correct Answer:</label>
-                <textarea class="form-control" id="answer" rows="3" required></textarea>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Maximum Score:</label>
-                <input type="number" class="form-control" id="maxScore" required min="1">
-            </div>
-            <button type="submit" class="btn btn-primary">Add Question</button>
-        </form>
-
-        <div id="message" class="mt-3"></div>
-
-        <a href="/student_answers" class="btn btn-success mt-3">Go to Student Answers</a>
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $("#questionForm").on("submit", function(e) {
-            e.preventDefault();
-            $.post("/add_question", JSON.stringify({
-                question_id: $("#questionId").val(),
-                type: $("#questionType").val(),
-                text_English: $("#questionText").val(),
-                answer_English: $("#answer").val(),
-                max_score: parseInt($("#maxScore").val())
-            }), function(response) {
-                $("#message").html('<div class="alert alert-success">Question added successfully!</div>');
-                $("#questionForm")[0].reset();
-            }).fail(function() {
-                $("#message").html('<div class="alert alert-danger">Error adding question.</div>');
+    <div id="root" class="container mx-auto p-4"></div>
+    <script type="text/babel">
+        function App() {
+            const [view, setView] = React.useState('home');
+            const [userType, setUserType] = React.useState('student');
+            const [subjects, setSubjects] = React.useState([]);
+            const [departments] = React.useState([
+                'Computer Science', 'Electrical Engineering', 
+                'Mechanical Engineering', 'Civil Engineering'
+            ]);
+            const [formData, setFormData] = React.useState({
+                name: '',
+                rollNo: '',
+                password: '',
+                department: '',
+                semester: 1,
+                subject: '',
+                questions: [],
+                answers: {}
             });
-        });
+
+            const API_URL = "http://127.0.0.1:8000";
+
+            React.useEffect(() => {
+                fetchSubjects();
+            }, []);
+
+            const fetchSubjects = async () => {
+                try {
+                    const response = await fetch(`${API_URL}/subjects`);
+                    const fetchedSubjects = await response.json();
+                    setSubjects(fetchedSubjects);
+                } catch (error) {
+                    console.error('Error fetching subjects');
+                }
+            };
+
+            const handleInputChange = (e) => {
+                const { name, value } = e.target;
+                console.log(`Input change: ${name} = ${value}`); // Debug log
+                setFormData(prev => ({
+                    ...prev,
+                    [name]: name === 'semester' ? parseInt(value) : value
+                }));
+            };
+
+            const handleAnswerChange = (qid, value) => {
+                setFormData(prev => ({
+                    ...prev,
+                    answers: { ...prev.answers, [qid]: value }
+                }));
+            };
+
+            const resetForm = () => {
+                setFormData({
+                    name: '',
+                    rollNo: '',
+                    password: '',
+                    department: '',
+                    semester: 1,
+                    subject: '',
+                    questions: [],
+                    answers: {}
+                });
+            };
+
+            // Student Registration
+            const handleStudentRegister = async (e) => {
+                e.preventDefault();
+                console.log("Submitting student registration with data:", formData); // Debug log
+                try {
+                    const response = await fetch(`${API_URL}/register_student`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            name: formData.name,
+                            roll_no: formData.rollNo,
+                            password: formData.password,
+                            department: formData.department,
+                            semester: formData.semester
+                        })
+                    });
+                    const result = await response.json();
+                    alert(result.message);
+                    setView('login');
+                } catch (error) {
+                    alert('Registration failed!');
+                }
+            };
+
+            // Teacher Registration
+            const handleTeacherRegister = async (e) => {
+                e.preventDefault();
+                console.log("Submitting teacher registration with data:", formData); // Debug log
+                try {
+                    const response = await fetch(`${API_URL}/register_teacher`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            name: formData.name,
+                            password: formData.password,
+                            department: formData.department
+                        })
+                    });
+                    const result = await response.json();
+                    alert(result.message);
+                    setView('login');
+                } catch (error) {
+                    alert('Teacher registration failed!');
+                }
+            };
+
+            // Student Login
+            const handleStudentLogin = async (e) => {
+                e.preventDefault();
+                try {
+                    const response = await fetch(`${API_URL}/login_student`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            roll_no: formData.rollNo,
+                            password: formData.password
+                        })
+                    });
+                    const result = await response.json();
+                    alert(result.message);
+                    setView('subject_select');
+                } catch (error) {
+                    alert('Login failed!');
+                }
+            };
+
+            // Teacher Login
+            const handleTeacherLogin = async (e) => {
+                e.preventDefault();
+                try {
+                    const response = await fetch(`${API_URL}/login_teacher`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            name: formData.name,
+                            password: formData.password
+                        })
+                    });
+                    const result = await response.json();
+                    alert(result.message);
+                    setView('teacher_dashboard'); // Redirect to teacher dashboard
+                } catch (error) {
+                    alert('Teacher login failed!');
+                }
+            };
+
+            const fetchQuestions = async () => {
+                try {
+                    console.log("Fetching questions for subject:", formData.subject);
+                    
+                    // Show loading state to user
+                    alert("Loading questions... Please wait.");
+                    
+                    const response = await fetch(`${API_URL}/questions?subject=${formData.subject}`);
+                    
+                    // Log detailed response info for debugging
+                    console.log("Response status:", response.status);
+                    console.log("Response headers:", Object.fromEntries([...response.headers]));
+                    
+                    if (!response.ok) {
+                        if (response.status === 500) {
+                            console.error("Server error (500) - likely an issue with the backend application");
+                            throw new Error(`Server error (500). There may be an issue with the database or the backend code.`);
+                        } else {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                    }
+
+                    let data;
+                    try {
+                        data = await response.json();
+                    } catch (parseError) {
+                        console.error("Error parsing JSON response:", parseError);
+                        throw new Error("Invalid response format from server");
+                    }
+                    
+                    console.log("Received data:", data);
+
+                    if (!data.questions || !Array.isArray(data.questions) || data.questions.length === 0) {
+                        alert("No questions available for this subject.");
+                        return;
+                    }
+
+                    setFormData(prev => ({ ...prev, questions: data.questions })); 
+                    setView('exam');
+
+                } catch (error) {
+                    console.error("Error fetching questions:", error);
+                    alert(`Failed to fetch questions: ${error.message}\n\nPlease check the server logs for more details.`);
+                }
+            };
+
+            const handleFileUpload = async (event, questionId) => {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const fileFormData = new FormData();
+                fileFormData.append("file", file);
+
+                try {
+                    const response = await fetch(`${API_URL}/upload-answer`, {
+                        method: "POST",
+                        body: fileFormData
+                    });
+
+                    const data = await response.json();
+                    console.log("Extracted text:", data);
+
+                    if (data.status === "success") {
+                        handleAnswerChange(questionId, data.extracted_text);
+                    } else {
+                        alert("Failed to extract text from file.");
+                    }
+
+                } catch (error) {
+                    console.error("Error uploading file:", error);
+                    alert("Error processing file.");
+                }
+            };
+
+            const submitExam = async (e) => {
+                e.preventDefault();
+                try {
+                    const response = await fetch(`${API_URL}/submit_exam`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            roll_no: formData.rollNo,
+                            subject: formData.subject,
+                            answers: formData.answers
+                        })
+                    });
+                    const result = await response.json();
+                    alert(result.message);
+                    setView('login');
+                } catch (error) {
+                    console.error('Error submitting exam');
+                    alert('Failed to submit exam');
+                }
+            };
+
+            // Home Page
+            const renderHome = () => (
+                <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md text-center">
+                    <h1 className="text-3xl font-bold mb-8">Exam Portal</h1>
+                    <div className="space-y-4">
+                        <div>
+                            <h2 className="text-xl font-semibold mb-4">Login As</h2>
+                            <div className="flex justify-center space-x-4 mb-6">
+                                <button 
+                                    onClick={() => {setUserType('student'); setView('login');}}
+                                    className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                >
+                                    Student
+                                </button>
+                                <button 
+                                    onClick={() => {setUserType('teacher'); setView('login');}}
+                                    className="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                                >
+                                    Teacher
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            // Login Page (Dynamic based on userType)
+            const renderLogin = () => (
+                <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+                    <h2 className="text-2xl font-bold mb-6 text-center">
+                        {userType === 'student' ? 'Student Login' : 'Teacher Login'}
+                    </h2>
+                    <form onSubmit={userType === 'student' ? handleStudentLogin : handleTeacherLogin}>
+                        {userType === 'student' ? (
+                            <input
+                                type="text"
+                                name="rollNo"
+                                placeholder="Roll Number"
+                                value={formData.rollNo}
+                                onChange={handleInputChange}
+                                className="w-full p-2 mb-4 border rounded"
+                                required
+                            />
+                        ) : (
+                            <input
+                                type="text"
+                                name="name"
+                                placeholder="Teacher Name"
+                                value={formData.name}
+                                onChange={handleInputChange}
+                                className="w-full p-2 mb-4 border rounded"
+                                required
+                            />
+                        )}
+                        <input
+                            type="password"
+                            name="password"
+                            placeholder="Password"
+                            value={formData.password}
+                            onChange={handleInputChange}
+                            className="w-full p-2 mb-4 border rounded"
+                            required
+                        />
+                        <button 
+                            type="submit" 
+                            className={`w-full ${userType === 'student' ? 'bg-blue-500 hover:bg-blue-600' : 'bg-green-500 hover:bg-green-600'} text-white p-2 rounded`}
+                        >
+                            Login
+                        </button>
+                        <div className="flex justify-between mt-4">
+                            <p className="text-center">
+                                Don't have an account? 
+                                <button 
+                                    type="button"
+                                    onClick={() => {resetForm(); setView('register');}}
+                                    className="text-blue-500 ml-2"
+                                >
+                                    Register
+                                </button>
+                            </p>
+                            <button 
+                                type="button"
+                                onClick={() => {resetForm(); setView('home');}}
+                                className="text-gray-500 hover:text-gray-700"
+                            >
+                                Back
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            );
+
+            // Registration Page (Dynamic based on userType)
+            const renderRegister = () => (
+                <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+                    <h2 className="text-2xl font-bold mb-6 text-center">
+                        {userType === 'student' ? 'Student Registration' : 'Teacher Registration'}
+                    </h2>
+                    <form onSubmit={userType === 'student' ? handleStudentRegister : handleTeacherRegister}>
+                        <div className="mb-4">
+                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                                {userType === 'student' ? 'Full Name' : 'Teacher Name'}
+                            </label>
+                            <input
+                                id="name"
+                                type="text"
+                                name="name"
+                                placeholder={userType === 'student' ? 'Full Name' : 'Teacher Name'}
+                                value={formData.name}
+                                onChange={handleInputChange}
+                                className="w-full p-2 mt-1 border rounded"
+                                required
+                            />
+                        </div>
+                        
+                        {userType === 'student' && (
+                            <div className="mb-4">
+                                <label htmlFor="rollNo" className="block text-sm font-medium text-gray-700">Roll Number</label>
+                                <input
+                                    id="rollNo"
+                                    type="text"
+                                    name="rollNo"
+                                    placeholder="Roll Number"
+                                    value={formData.rollNo}
+                                    onChange={handleInputChange}
+                                    className="w-full p-2 mt-1 border rounded"
+                                    required
+                                />
+                            </div>
+                        )}
+                        
+                        <div className="mb-4">
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+                            <input
+                                id="password"
+                                type="password"
+                                name="password"
+                                placeholder="Password"
+                                value={formData.password}
+                                onChange={handleInputChange}
+                                className="w-full p-2 mt-1 border rounded"
+                                required
+                            />
+                        </div>
+                        
+                        <div className="mb-4">
+                            <label htmlFor="department" className="block text-sm font-medium text-gray-700">Department</label>
+                            <select
+                                id="department"
+                                name="department"
+                                value={formData.department}
+                                onChange={handleInputChange}
+                                className="w-full p-2 mt-1 border rounded"
+                                required
+                            >
+                                <option value="">Select Department</option>
+                                {departments.map(dept => (
+                                    <option key={dept} value={dept}>{dept}</option>
+                                ))}
+                            </select>
+                        </div>
+                        
+                        {userType === 'student' && (
+                            <div className="mb-4">
+                                <label htmlFor="semester" className="block text-sm font-medium text-gray-700">Semester</label>
+                                <select
+                                    id="semester"
+                                    name="semester"
+                                    value={formData.semester}
+                                    onChange={handleInputChange}
+                                    className="w-full p-2 mt-1 border rounded"
+                                    required
+                                >
+                                    {[1,2,3,4,5,6,7,8].map(sem => (
+                                        <option key={sem} value={sem}>Semester {sem}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+                        
+                        <button
+                            type="submit"
+                            className={`w-full ${userType === 'student' ? 'bg-blue-500 hover:bg-blue-600' : 'bg-green-500 hover:bg-green-600'} text-white p-2 rounded`}
+                        >
+                            Register
+                        </button>
+                        <div className="flex justify-between mt-4">
+                            <p className="text-center">
+                                Already have an account? 
+                                <button 
+                                    type="button"
+                                    onClick={() => {resetForm(); setView('login');}}
+                                    className="text-blue-500 ml-2"
+                                >
+                                    Login
+                                </button>
+                            </p>
+                            <button 
+                                type="button"
+                                onClick={() => {resetForm(); setView('home');}}
+                                className="text-gray-500 hover:text-gray-700"
+                            >
+                                Back
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            );
+
+            const renderSubjectSelect = () => (
+                <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+                    <h2 className="text-2xl font-bold mb-6 text-center">Select Subject</h2>
+                    <select 
+                        name="subject" 
+                        value={formData.subject} 
+                        onChange={handleInputChange} 
+                        className="w-full p-2 mb-4 border rounded" 
+                        required
+                    >
+                        <option value="">Select a Subject</option>
+                        {subjects.map(subject => (
+                            <option key={subject.name} value={subject.name}>
+                                {subject.name} ({subject.department})
+                            </option>
+                        ))}
+                    </select>
+                    <button
+                        onClick={fetchQuestions}
+                        className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                        disabled={!formData.subject}
+                    >
+                        Start Exam
+                    </button>
+                    <button
+                        onClick={() => {resetForm(); setView('home');}}
+                        className="w-full mt-4 bg-gray-300 text-gray-700 p-2 rounded hover:bg-gray-400"
+                    >
+                        Logout
+                    </button>
+                </div>
+            );
+
+            const renderTeacherDashboard = () => (
+                <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+                    <h2 className="text-2xl font-bold mb-6 text-center">Teacher Dashboard</h2>
+                    <div className="text-center p-8">
+                        <p className="text-lg mb-4">Welcome, {formData.name}!</p>
+                        <p className="text-gray-600 mb-6">This is your dashboard where you can manage exams and review submissions.</p>
+                        
+                        {/* Placeholder for teacher features */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                            <div className="border p-4 rounded bg-blue-50 hover:bg-blue-100 cursor-pointer">
+                                <h3 className="font-semibold mb-2">Create Exam</h3>
+                                <p className="text-sm text-gray-600">Create new exams for your subjects</p>
+                            </div>
+                            <div className="border p-4 rounded bg-green-50 hover:bg-green-100 cursor-pointer">
+                                <h3 className="font-semibold mb-2">Review Submissions</h3>
+                                <p className="text-sm text-gray-600">Review and grade student submissions</p>
+                            </div>
+                            <div className="border p-4 rounded bg-purple-50 hover:bg-purple-100 cursor-pointer">
+                                <h3 className="font-semibold mb-2">Manage Questions</h3>
+                                <p className="text-sm text-gray-600">Add or edit exam questions</p>
+                            </div>
+                            <div className="border p-4 rounded bg-yellow-50 hover:bg-yellow-100 cursor-pointer">
+                                <h3 className="font-semibold mb-2">View Results</h3>
+                                <p className="text-sm text-gray-600">View examination results</p>
+                            </div>
+                        </div>
+                        
+                        <button
+                            onClick={() => {resetForm(); setView('home');}}
+                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                        >
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            );
+
+            const renderExam = () => (
+                <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+                    <h2 className="text-2xl font-bold mb-6 text-center">Exam: {formData.subject}</h2>
+                    <form onSubmit={submitExam}>
+                        {formData.questions.map((q) => (
+                            <div key={q.id} className="mb-6 p-4 border rounded">
+                                <p className="font-bold mb-2">
+                                    Q{q.id}: {q.question} ({q.marks} Marks)
+                                </p>
+                                <textarea
+                                    className="w-full p-2 border rounded"
+                                    placeholder="Type your answer here"
+                                    value={formData.answers[q.id] || ""}
+                                    onChange={(e) => handleAnswerChange(q.id, e.target.value)}
+                                    required
+                                />
+                                <div className="mt-2">
+                                    <p className="text-sm text-gray-600 mb-1">Or upload an image/PDF with your answer:</p>
+                                    <input 
+                                        type="file" 
+                                        accept="image/*,application/pdf" 
+                                        onChange={(e) => handleFileUpload(e, q.id)} 
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                        <button
+                            type="submit"
+                            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                        >
+                            Submit Exam
+                        </button>
+                    </form>
+                </div>
+            );
+
+            return (
+                <div className="min-h-screen bg-gray-100">
+                    {view === 'home' && renderHome()}
+                    {view === 'login' && renderLogin()}
+                    {view === 'register' && renderRegister()}
+                    {view === 'subject_select' && renderSubjectSelect()}
+                    {view === 'exam' && renderExam()}
+                    {view === 'teacher_dashboard' && renderTeacherDashboard()}
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
     </script>
 </body>
 </html>

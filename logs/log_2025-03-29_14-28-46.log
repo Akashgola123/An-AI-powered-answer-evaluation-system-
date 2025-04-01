@@ -1,0 +1,17 @@
+[2025-03-29 14:28:47,937] werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.24.197.130:5000
+[2025-03-29 14:28:47,937] werkzeug - INFO - [33mPress CTRL+C to quit[0m
+[2025-03-29 14:28:47,938] werkzeug - INFO -  * Restarting with stat
+[2025-03-29 14:30:33,703] werkzeug - INFO -  * Restarting with stat
+[2025-03-29 14:31:13,049] werkzeug - INFO -  * Restarting with stat
+[2025-03-29 14:31:48,358] werkzeug - INFO -  * Restarting with stat
+[2025-03-29 14:34:39,283] werkzeug - INFO -  * Restarting with stat
+[2025-03-29 14:35:15,620] werkzeug - INFO -  * Restarting with stat
+[2025-03-29 14:36:42,805] werkzeug - INFO -  * Restarting with stat
+[2025-03-29 14:58:15,932] werkzeug - INFO -  * Restarting with stat
+[2025-03-29 14:58:53,909] werkzeug - INFO -  * Restarting with stat
+[2025-03-29 14:59:35,528] werkzeug - INFO -  * Restarting with stat
+[2025-03-29 14:59:37,622] werkzeug - INFO -  * Restarting with stat
+[2025-03-29 15:00:39,233] werkzeug - INFO -  * Restarting with stat

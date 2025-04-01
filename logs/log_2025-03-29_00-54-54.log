@@ -1,0 +1,5 @@
+[2025-03-29 00:54:54,437] werkzeug - WARNING -  * Debugger is active!
+[2025-03-29 00:54:54,439] werkzeug - INFO -  * Debugger PIN: 858-209-888
+[2025-03-29 00:54:58,532] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 00:54:58] "GET / HTTP/1.1" 200 -
+[2025-03-29 00:55:03,402] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 00:55:03] "[35m[1mPOST /extract-text HTTP/1.1[0m" 500 -
+[2025-03-29 00:55:35,424] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 00:55:35] "[31m[1mGET /extract-text HTTP/1.1[0m" 405 -

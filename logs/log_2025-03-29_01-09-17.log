@@ -1,0 +1,29 @@
+[2025-03-29 01:09:18,279] werkzeug - WARNING -  * Debugger is active!
+[2025-03-29 01:09:18,279] werkzeug - INFO -  * Debugger PIN: 858-209-888
+[2025-03-29 01:09:19,724] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:09:19] "GET / HTTP/1.1" 200 -
+[2025-03-29 01:09:25,578] AIAnswerEvaluationSystem.ocr - INFO - Sending request to Gemini API...
+[2025-03-29 01:09:25,578] google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+[2025-03-29 01:09:31,051] httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent "HTTP/1.1 200 OK"
+[2025-03-29 01:09:31,057] google_genai.models - INFO - AFC remote call 1 is done.
+[2025-03-29 01:09:31,057] AIAnswerEvaluationSystem.ocr - INFO - Extracted Text: Here is the text from the image:
+
+Data:
+
+Q7 What do you have for breakfast?
+As. I eat bread and butter in my breakfast.
+
+Q8 Do you do any exercise?
+As. I love to play badminton.
+
+Q9 What time do you usually wake up?
+As. I wake up at 6:30 Am in the morning
+
+Q10 Do you eat dinner alone or with your family?
+As. I eat dinner with my family.
+
+Q11 How do you spend your evenings during the week?
+As. I spend my evening with my family.
+
+Q12 At what time do you go to bed at
+[2025-03-29 01:09:31,057] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:09:31] "POST /extract-text HTTP/1.1" 200 -
+[2025-03-29 01:13:39,071] werkzeug - INFO -  * Detected change in '/home/gola/GRAPH_RAG/An-AI-powered-answer-evaluation-system-/app.py', reloading

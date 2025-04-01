@@ -1,0 +1,9 @@
+[2025-03-29 15:52:07,270] werkzeug - WARNING -  * Debugger is active!
+[2025-03-29 15:52:07,271] werkzeug - INFO -  * Debugger PIN: 883-443-999
+[2025-03-29 15:52:16,698] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:52:16] "GET / HTTP/1.1" 200 -
+[2025-03-29 15:52:17,575] AIAnswerEvaluationSystem.logger - ERROR - Error executing query: type object 'Neo4jManager' has no attribute 'execute_query'
+[2025-03-29 15:52:17,575] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:52:17] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+[2025-03-29 15:52:18,183] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:52:18] "OPTIONS /login_student HTTP/1.1" 200 -
+[2025-03-29 15:52:18,204] root - INFO - ✅ Neo4j connection established successfully
+[2025-03-29 15:52:18,441] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 15:52:18] "POST /login_student HTTP/1.1" 200 -
+[2025-03-29 15:54:10,019] werkzeug - INFO -  * Detected change in '/home/gola/GRAPH_RAG/An-AI-powered-answer-evaluation-system-/app.py', reloading

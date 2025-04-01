@@ -1,0 +1,10 @@
+[2025-03-29 14:31:49,991] werkzeug - WARNING -  * Debugger is active!
+[2025-03-29 14:31:49,991] werkzeug - INFO -  * Debugger PIN: 883-443-999
+[2025-03-29 14:33:49,305] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:33:49] "GET / HTTP/1.1" 200 -
+[2025-03-29 14:33:53,408] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:33:53] "OPTIONS /login_student HTTP/1.1" 200 -
+[2025-03-29 14:33:53,425] root - INFO - ✅ Neo4j connection established successfully
+[2025-03-29 14:33:53,428] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:33:53] "[31m[1mPOST /login_student HTTP/1.1[0m" 400 -
+[2025-03-29 14:33:57,834] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:33:57] "GET / HTTP/1.1" 200 -
+[2025-03-29 14:34:01,747] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:34:01] "OPTIONS /login_student HTTP/1.1" 200 -
+[2025-03-29 14:34:02,013] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:34:02] "POST /login_student HTTP/1.1" 200 -
+[2025-03-29 14:34:39,035] werkzeug - INFO -  * Detected change in '/home/gola/GRAPH_RAG/An-AI-powered-answer-evaluation-system-/app.py', reloading

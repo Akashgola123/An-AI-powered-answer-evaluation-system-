@@ -1,0 +1,12 @@
+[2025-03-29 01:23:59,708] werkzeug - WARNING -  * Debugger is active!
+[2025-03-29 01:23:59,709] werkzeug - INFO -  * Debugger PIN: 858-209-888
+[2025-03-29 01:24:03,858] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:24:03] "[33mGET /fetch_answers HTTP/1.1[0m" 404 -
+[2025-03-29 01:24:24,529] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:24:24] "GET / HTTP/1.1" 200 -
+[2025-03-29 01:24:45,642] AIAnswerEvaluationSystem.ocr - INFO - Sending request to Gemini API...
+[2025-03-29 01:24:45,642] google_genai.models - INFO - AFC is enabled with max remote calls: 10.
+[2025-03-29 01:24:49,248] httpx - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent "HTTP/1.1 200 OK"
+[2025-03-29 01:24:49,250] google_genai.models - INFO - AFC remote call 1 is done.
+[2025-03-29 01:24:49,250] AIAnswerEvaluationSystem.ocr - INFO - Extracted Text: Delicious substitute for tuna in your Favorite
+recipes. Perfect for creative hors d'oeuvres and
+Snacks. Great as a salad topper.
+[2025-03-29 01:24:49,250] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 01:24:49] "POST /extract-text HTTP/1.1" 200 -

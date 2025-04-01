@@ -1,0 +1,3 @@
+[2025-03-29 01:06:39,855] werkzeug - WARNING -  * Debugger is active!
+[2025-03-29 01:06:39,855] werkzeug - INFO -  * Debugger PIN: 858-209-888
+[2025-03-29 01:07:52,770] werkzeug - INFO -  * Detected change in '/home/gola/GRAPH_RAG/An-AI-powered-answer-evaluation-system-/src/AIAnswerEvaluationSystem/ocr.py', reloading

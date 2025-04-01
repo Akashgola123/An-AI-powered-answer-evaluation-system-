@@ -1,0 +1,72 @@
+[2025-03-29 14:36:43,796] werkzeug - WARNING -  * Debugger is active!
+[2025-03-29 14:36:43,797] werkzeug - INFO -  * Debugger PIN: 883-443-999
+[2025-03-29 14:36:45,746] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:36:45] "GET / HTTP/1.1" 200 -
+[2025-03-29 14:36:48,001] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:36:48] "OPTIONS /login_student HTTP/1.1" 200 -
+[2025-03-29 14:36:48,019] root - INFO - ✅ Neo4j connection established successfully
+[2025-03-29 14:36:48,219] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:36:48] "POST /login_student HTTP/1.1" 200 -
+[2025-03-29 14:36:51,353] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:36:51] "GET / HTTP/1.1" 200 -
+[2025-03-29 14:36:52,857] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:36:52] "POST /login_student HTTP/1.1" 200 -
+[2025-03-29 14:39:36,962] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:39:36] "GET / HTTP/1.1" 200 -
+[2025-03-29 14:39:37,450] AIAnswerEvaluationSystem.logger - ERROR - Error fetching subjects: 'Neo4jManager' object has no attribute 'execute_query'
+[2025-03-29 14:39:37,451] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:39:37] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+[2025-03-29 14:39:39,664] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:39:39] "OPTIONS /login_student HTTP/1.1" 200 -
+[2025-03-29 14:39:39,900] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:39:39] "POST /login_student HTTP/1.1" 200 -
+[2025-03-29 14:39:45,336] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:39:45] "GET / HTTP/1.1" 200 -
+[2025-03-29 14:39:45,579] AIAnswerEvaluationSystem.logger - ERROR - Error fetching subjects: 'Neo4jManager' object has no attribute 'execute_query'
+[2025-03-29 14:39:45,579] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:39:45] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+[2025-03-29 14:39:46,909] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:39:46] "OPTIONS /login_student HTTP/1.1" 200 -
+[2025-03-29 14:39:47,106] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:39:47] "POST /login_student HTTP/1.1" 200 -
+[2025-03-29 14:39:51,453] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:39:51] "GET / HTTP/1.1" 200 -
+[2025-03-29 14:39:51,690] AIAnswerEvaluationSystem.logger - ERROR - Error fetching subjects: 'Neo4jManager' object has no attribute 'execute_query'
+[2025-03-29 14:39:51,690] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:39:51] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+[2025-03-29 14:41:44,039] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:41:44] "GET / HTTP/1.1" 200 -
+[2025-03-29 14:41:46,418] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:41:46] "OPTIONS /login_student HTTP/1.1" 200 -
+[2025-03-29 14:41:46,630] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:41:46] "POST /login_student HTTP/1.1" 200 -
+[2025-03-29 14:41:51,561] root - INFO - Question data fetched Unsuccessfully.
+[2025-03-29 14:41:51,561] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:41:51] "[33mGET /questions?subject=Mathematics HTTP/1.1[0m" 404 -
+[2025-03-29 14:42:46,786] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:42:46] "GET / HTTP/1.1" 200 -
+[2025-03-29 14:42:47,143] AIAnswerEvaluationSystem.logger - ERROR - Error fetching subjects: 'Neo4jManager' object has no attribute 'execute_query'
+[2025-03-29 14:42:47,144] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:42:47] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+[2025-03-29 14:42:49,971] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:42:49] "GET / HTTP/1.1" 200 -
+[2025-03-29 14:42:50,179] AIAnswerEvaluationSystem.logger - ERROR - Error fetching subjects: 'Neo4jManager' object has no attribute 'execute_query'
+[2025-03-29 14:42:50,179] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:42:50] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+[2025-03-29 14:42:57,262] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:42:57] "[33mGET /subject HTTP/1.1[0m" 404 -
+[2025-03-29 14:42:58,661] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:42:58] "[33mGET /subject HTTP/1.1[0m" 404 -
+[2025-03-29 14:43:04,030] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:43:04] "[33mGET /llmss HTTP/1.1[0m" 404 -
+[2025-03-29 14:43:08,060] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:43:08] "GET / HTTP/1.1" 200 -
+[2025-03-29 14:43:08,306] AIAnswerEvaluationSystem.logger - ERROR - Error fetching subjects: 'Neo4jManager' object has no attribute 'execute_query'
+[2025-03-29 14:43:08,306] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:43:08] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+[2025-03-29 14:43:10,473] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:43:10] "GET / HTTP/1.1" 200 -
+[2025-03-29 14:43:10,677] AIAnswerEvaluationSystem.logger - ERROR - Error fetching subjects: 'Neo4jManager' object has no attribute 'execute_query'
+[2025-03-29 14:43:10,677] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:43:10] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+[2025-03-29 14:43:21,221] AIAnswerEvaluationSystem.logger - ERROR - Error fetching subjects: 'Neo4jManager' object has no attribute 'execute_query'
+[2025-03-29 14:43:21,222] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:43:21] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+[2025-03-29 14:45:00,634] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:45:00] "GET / HTTP/1.1" 200 -
+[2025-03-29 14:45:01,213] AIAnswerEvaluationSystem.logger - ERROR - Error fetching subjects: 'Neo4jManager' object has no attribute 'execute_query'
+[2025-03-29 14:45:01,213] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:45:01] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+[2025-03-29 14:45:09,643] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:45:09] "GET / HTTP/1.1" 200 -
+[2025-03-29 14:45:09,887] AIAnswerEvaluationSystem.logger - ERROR - Error fetching subjects: 'Neo4jManager' object has no attribute 'execute_query'
+[2025-03-29 14:45:09,887] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:45:09] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+[2025-03-29 14:45:18,305] AIAnswerEvaluationSystem.logger - ERROR - Error fetching subjects: 'Neo4jManager' object has no attribute 'execute_query'
+[2025-03-29 14:45:18,306] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:45:18] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+[2025-03-29 14:46:13,258] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:46:13] "GET / HTTP/1.1" 200 -
+[2025-03-29 14:46:13,682] AIAnswerEvaluationSystem.logger - ERROR - Error fetching subjects: 'Neo4jManager' object has no attribute 'execute_query'
+[2025-03-29 14:46:13,684] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:46:13] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+[2025-03-29 14:46:15,268] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:46:15] "OPTIONS /login_student HTTP/1.1" 200 -
+[2025-03-29 14:46:15,474] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:46:15] "POST /login_student HTTP/1.1" 200 -
+[2025-03-29 14:46:20,154] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:46:20] "GET / HTTP/1.1" 200 -
+[2025-03-29 14:46:20,375] AIAnswerEvaluationSystem.logger - ERROR - Error fetching subjects: 'Neo4jManager' object has no attribute 'execute_query'
+[2025-03-29 14:46:20,375] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:46:20] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+[2025-03-29 14:46:23,211] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:46:23] "OPTIONS /login_student HTTP/1.1" 200 -
+[2025-03-29 14:46:23,409] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:46:23] "POST /login_student HTTP/1.1" 200 -
+[2025-03-29 14:50:31,760] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:50:31] "GET / HTTP/1.1" 200 -
+[2025-03-29 14:50:32,194] AIAnswerEvaluationSystem.logger - ERROR - Error fetching subjects: 'Neo4jManager' object has no attribute 'execute_query'
+[2025-03-29 14:50:32,194] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:50:32] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+[2025-03-29 14:50:33,427] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:50:33] "OPTIONS /login_student HTTP/1.1" 200 -
+[2025-03-29 14:50:33,638] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:50:33] "POST /login_student HTTP/1.1" 200 -
+[2025-03-29 14:51:42,579] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:51:42] "GET / HTTP/1.1" 200 -
+[2025-03-29 14:51:42,873] AIAnswerEvaluationSystem.logger - ERROR - Error fetching subjects: 'Neo4jManager' object has no attribute 'execute_query'
+[2025-03-29 14:51:42,873] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:51:42] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+[2025-03-29 14:51:43,830] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:51:43] "OPTIONS /login_student HTTP/1.1" 200 -
+[2025-03-29 14:51:44,042] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:51:44] "POST /login_student HTTP/1.1" 200 -
+[2025-03-29 14:58:15,638] werkzeug - INFO -  * Detected change in '/home/gola/GRAPH_RAG/An-AI-powered-answer-evaluation-system-/app.py', reloading

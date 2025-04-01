@@ -1,0 +1,10 @@
+[2025-03-29 14:27:51,774] werkzeug - WARNING -  * Debugger is active!
+[2025-03-29 14:27:51,776] werkzeug - INFO -  * Debugger PIN: 883-443-999
+[2025-03-29 14:27:54,055] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:27:54] "GET / HTTP/1.1" 200 -
+[2025-03-29 14:27:55,522] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:27:55] "OPTIONS /login_student HTTP/1.1" 200 -
+[2025-03-29 14:27:55,537] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:27:55] "[35m[1mPOST /login_student HTTP/1.1[0m" 500 -
+[2025-03-29 14:28:02,944] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:28:02] "OPTIONS /login_student HTTP/1.1" 200 -
+[2025-03-29 14:28:02,949] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:28:02] "[35m[1mPOST /login_student HTTP/1.1[0m" 500 -
+[2025-03-29 14:28:29,284] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:28:29] "GET / HTTP/1.1" 200 -
+[2025-03-29 14:28:32,089] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:28:32] "OPTIONS /login_student HTTP/1.1" 200 -
+[2025-03-29 14:28:32,094] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:28:32] "[35m[1mPOST /login_student HTTP/1.1[0m" 500 -

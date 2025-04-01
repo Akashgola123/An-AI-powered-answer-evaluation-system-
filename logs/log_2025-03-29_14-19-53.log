@@ -1,0 +1,9 @@
+[2025-03-29 14:19:55,777] werkzeug - WARNING -  * Debugger is active!
+[2025-03-29 14:19:55,777] werkzeug - INFO -  * Debugger PIN: 883-443-999
+[2025-03-29 14:23:39,433] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:23:39] "GET / HTTP/1.1" 200 -
+[2025-03-29 14:23:44,647] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:23:44] "OPTIONS /login_student HTTP/1.1" 200 -
+[2025-03-29 14:23:44,651] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:23:44] "[35m[1mPOST /login_student HTTP/1.1[0m" 500 -
+[2025-03-29 14:23:54,094] root - INFO - ✅ Neo4j connection established successfully
+[2025-03-29 14:23:54,256] root - INFO - Question data fetched Unsuccessfully.
+[2025-03-29 14:23:54,257] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:23:54] "[33mGET /questions?subject=Mathematics HTTP/1.1[0m" 404 -
+[2025-03-29 14:23:57,395] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 14:23:57] "GET / HTTP/1.1" 200 -

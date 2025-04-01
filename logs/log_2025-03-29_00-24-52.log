@@ -1,0 +1,7 @@
+[2025-03-29 00:24:55,447] werkzeug - WARNING -  * Debugger is active!
+[2025-03-29 00:24:55,450] werkzeug - INFO -  * Debugger PIN: 858-209-888
+[2025-03-29 00:25:04,842] __main__ - INFO - Home page accessed
+[2025-03-29 00:25:04,843] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 00:25:04] "GET / HTTP/1.1" 200 -
+[2025-03-29 00:25:05,158] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 00:25:05] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+[2025-03-29 00:25:23,341] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 00:25:23] "[31m[1mGET /gemini HTTP/1.1[0m" 405 -
+[2025-03-29 00:29:10,022] werkzeug - INFO -  * Detected change in '/home/gola/GRAPH_RAG/An-AI-powered-answer-evaluation-system-/app.py', reloading

@@ -1,0 +1,9 @@
+[2025-03-29 00:34:53,718] werkzeug - WARNING -  * Debugger is active!
+[2025-03-29 00:34:53,719] werkzeug - INFO -  * Debugger PIN: 858-209-888
+[2025-03-29 00:34:54,598] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 00:34:54] "GET / HTTP/1.1" 200 -
+[2025-03-29 00:35:03,960] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 00:35:03] "[35m[1mPOST /extract-text HTTP/1.1[0m" 500 -
+[2025-03-29 00:35:06,862] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 00:35:06] "[35m[1mPOST /extract-text HTTP/1.1[0m" 500 -
+[2025-03-29 00:35:08,173] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 00:35:08] "[35m[1mPOST /extract-text HTTP/1.1[0m" 500 -
+[2025-03-29 00:35:08,870] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 00:35:08] "[35m[1mPOST /extract-text HTTP/1.1[0m" 500 -
+[2025-03-29 00:35:09,122] werkzeug - INFO - 127.0.0.1 - - [29/Mar/2025 00:35:09] "[35m[1mPOST /extract-text HTTP/1.1[0m" 500 -
+[2025-03-29 00:36:33,738] werkzeug - INFO -  * Detected change in '/home/gola/GRAPH_RAG/An-AI-powered-answer-evaluation-system-/src/AIAnswerEvaluationSystem/ocr.py', reloading

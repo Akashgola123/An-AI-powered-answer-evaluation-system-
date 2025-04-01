@@ -11,18 +11,12 @@ project_name = "AIAnswerEvaluationSystem"
 list_of_files = [
     ".github/workflows/.gitkeep",
     "research/trials.ipynb",
-    f"src/{project_name}/agents/agentss.py",
-    f"src/{project_name}/prompt/prompts.py",
-    f"src/{project_name}/llms/llmss.py",
-    f"src/{project_name}/Graph_Database/Graph_Databases.py",
-    f"src/{project_name}/Memory_Manager/Memory_Managers.py",
-    f"src/{project_name}/utils/utils.py",
-    f"src/{project_name}/telemetry/telemetrys.py",
-    f"src/{project_name}/config/configs.py",
-    f"src/{project_name}/dataloader/dataloaders.py",
-    f"src/{project_name}/retrievers/retrieverss.py",
-    f"src/{project_name}/Score_Manager/Score_Managers.py",
-    f"src/{project_name}/nlogger/__init__.py",
+    f"src/{project_name}/prompts.py",
+    f"src/{project_name}/llmss.py",
+    f"src/{project_name}/neo4j_Manager.py",
+    f"src/{project_name}/ocr.py",
+    f"src/{project_name}/Fetching.py",
+    f"src/{project_name}/database_login_rigister.py",
     f"src/{project_name}/main.py",
     "requirements.txt",
     "setup.py",
@@ -30,7 +24,8 @@ list_of_files = [
     "logs.py",
     "tests/test_main.py",
     "Makefile",
-    "templates/index.html"
+    "fontend/index.html",
+    ".env"
 
 
 ]

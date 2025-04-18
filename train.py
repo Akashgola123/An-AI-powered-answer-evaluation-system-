@@ -4,12 +4,12 @@ from datasets import load_dataset
 from peft import LoraConfig
 import torch
 
-# Initialize tokenizer and model
+
 model_id = "llama3.2:latest"
 tokenizer = AutoTokenizer.from_pretrained(model_id)
 tokenizer.pad_token = tokenizer.eos_token
 
-# Load and prepare model with Unsloth optimization
+
 model, tokenizer = FastLanguageModel.from_pretrained(
     model_id=model_id,
     max_seq_length=2048,
@@ -17,7 +17,7 @@ model, tokenizer = FastLanguageModel.from_pretrained(
     load_in_4bit=True,
 )
 
-# Configure LoRA for efficient fine-tuning
+
 lora_config = LoraConfig(
     r=16,
     target_modules=["q_proj", "k_proj", "v_proj", "o_proj"],
@@ -27,7 +27,6 @@ lora_config = LoraConfig(
 
 model = FastLanguageModel.get_peft_model(model, lora_config)
 
-# Load and prepare your QA dataset
 def prepare_dataset():
     dataset = load_dataset("chetan ka dataset") 
     
@@ -53,28 +52,24 @@ def prepare_dataset():
     
     return dataset.map(format_qa_with_copy_detection)
 
-# Custom loss function to incorporate copy detection
+
 def compute_loss(model, inputs, similarity_scores):
-    # Standard language modeling loss
+
     outputs = model(**inputs)
     lm_loss = outputs.loss
     
-    # Contrastive loss for copy detection
-    hidden_states = outputs.hidden_states[-1][:, 0]  # Use [CLS] token representation
+    hidden_states = outputs.hidden_states[-1][:, 0]  
     batch_size = hidden_states.shape[0]
     
-    # Compute similarity between embeddings
     similarity_matrix = torch.matmul(hidden_states, hidden_states.t())
     similarity_matrix = similarity_matrix - torch.eye(batch_size).to(similarity_matrix.device)
-    
-    # Contrastive loss based on similarity scores
+   
     contrastive_loss = torch.mean(torch.abs(similarity_matrix - similarity_scores))
     
     # Combined loss
     total_loss = lm_loss + 0.1 * contrastive_loss
     return total_loss
 
-# Training arguments with enhanced learning rate scheduling and optimization
 training_args = TrainingArguments(
     output_dir="./llama2-qa-finetuned",
     num_train_epochs=3,
@@ -85,16 +80,16 @@ training_args = TrainingArguments(
     logging_steps=10,
     save_strategy="epoch",
     evaluation_strategy="epoch",
-    # Adaptive learning rate scheduling
+  
     lr_scheduler_type="cosine",
     warmup_ratio=0.1,
-    # Improved optimization settings
+
     weight_decay=0.01,
     adam_beta1=0.9,
     adam_beta2=0.999,
     adam_epsilon=1e-8,
     max_grad_norm=1.0,
-    # Early stopping
+
     load_best_model_at_end=True,
     metric_for_best_model="loss",
     greater_is_better=False,

@@ -1,0 +1,9 @@
+[2025-04-26 18:15:38] root:132 - INFO - Logging configured. Level: INFO. File: /home/gola/GRAPH_RAG/Exam_Portal/An-AI-powered-answer-evaluation-system-/src/AIAnswerEvaluationSystem/logger/logs/app_log_2025-04-26.log
+[2025-04-26 18:15:38] __main__:148 - INFO - This is an info message.
+[2025-04-26 18:15:38] __main__:149 - WARNING - This is a warning message.
+[2025-04-26 18:15:38] __main__:150 - ERROR - This is an error message.
+[2025-04-26 18:15:38] __main__:154 - ERROR - This is an exception message (includes traceback).
+Traceback (most recent call last):
+  File "/home/gola/GRAPH_RAG/Exam_Portal/An-AI-powered-answer-evaluation-system-/src/AIAnswerEvaluationSystem/logger/__init__.py", line 152, in <module>
+    1 / 0
+ZeroDivisionError: division by zero

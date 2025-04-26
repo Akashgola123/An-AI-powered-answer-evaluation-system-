@@ -1,0 +1,7 @@
+[2025-04-26 16:07:45,053] root - INFO - Creating new Neo4jManager instance for ('neo4j://localhost:7687', 'neo4j')
+[2025-04-26 16:07:45,053] root - INFO - Neo4jManager instance configured for URI: neo4j://localhost:7687
+[2025-04-26 16:07:45,053] root - ERROR - Failed to initialize Neo4j driver for ('neo4j://localhost:7687', 'neo4j') during get_instance.
+Traceback (most recent call last):
+  File "/home/gola/GRAPH_RAG/Exam_Portal/An-AI-powered-answer-evaluation-system-/src/AIAnswerEvaluationSystem/neo4j_Manager.py", line 121, in get_instance
+    instance._get_driver() # Call internal method to init and verify
+AttributeError: 'Neo4jManager' object has no attribute '_get_driver'

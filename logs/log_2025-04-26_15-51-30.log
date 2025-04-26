@@ -1,0 +1,2 @@
+[2025-04-26 15:51:30,430] AIAnswerEvaluationSystem.neo4j_Manager - INFO - Creating new Neo4jManager instance for ('neo4j://localhost:7687', 'neo4j')
+[2025-04-26 15:51:30,430] AIAnswerEvaluationSystem.neo4j_Manager - INFO - Neo4jManager instance configured for URI: neo4j://localhost:7687

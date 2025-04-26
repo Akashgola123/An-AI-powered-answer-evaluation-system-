@@ -1,0 +1,197 @@
+[2025-04-26 20:51:03] root:156 - INFO - Logging configured. Level: INFO. File: /home/gola/GRAPH_RAG/Exam_Portal/An-AI-powered-answer-evaluation-system-/research/logs/app_log_2025-04-26.log
+[2025-04-26 20:51:03] AIAnswerEvaluationSystem:179 - INFO - Logger 'AIAnswerEvaluationSystem' obtained and ready for import.
+[2025-04-26 20:51:03] MainExample:328 - INFO - Running Evaluation Processor Example...
+[2025-04-26 20:51:26] MainExample:329 - INFO - Running Evaluation Processor Example...
+[2025-04-26 20:51:26] root:117 - INFO - Creating new Neo4jManager instance for ('neo4j://localhost:7687', 'neo4j')
+[2025-04-26 20:51:26] root:97 - INFO - Neo4jManager instance configured for URI: neo4j://localhost:7687
+[2025-04-26 20:51:26] MainExample:59 - INFO - LLMEvaluator configured for model: ./llama-3.2-3b-qa-finetuned/final_model on device cuda
+[2025-04-26 20:51:26] MainExample:142 - INFO - EvaluationProcessor initialized.
+[2025-04-26 20:51:26] MainExample:351 - INFO - 
+--- Evaluating Specific Submission Example ---
+[2025-04-26 20:51:26] MainExample:257 - INFO - Starting evaluation process for student '2115500009', question 'PHYSICS_NEWTON_Q1'...
+[2025-04-26 20:51:26] MainExample:370 - ERROR - An unexpected error occurred.
+Traceback (most recent call last):
+  File "/tmp/ipykernel_11125/4062410759.py", line 355, in <module>
+    evaluation_result = processor.evaluate_and_store_answer(
+  File "/tmp/ipykernel_11125/4062410759.py", line 261, in evaluate_and_store_answer
+    submission_data = self._fetch_submission_details(student_roll_no, question_id)
+  File "/tmp/ipykernel_11125/4062410759.py", line 166, in _fetch_submission_details
+    results = self.db.execute_read(query, params)
+AttributeError: 'Neo4jManager' object has no attribute 'execute_read'. Did you mean: 'execute_query'?
+[2025-04-26 20:51:26] MainExample:375 - INFO - Closing Neo4j connection.
+[2025-04-26 20:51:26] MainExample:378 - INFO - Evaluation Processor Example Finished.
+[2025-04-26 20:51:28] MainExample:329 - INFO - Running Evaluation Processor Example...
+[2025-04-26 20:51:28] MainExample:59 - INFO - LLMEvaluator configured for model: ./llama-3.2-3b-qa-finetuned/final_model on device cuda
+[2025-04-26 20:51:28] MainExample:142 - INFO - EvaluationProcessor initialized.
+[2025-04-26 20:51:28] MainExample:351 - INFO - 
+--- Evaluating Specific Submission Example ---
+[2025-04-26 20:51:28] MainExample:257 - INFO - Starting evaluation process for student '2115500009', question 'PHYSICS_NEWTON_Q1'...
+[2025-04-26 20:51:28] MainExample:370 - ERROR - An unexpected error occurred.
+Traceback (most recent call last):
+  File "/tmp/ipykernel_11125/4062410759.py", line 355, in <module>
+    evaluation_result = processor.evaluate_and_store_answer(
+  File "/tmp/ipykernel_11125/4062410759.py", line 261, in evaluate_and_store_answer
+    submission_data = self._fetch_submission_details(student_roll_no, question_id)
+  File "/tmp/ipykernel_11125/4062410759.py", line 166, in _fetch_submission_details
+    results = self.db.execute_read(query, params)
+AttributeError: 'Neo4jManager' object has no attribute 'execute_read'. Did you mean: 'execute_query'?
+[2025-04-26 20:51:28] MainExample:375 - INFO - Closing Neo4j connection.
+[2025-04-26 20:51:28] MainExample:378 - INFO - Evaluation Processor Example Finished.
+[2025-04-26 20:51:29] MainExample:329 - INFO - Running Evaluation Processor Example...
+[2025-04-26 20:51:29] MainExample:59 - INFO - LLMEvaluator configured for model: ./llama-3.2-3b-qa-finetuned/final_model on device cuda
+[2025-04-26 20:51:29] MainExample:142 - INFO - EvaluationProcessor initialized.
+[2025-04-26 20:51:29] MainExample:351 - INFO - 
+--- Evaluating Specific Submission Example ---
+[2025-04-26 20:51:29] MainExample:257 - INFO - Starting evaluation process for student '2115500009', question 'PHYSICS_NEWTON_Q1'...
+[2025-04-26 20:51:29] MainExample:370 - ERROR - An unexpected error occurred.
+Traceback (most recent call last):
+  File "/tmp/ipykernel_11125/4062410759.py", line 355, in <module>
+    evaluation_result = processor.evaluate_and_store_answer(
+  File "/tmp/ipykernel_11125/4062410759.py", line 261, in evaluate_and_store_answer
+    submission_data = self._fetch_submission_details(student_roll_no, question_id)
+  File "/tmp/ipykernel_11125/4062410759.py", line 166, in _fetch_submission_details
+    results = self.db.execute_read(query, params)
+AttributeError: 'Neo4jManager' object has no attribute 'execute_read'. Did you mean: 'execute_query'?
+[2025-04-26 20:51:29] MainExample:375 - INFO - Closing Neo4j connection.
+[2025-04-26 20:51:29] MainExample:378 - INFO - Evaluation Processor Example Finished.
+[2025-04-26 20:51:40] MainExample:329 - INFO - Running Evaluation Processor Example...
+[2025-04-26 20:51:40] MainExample:59 - INFO - LLMEvaluator configured for model: ./llama-3.2-3b-qa-finetuned/final_model on device cuda
+[2025-04-26 20:51:40] MainExample:142 - INFO - EvaluationProcessor initialized.
+[2025-04-26 20:51:40] MainExample:351 - INFO - 
+--- Evaluating Specific Submission Example ---
+[2025-04-26 20:51:40] MainExample:257 - INFO - Starting evaluation process for student '2115500009', question 'PHYSICS_NEWTON_Q1'...
+[2025-04-26 20:51:40] MainExample:370 - ERROR - An unexpected error occurred.
+Traceback (most recent call last):
+  File "/tmp/ipykernel_11125/4062410759.py", line 355, in <module>
+    evaluation_result = processor.evaluate_and_store_answer(
+  File "/tmp/ipykernel_11125/4062410759.py", line 261, in evaluate_and_store_answer
+    submission_data = self._fetch_submission_details(student_roll_no, question_id)
+  File "/tmp/ipykernel_11125/4062410759.py", line 166, in _fetch_submission_details
+    results = self.db.execute_read(query, params)
+AttributeError: 'Neo4jManager' object has no attribute 'execute_read'. Did you mean: 'execute_query'?
+[2025-04-26 20:51:40] MainExample:375 - INFO - Closing Neo4j connection.
+[2025-04-26 20:51:40] MainExample:378 - INFO - Evaluation Processor Example Finished.
+[2025-04-26 20:51:41] MainExample:329 - INFO - Running Evaluation Processor Example...
+[2025-04-26 20:51:41] MainExample:59 - INFO - LLMEvaluator configured for model: ./llama-3.2-3b-qa-finetuned/final_model on device cuda
+[2025-04-26 20:51:41] MainExample:142 - INFO - EvaluationProcessor initialized.
+[2025-04-26 20:51:41] MainExample:351 - INFO - 
+--- Evaluating Specific Submission Example ---
+[2025-04-26 20:51:41] MainExample:257 - INFO - Starting evaluation process for student '2115500009', question 'PHYSICS_NEWTON_Q1'...
+[2025-04-26 20:51:41] MainExample:370 - ERROR - An unexpected error occurred.
+Traceback (most recent call last):
+  File "/tmp/ipykernel_11125/4062410759.py", line 355, in <module>
+    evaluation_result = processor.evaluate_and_store_answer(
+  File "/tmp/ipykernel_11125/4062410759.py", line 261, in evaluate_and_store_answer
+    submission_data = self._fetch_submission_details(student_roll_no, question_id)
+  File "/tmp/ipykernel_11125/4062410759.py", line 166, in _fetch_submission_details
+    results = self.db.execute_read(query, params)
+AttributeError: 'Neo4jManager' object has no attribute 'execute_read'. Did you mean: 'execute_query'?
+[2025-04-26 20:51:41] MainExample:375 - INFO - Closing Neo4j connection.
+[2025-04-26 20:51:41] MainExample:378 - INFO - Evaluation Processor Example Finished.
+[2025-04-26 20:51:42] MainExample:329 - INFO - Running Evaluation Processor Example...
+[2025-04-26 20:51:42] MainExample:59 - INFO - LLMEvaluator configured for model: ./llama-3.2-3b-qa-finetuned/final_model on device cuda
+[2025-04-26 20:51:42] MainExample:142 - INFO - EvaluationProcessor initialized.
+[2025-04-26 20:51:42] MainExample:351 - INFO - 
+--- Evaluating Specific Submission Example ---
+[2025-04-26 20:51:42] MainExample:257 - INFO - Starting evaluation process for student '2115500009', question 'PHYSICS_NEWTON_Q1'...
+[2025-04-26 20:51:42] MainExample:370 - ERROR - An unexpected error occurred.
+Traceback (most recent call last):
+  File "/tmp/ipykernel_11125/4062410759.py", line 355, in <module>
+    evaluation_result = processor.evaluate_and_store_answer(
+  File "/tmp/ipykernel_11125/4062410759.py", line 261, in evaluate_and_store_answer
+    submission_data = self._fetch_submission_details(student_roll_no, question_id)
+  File "/tmp/ipykernel_11125/4062410759.py", line 166, in _fetch_submission_details
+    results = self.db.execute_read(query, params)
+AttributeError: 'Neo4jManager' object has no attribute 'execute_read'. Did you mean: 'execute_query'?
+[2025-04-26 20:51:42] MainExample:375 - INFO - Closing Neo4j connection.
+[2025-04-26 20:51:42] MainExample:378 - INFO - Evaluation Processor Example Finished.
+[2025-04-26 20:51:42] MainExample:329 - INFO - Running Evaluation Processor Example...
+[2025-04-26 20:51:42] MainExample:59 - INFO - LLMEvaluator configured for model: ./llama-3.2-3b-qa-finetuned/final_model on device cuda
+[2025-04-26 20:51:42] MainExample:142 - INFO - EvaluationProcessor initialized.
+[2025-04-26 20:51:42] MainExample:351 - INFO - 
+--- Evaluating Specific Submission Example ---
+[2025-04-26 20:51:42] MainExample:257 - INFO - Starting evaluation process for student '2115500009', question 'PHYSICS_NEWTON_Q1'...
+[2025-04-26 20:51:42] MainExample:370 - ERROR - An unexpected error occurred.
+Traceback (most recent call last):
+  File "/tmp/ipykernel_11125/4062410759.py", line 355, in <module>
+    evaluation_result = processor.evaluate_and_store_answer(
+  File "/tmp/ipykernel_11125/4062410759.py", line 261, in evaluate_and_store_answer
+    submission_data = self._fetch_submission_details(student_roll_no, question_id)
+  File "/tmp/ipykernel_11125/4062410759.py", line 166, in _fetch_submission_details
+    results = self.db.execute_read(query, params)
+AttributeError: 'Neo4jManager' object has no attribute 'execute_read'. Did you mean: 'execute_query'?
+[2025-04-26 20:51:42] MainExample:375 - INFO - Closing Neo4j connection.
+[2025-04-26 20:51:42] MainExample:378 - INFO - Evaluation Processor Example Finished.
+[2025-04-26 20:53:22] root:24 - INFO - Neo4j connection initialized and verified for URI: neo4j://localhost:7687
+[2025-04-26 20:53:22] root:119 - INFO - Fetching subjects and questions... (Filter: Subject='ALL')
+[2025-04-26 20:53:22] root:51 - ERROR - Neo4j read transaction failed: 'Session' object has no attribute 'execute_query'
+[2025-04-26 20:53:22] root:52 - ERROR - Query: 
+        MATCH (sub:Subject)<-[:HAS_SUBJECT]-(q:Question)-[:HAS_CORRECT_ANSWER]->(ca:CorrectAnswer)
+          
+        RETURN sub.name AS subject_name,
+               q.id AS question_id,
+               q.text AS question_text,
+               q.max_marks AS max_marks,
+               ca.text AS correct_answer_text
+        ORDER BY sub.name, q.id // Order results logically
+        
+[2025-04-26 20:53:22] root:53 - ERROR - Parameters: {}
+[2025-04-26 20:53:22] root:125 - WARNING - No questions found matching the criteria (Subject='ALL').
+[2025-04-26 20:53:22] root:119 - INFO - Fetching subjects and questions... (Filter: Subject='Physics')
+[2025-04-26 20:53:22] root:51 - ERROR - Neo4j read transaction failed: 'Session' object has no attribute 'execute_query'
+[2025-04-26 20:53:22] root:52 - ERROR - Query: 
+        MATCH (sub:Subject)<-[:HAS_SUBJECT]-(q:Question)-[:HAS_CORRECT_ANSWER]->(ca:CorrectAnswer)
+         WHERE sub.name = $subject_name 
+        RETURN sub.name AS subject_name,
+               q.id AS question_id,
+               q.text AS question_text,
+               q.max_marks AS max_marks,
+               ca.text AS correct_answer_text
+        ORDER BY sub.name, q.id // Order results logically
+        
+[2025-04-26 20:53:22] root:53 - ERROR - Parameters: {'subject_name': 'Physics'}
+[2025-04-26 20:53:22] root:125 - WARNING - No questions found matching the criteria (Subject='Physics').
+[2025-04-26 20:53:22] root:34 - INFO - Neo4j connection closed.
+[2025-04-26 20:53:43] MainExample:329 - INFO - Running Evaluation Processor Example...
+[2025-04-26 20:53:43] MainExample:59 - INFO - LLMEvaluator configured for model: ./llama-3.2-3b-qa-finetuned/final_model on device cuda
+[2025-04-26 20:53:44] MainExample:142 - INFO - EvaluationProcessor initialized.
+[2025-04-26 20:53:44] MainExample:351 - INFO - 
+--- Evaluating Specific Submission Example ---
+[2025-04-26 20:53:44] MainExample:257 - INFO - Starting evaluation process for student '2115500009', question 'PHYSICS_NEWTON_Q1'...
+[2025-04-26 20:53:44] root:131 - INFO - ✅ Neo4j connection established successfully
+[2025-04-26 20:53:45] MainExample:370 - ERROR - An unexpected error occurred.
+Traceback (most recent call last):
+  File "/tmp/ipykernel_11125/4063824180.py", line 355, in <module>
+    evaluation_result = processor.evaluate_and_store_answer(
+  File "/tmp/ipykernel_11125/4063824180.py", line 284, in evaluate_and_store_answer
+    llm_result = self.llm.evaluate(
+AttributeError: 'FineTunedLLMEvaluator' object has no attribute 'evaluate'
+[2025-04-26 20:53:45] MainExample:375 - INFO - Closing Neo4j connection.
+[2025-04-26 20:55:18] MainExample:329 - INFO - Running Evaluation Processor Example...
+[2025-04-26 20:55:18] MainExample:59 - INFO - LLMEvaluator configured for model: ./llama-3.2-3b-qa-finetuned/final_model on device cuda
+[2025-04-26 20:55:18] MainExample:142 - INFO - EvaluationProcessor initialized.
+[2025-04-26 20:55:18] MainExample:351 - INFO - 
+--- Evaluating Specific Submission Example ---
+[2025-04-26 20:55:18] MainExample:257 - INFO - Starting evaluation process for student '2115500009', question 'PHYSICS_NEWTON_Q1'...
+[2025-04-26 20:55:18] MainExample:370 - ERROR - An unexpected error occurred.
+Traceback (most recent call last):
+  File "/tmp/ipykernel_11125/4063824180.py", line 355, in <module>
+    evaluation_result = processor.evaluate_and_store_answer(
+  File "/tmp/ipykernel_11125/4063824180.py", line 284, in evaluate_and_store_answer
+    llm_result = self.llm.evaluate(
+AttributeError: 'FineTunedLLMEvaluator' object has no attribute 'evaluate'
+[2025-04-26 20:55:18] MainExample:375 - INFO - Closing Neo4j connection.
+[2025-04-26 20:55:59] MainExample:329 - INFO - Running Evaluation Processor Example...
+[2025-04-26 20:55:59] MainExample:59 - INFO - LLMEvaluator configured for model: ./llama-3.2-3b-qa-finetuned/final_model on device cuda
+[2025-04-26 20:55:59] MainExample:142 - INFO - EvaluationProcessor initialized.
+[2025-04-26 20:55:59] MainExample:351 - INFO - 
+--- Evaluating Specific Submission Example ---
+[2025-04-26 20:55:59] MainExample:257 - INFO - Starting evaluation process for student '2115500009', question 'PHYSICS_NEWTON_Q1'...
+[2025-04-26 20:55:59] MainExample:370 - ERROR - An unexpected error occurred.
+Traceback (most recent call last):
+  File "/tmp/ipykernel_11125/4063824180.py", line 355, in <module>
+    evaluation_result = processor.evaluate_and_store_answer(
+  File "/tmp/ipykernel_11125/4063824180.py", line 284, in evaluate_and_store_answer
+    llm_result = self.llm.evaluate(
+AttributeError: 'FineTunedLLMEvaluator' object has no attribute 'evaluate'
+[2025-04-26 20:55:59] MainExample:375 - INFO - Closing Neo4j connection.

@@ -1,0 +1,566 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@17.0.2/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <style>
+        /* Optional: Style for loading */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #09f;
+            animation: spin 1s ease infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="root" class="container mx-auto p-4"></div>
+    <script type="text/babel">
+
+        const initialFormData = {
+            name: '', rollNo: '', password: '', department: '', semester: 1,
+            subject: '', questions: [], answers: {},
+            // Teacher specific form state
+            uploadQid: '', uploadSubject: '', uploadQText: '',
+            uploadCorrectAnswer: '', uploadMarks: 5.0, uploadConcepts: '',
+            // Results view state
+            viewStudentRollNo: '', studentResults: [], isLoading: false, errorMsg: null
+        };
+
+        function App() {
+            const [view, setView] = React.useState('home'); // home, login, register, subject_select, exam, teacher_dashboard, upload_question, view_results_prompt, view_results_display
+            const [userType, setUserType] = React.useState('student'); // student or teacher
+            const [subjects, setSubjects] = React.useState([]);
+            const [departments] = React.useState([
+                'Computer Science', 'Electrical Engineering',
+                'Mechanical Engineering', 'Civil Engineering', 'Other'
+            ]);
+            const [formData, setFormData] = React.useState({...initialFormData});
+
+            const API_URL = "http://127.0.0.1:8000"; // Backend API URL
+
+            // Fetch subjects on initial load
+            React.useEffect(() => {
+                fetchSubjects();
+            }, []);
+
+            const fetchSubjects = async () => {
+                try {
+                    const response = await fetch(`${API_URL}/subjects`); // No change needed here usually
+                    if (!response.ok) throw new Error('Failed to fetch subjects');
+                    const fetchedSubjects = await response.json();
+                    setSubjects(Array.isArray(fetchedSubjects) ? fetchedSubjects : []);
+                } catch (error) {
+                    console.error('Error fetching subjects:', error);
+                    setSubjects([]);
+                }
+            };
+
+            const handleInputChange = (e) => {
+                const { name, value, type } = e.target;
+                setFormData(prev => ({
+                    ...prev,
+                    [name]: type === 'number' ? parseFloat(value) : value
+                }));
+            };
+
+            const handleAnswerChange = (qid, value) => {
+                setFormData(prev => ({
+                    ...prev,
+                    answers: { ...prev.answers, [qid]: value }
+                }));
+            };
+
+            const resetForm = (fullReset = true) => {
+                if(fullReset) {
+                    setFormData({...initialFormData});
+                } else {
+                    // Keep basic info like logged-in name maybe?
+                    setFormData(prev => ({
+                        ...initialFormData, // Start from default
+                        name: prev.name,     // Keep current name if logged in
+                        rollNo: prev.rollNo, // Keep roll no if logged in
+                        userType: prev.userType // Keep user type
+                    }));
+                }
+            };
+
+            // --- Registration/Login Handlers ---
+            const handleStudentRegister = async (e) => {
+                 e.preventDefault();
+                 try {
+                     const payload = { name: formData.name, roll_no: formData.rollNo, password: formData.password, department: formData.department, semester: formData.semester };
+                     // *** Use underscore endpoint ***
+                     const response = await fetch(`${API_URL}/register_student`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+                     const result = await response.json();
+                     if (!response.ok) throw new Error(result.detail || 'Registration failed');
+                     alert(result.message); setView('login'); resetForm();
+                 } catch (error) { alert(`Student Registration Failed: ${error.message}`); }
+             };
+            const handleTeacherRegister = async (e) => {
+                e.preventDefault();
+                 try {
+                     const payload = { name: formData.name, password: formData.password, department: formData.department };
+                     // *** Use underscore endpoint ***
+                     const response = await fetch(`${API_URL}/register_teacher`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+                     const result = await response.json();
+                     if (!response.ok) throw new Error(result.detail || 'Registration failed');
+                     alert(result.message); setView('login'); resetForm();
+                 } catch (error) { alert(`Teacher Registration Failed: ${error.message}`); }
+            };
+            const handleStudentLogin = async (e) => {
+                e.preventDefault();
+                 try {
+                     const payload = { roll_no: formData.rollNo, password: formData.password };
+                     // *** Use underscore endpoint ***
+                     const response = await fetch(`${API_URL}/login_student`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+                     const result = await response.json();
+                     if (!response.ok) throw new Error(result.detail || 'Login failed');
+                     alert(result.message);
+                     setFormData(prev => ({ ...prev, name: result.student_name }));
+                     setView('subject_select');
+                 } catch (error) { alert(`Student Login Failed: ${error.message}`); }
+            };
+            const handleTeacherLogin = async (e) => {
+                e.preventDefault();
+                 try {
+                     const payload = { name: formData.name, password: formData.password };
+                      // *** Use underscore endpoint ***
+                     const response = await fetch(`${API_URL}/login_teacher`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+                     const result = await response.json();
+                     if (!response.ok) throw new Error(result.detail || 'Login failed');
+                     alert(result.message);
+                     setFormData(prev => ({ ...prev, name: result.teacher_name }));
+                     setView('teacher_dashboard');
+                 } catch (error) { alert(`Teacher Login Failed: ${error.message}`); }
+             };
+
+            // --- Exam Handlers ---
+            const fetchQuestions = async () => {
+                 try {
+                     alert("Loading questions...");
+                     const response = await fetch(`${API_URL}/questions?subject=${formData.subject}`);
+
+                     // *** CORRECTED ERROR HANDLING ***
+                     if (!response.ok) {
+                         let errorDetail = `HTTP error! Status: ${response.status}`; // Default error
+                         try {
+                             // Try to parse error details from response body if available
+                             const errData = await response.json();
+                             errorDetail = errData.detail || JSON.stringify(errData) || errorDetail; // Use detail if present
+                         } catch (e) {
+                             // Failed to parse JSON body, stick with status code error
+                             console.error("Could not parse error response body:", e);
+                         }
+                         // Throw the error *after* attempting to get details
+                         throw new Error(errorDetail);
+                     }
+                     // *** END OF CORRECTION ***
+
+                     // If response IS ok, proceed to parse successful data
+                     const data = await response.json(); // Now this runs only on success
+
+                     // Check the data structure after successful parsing
+                     if (!data || !data.questions || !Array.isArray(data.questions) || data.questions.length === 0) {
+                         alert("No questions available for this subject or invalid data format received.");
+                         console.warn("Received data without valid 'questions' array:", data);
+                         return;
+                     }
+
+                     // Update state if everything is okay
+                     setFormData(prev => ({ ...prev, questions: data.questions }));
+                     setView('exam');
+
+                 } catch (error) { // Catch errors from fetch or the 'throw' above
+                     console.error("Fetch Questions Error:", error);
+                     alert(`Failed to fetch questions: ${error.message}\nCheck console/backend logs.`);
+                     // Optionally reset view or state here if fetch fails
+                     // setView('subject_select'); // Example: Go back?
+                 }
+             };
+            const handleFileUpload = async (event, questionId) => {
+                 const file = event.target.files[0]; if (!file) return;
+                 const fileFormData = new FormData(); fileFormData.append("file", file);
+                 try {
+                    // *** Use underscore endpoint ***
+                    const response = await fetch(`${API_URL}/upload_answer_ocr`, { method: "POST", body: fileFormData });
+                    const data = await response.json();
+                    if (!response.ok) throw new Error(data.detail || 'OCR Failed');
+                    if (data.status === "success") { handleAnswerChange(questionId, data.extracted_text); }
+                    else { alert("Failed text extraction."); }
+                 } catch (error) { console.error("File Up Error:", error); alert(`Error processing file: ${error.message}`); }
+             };
+            const submitExam = async (e) => {
+                 e.preventDefault();
+                 try {
+                     const payload = { roll_no: formData.rollNo, subject: formData.subject, answers: formData.answers };
+                     // *** Use underscore endpoint ***
+                     const response = await fetch(`${API_URL}/submit_exam`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+                     const result = await response.json();
+                     if (!response.ok) throw new Error(result.detail || 'Submit failed');
+                     alert(result.message); setView('login'); resetForm();
+                 } catch (error) { console.error('Submit Exam Error:', error); alert(`Failed to submit exam: ${error.message}`); }
+             };
+
+            // --- Teacher - Upload Question Handler ---
+            const handleQuestionUpload = async (e) => {
+                e.preventDefault();
+                 const payload = {
+                    question_id: formData.uploadQid, subject_name: formData.uploadSubject,
+                    question_text: formData.uploadQText, correct_answer_text: formData.uploadCorrectAnswer,
+                    max_marks: formData.uploadMarks, concepts: formData.uploadConcepts.split(',').map(c => c.trim()).filter(Boolean)
+                 };
+                 console.log("Uploading question:", payload);
+                 try {
+                     setFormData(prev => ({ ...prev, isLoading: true, errorMsg: null }));
+                     // *** Use underscore endpoint ***
+                     const response = await fetch(`${API_URL}/upload_question`, {
+                         method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)
+                     });
+                     const result = await response.json();
+                     if (!response.ok) throw new Error(result.detail || `HTTP ${response.status}`);
+                     alert(result.message || "Question processed successfully!");
+                     setFormData(prev => ({ ...prev, isLoading: false, uploadQid:'', uploadQText:'', uploadCorrectAnswer:'', uploadMarks: 5.0, uploadConcepts: ''}));
+                 } catch (error) {
+                     console.error("Upload Question Error:", error); alert(`Failed to upload question: ${error.message}`);
+                     setFormData(prev => ({ ...prev, isLoading: false, errorMsg: error.message }));
+                 } finally { setFormData(prev => ({ ...prev, isLoading: false })); }
+             };
+
+            // --- Teacher - Fetch Student Results Handler ---
+            const handleFetchResults = async (e) => {
+                 e.preventDefault();
+                 const rollNo = formData.viewStudentRollNo; if (!rollNo) { alert("Please enter roll number."); return; }
+                 console.log("Fetching results for:", rollNo);
+                 try {
+                     setFormData(prev => ({ ...prev, isLoading: true, studentResults: [], errorMsg: null }));
+                     // *** Use underscore endpoint ***
+                     const response = await fetch(`${API_URL}/teacher/student_results/${rollNo}`); // Underscore path param style is less common, but depends on backend setup
+                     const result = await response.json();
+                     if (!response.ok) throw new Error(result.detail || `HTTP ${response.status}`);
+                     if (result.submissions && Array.isArray(result.submissions)) {
+                        setFormData(prev => ({ ...prev, studentResults: result.submissions, isLoading: false }));
+                        setView('view_results_display');
+                     } else { throw new Error("Invalid data format received."); }
+                 } catch (error) {
+                     console.error("Fetch Results Error:", error); alert(`Failed to fetch results: ${error.message}`);
+                     setFormData(prev => ({ ...prev, isLoading: false, errorMsg: error.message, studentResults: [] }));
+                     setView('view_results_prompt');
+                 }
+             };
+
+            // --- Render Functions (Structure remains the same, minor text/label changes maybe) ---
+             const renderHome = () => ( /* ... No URL changes needed here ... */
+                 <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md text-center"> <h1 className="text-3xl font-bold mb-8">Exam Portal</h1> <div className="space-y-4"> <div> <h2 className="text-xl font-semibold mb-4">Login As</h2> <div className="flex justify-center space-x-4 mb-6"> <button onClick={() => {setUserType('student'); setView('login');}} className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Student</button> <button onClick={() => {setUserType('teacher'); setView('login');}} className="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600">Teacher</button> </div></div></div></div>
+             );
+             const renderLogin = () => ( /* ... No URL changes needed here ... */
+                <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md"> <h2 className="text-2xl font-bold mb-6 text-center">{userType === 'student' ? 'Student Login' : 'Teacher Login'}</h2> <form onSubmit={userType === 'student' ? handleStudentLogin : handleTeacherLogin}> {userType === 'student' ? (<input type="text" name="rollNo" placeholder="Roll Number" value={formData.rollNo} onChange={handleInputChange} className="w-full p-2 mb-4 border rounded" required />) : (<input type="text" name="name" placeholder="Teacher Name" value={formData.name} onChange={handleInputChange} className="w-full p-2 mb-4 border rounded" required />)} <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleInputChange} className="w-full p-2 mb-4 border rounded" required /> <button type="submit" className={`w-full ${userType === 'student' ? 'bg-blue-500 hover:bg-blue-600' : 'bg-green-500 hover:bg-green-600'} text-white p-2 rounded`}>Login</button> <div className="flex justify-between mt-4"> <p className="text-center">Don't have an account? <button type="button" onClick={() => {resetForm(false); setView('register');}} className="text-blue-500 ml-2">Register</button></p><button type="button" onClick={() => {resetForm(); setView('home');}} className="text-gray-500 hover:text-gray-700">Back</button></div> </form> </div>
+             );
+             const renderRegister = () => ( /* ... No URL changes needed here ... */
+                 <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md"> <h2 className="text-2xl font-bold mb-6 text-center">{userType === 'student' ? 'Student Registration' : 'Teacher Registration'}</h2> <form onSubmit={userType === 'student' ? handleStudentRegister : handleTeacherRegister}><div className="mb-4"><label htmlFor="name" className="block text-sm font-medium text-gray-700">{userType === 'student' ? 'Full Name' : 'Teacher Name'}</label><input id="name" type="text" name="name" placeholder={userType==='student'?'Full Name':'Teacher Name'} value={formData.name} onChange={handleInputChange} className="w-full p-2 mt-1 border rounded" required /></div>{userType === 'student' && (<div className="mb-4"><label htmlFor="rollNo" className="block text-sm font-medium text-gray-700">Roll Number</label><input id="rollNo" type="text" name="rollNo" placeholder="Roll Number" value={formData.rollNo} onChange={handleInputChange} className="w-full p-2 mt-1 border rounded" required /></div>)} <div className="mb-4"><label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label><input id="password" type="password" name="password" placeholder="Password" value={formData.password} onChange={handleInputChange} className="w-full p-2 mt-1 border rounded" required /></div> <div className="mb-4"><label htmlFor="department" className="block text-sm font-medium text-gray-700">Department</label><select id="department" name="department" value={formData.department} onChange={handleInputChange} className="w-full p-2 mt-1 border rounded" required><option value="">Select Dept</option>{departments.map(dept=>(<option key={dept} value={dept}>{dept}</option>))}</select></div> {userType === 'student' && (<div className="mb-4"><label htmlFor="semester" className="block text-sm font-medium text-gray-700">Semester</label><select id="semester" name="semester" value={formData.semester} onChange={handleInputChange} className="w-full p-2 mt-1 border rounded" required>{[1,2,3,4,5,6,7,8].map(sem=>(<option key={sem} value={sem}>Sem {sem}</option>))}</select></div>)} <button type="submit" className={`w-full ${userType==='student'?'bg-blue-500 hover:bg-blue-600':'bg-green-500 hover:bg-green-600'} text-white p-2 rounded`}>Register</button> <div className="flex justify-between mt-4"><p className="text-center">Have account? <button type="button" onClick={()=>{resetForm(false);setView('login');}} className="text-blue-500 ml-2">Login</button></p><button type="button" onClick={()=>{resetForm();setView('home');}} className="text-gray-500 hover:text-gray-700">Back</button></div></form></div>
+             );
+            const renderSubjectSelect = () => { /* ... No URL changes needed ... */
+                 const validSubjects = Array.isArray(subjects) ? subjects : [];
+                 return (<div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md"> <h2 className="text-2xl font-bold mb-6 text-center">Select Subject</h2> <select name="subject" value={formData.subject} onChange={handleInputChange} className="w-full p-2 mb-4 border rounded" required><option value="">Select Subject</option>{validSubjects.map(subject => (<option key={subject.name} value={subject.name}>{subject.name} ({subject.department || 'N/A'})</option>))} </select> <button onClick={fetchQuestions} className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600" disabled={!formData.subject}>Start Exam</button> <button onClick={()=>{resetForm();setView('login');}} className="w-full mt-4 bg-gray-300 text-gray-700 p-2 rounded hover:bg-gray-400">Logout</button> </div>);
+             };
+             const renderExam = () => ( /* ... No URL changes needed ... */
+                 <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md"> <h2 className="text-2xl font-bold mb-6 text-center">Exam: {formData.subject}</h2> <form onSubmit={submitExam}>{formData.questions.map((q)=>(<div key={q.id} className="mb-6 p-4 border rounded"><p className="font-bold mb-2">Q{q.id}: {q.question} ({q.marks} Marks)</p><textarea className="w-full p-2 border rounded" placeholder="Type answer" value={formData.answers[q.id] || ""} onChange={(e)=>handleAnswerChange(q.id, e.target.value)} required></textarea><div className="mt-2"><p className="text-sm text-gray-600 mb-1">Or upload file:</p><input type="file" accept="image/*,application/pdf" onChange={(e) => handleFileUpload(e, q.id)} /></div></div>))} <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Submit Exam</button> </form></div>
+             );
+             const renderTeacherDashboard = () => ( /* ... No URL changes needed ... */
+                  <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md"><div className="flex justify-between items-center mb-6"><h2 className="text-2xl font-bold">Teacher Dashboard</h2><button onClick={() => {resetForm(); setView('home');}} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 text-sm">Logout</button></div> <p className="text-lg mb-6">Welcome, {formData.name}!</p><p className="text-gray-600 mb-8">Select an action:</p><div className="grid grid-cols-1 md:grid-cols-2 gap-6"><div className="border p-6 rounded-lg bg-purple-50 hover:shadow-lg cursor-pointer transition-shadow" onClick={() => { setView('upload_question'); }}><h3 className="font-semibold text-xl mb-2 text-purple-800">📝 Add / Manage Questions</h3><p className="text-sm text-gray-700">Create or update questions.</p></div><div className="border p-6 rounded-lg bg-teal-50 hover:shadow-lg cursor-pointer transition-shadow" onClick={() => { resetForm(false); setView('view_results_prompt'); }}><h3 className="font-semibold text-xl mb-2 text-teal-800">📊 View Student Results</h3><p className="text-sm text-gray-700">Check submitted answers for a student.</p></div></div></div>
+             );
+            const renderUploadQuestionForm = () => { /* ... No URL changes needed ... */
+                const subjectNames = Array.isArray(subjects) ? subjects.map(s => s.name) : [];
+                 return ( <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md"><h2 className="text-2xl font-bold mb-6 text-center">Add / Update Question</h2><form onSubmit={handleQuestionUpload}><div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><div><label htmlFor="uploadQid">ID*</label><input id="uploadQid" name="uploadQid" type="text" value={formData.uploadQid} onChange={handleInputChange} required /></div><div><label htmlFor="uploadSubject">Subject*</label><select id="uploadSubject" name="uploadSubject" value={formData.uploadSubject} onChange={handleInputChange} required><option value="">-- Select --</option>{subjectNames.map(name=><option key={name} value={name}>{name}</option>)}</select></div></div> <div className="mb-4"><label htmlFor="uploadQText">Question*</label><textarea id="uploadQText" name="uploadQText" value={formData.uploadQText} onChange={handleInputChange} rows="4" required /></div><div className="mb-4"><label htmlFor="uploadCorrectAnswer">Answer*</label><textarea id="uploadCorrectAnswer" name="uploadCorrectAnswer" value={formData.uploadCorrectAnswer} onChange={handleInputChange} rows="4" required /></div><div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><div><label htmlFor="uploadMarks">Marks*</label><input id="uploadMarks" name="uploadMarks" type="number" step="0.5" min="0.1" value={formData.uploadMarks} onChange={handleInputChange} required /></div><div><label htmlFor="uploadConcepts">Concepts</label><input id="uploadConcepts" name="uploadConcepts" type="text" value={formData.uploadConcepts} onChange={handleInputChange} /></div></div> {formData.isLoading && <div className="spinner"></div>}{formData.errorMsg && <p className="text-red-500">{formData.errorMsg}</p>}<div className="flex justify-between mt-6"><button type="button" onClick={()=>setView('teacher_dashboard')}>Back</button><button type="submit" disabled={formData.isLoading}>{formData.isLoading?'...': 'Submit'}</button></div></form></div>);
+             };
+            const renderViewResultsPrompt = () => ( /* ... No URL changes needed ... */
+                 <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md"><h2 className="text-2xl font-bold mb-6 text-center">View Student Submissions</h2><form onSubmit={handleFetchResults}><div className="mb-4"><label htmlFor="viewStudentRollNo">Student Roll No.</label><input id="viewStudentRollNo" name="viewStudentRollNo" type="text" value={formData.viewStudentRollNo} onChange={handleInputChange} required /></div> {formData.isLoading && <div className="spinner"></div>}{formData.errorMsg && <p className="text-red-500">{formData.errorMsg}</p>}<div className="flex justify-between mt-6"><button type="button" onClick={()=>{resetForm(false);setView('teacher_dashboard');}}>Back</button><button type="submit" disabled={formData.isLoading}>{formData.isLoading?'Fetching...': 'Fetch'}</button></div></form></div>
+            );
+            const renderStudentResultsDisplay = () => { /* ... No URL changes needed ... */
+                 return (<div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md"><div className="flex justify-between items-center mb-6"><h2 className="text-2xl font-bold">Submissions for Roll No: {formData.viewStudentRollNo}</h2><button onClick={()=>setView('view_results_prompt')}>Check Another</button></div> {formData.isLoading && <div className="spinner"></div>}{formData.errorMsg && <p>Error: {formData.errorMsg}</p>} {!formData.isLoading && formData.studentResults.length === 0 && (<p>No submissions found.</p>)} {!formData.isLoading && formData.studentResults.length > 0 && (<div className="space-y-4">{formData.studentResults.map((sub, index)=>(<div key={`${sub.submission_id}-${sub.question_id}-${index}`}><p>Sub ID: {sub.submission_id} | Subject: {sub.subject_name}</p><h4>Q{sub.question_id}: {sub.question_text} ({sub.max_marks} marks)</h4><div><p>Student Answer:</p><p>{sub.submitted_answer}</p></div><div><p>Correct Answer:</p><p>{sub.correct_answer_text}</p></div></div>))}</div>)} <div className="mt-6 text-center"><button onClick={()=>setView('teacher_dashboard')}>Back</button></div></div>);
+             };
+
+
+            // --- Main View Router ---
+            return (
+                <div className="min-h-screen bg-gray-100">
+                    {view === 'home' && renderHome()}
+                    {view === 'login' && renderLogin()}
+                    {view === 'register' && renderRegister()}
+                    {/* Student Views */}
+                    {view === 'subject_select' && userType === 'student' && renderSubjectSelect()}
+                    {view === 'exam' && userType === 'student' && renderExam()}
+                    {/* Teacher Views */}
+                    {view === 'teacher_dashboard' && userType === 'teacher' && renderTeacherDashboard()}
+                    {view === 'upload_question' && userType === 'teacher' && renderUploadQuestionForm()}
+                    {view === 'view_results_prompt' && userType === 'teacher' && renderViewResultsPrompt()}
+                    {view === 'view_results_display' && userType === 'teacher' && renderStudentResultsDisplay()}
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Portal</title>
+    {/* Tailwind CSS via CDN */}
+    <script src="https://cdn.tailwindcss.com"></script>
+    {/* React and ReactDOM via CDN */}
+    <script src="https://unpkg.com/react@17.0.2/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.development.js"></script>
+    {/* Babel Standalone for JSX transpilation */}
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <style>
+        /* Basic spinner styles */
+        .spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: #09f; animation: spin 1s ease infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Preserve whitespace for answers/feedback */
+        .whitespace-pre-wrap { white-space: pre-wrap; }
+         /* Toast styles */
+         .toast { position: fixed; top: 20px; right: 20px; padding: 12px 20px; border-radius: 6px; z-index: 1000; color: white; animation: fadeOutToast 5s ease-out forwards; box-shadow: 0 2px 10px rgba(0,0,0,0.2); font-size: 0.9rem; }
+         .toast-success { background-color: #2f855a; }
+         .toast-error { background-color: #c53030; }
+         .toast-warning { background-color: #dd6b20; color: #333 }
+         .toast-info { background-color: #3182ce; }
+         @keyframes fadeOutToast { 0%, 80% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-20px); } }
+    </style>
+</head>
+<body>
+    <div id="root" class="container mx-auto p-0"></div> {/* Removed p-4 from root container */}
+
+    <script type="text/babel"> // Use text/babel type
+
+        // --- Constants and Initial State ---
+        const API_URL = "http://127.0.0.1:8000"; // Make sure backend API runs on this address
+        const initialFormData = { name: '', rollNo: '', password: '', department: '', semester: 1, subject: '', questions: [], answers: {}, uploadQid: '', uploadSubject: '', uploadQText: '', uploadCorrectAnswer: '', uploadMarks: 5.0, uploadConcepts: '', viewStudentRollNo: '', studentResults: [], lastSubmissionId: null, examResultData: null, isLoading: false, errorMsg: null };
+
+        // --- Main React Application ---
+        function App() {
+            // --- State Hooks ---
+            const [view, setView] = React.useState('home'); // Controls which UI component is shown
+            const [userType, setUserType] = React.useState('student'); // 'student' or 'teacher'
+            const [subjects, setSubjects] = React.useState([]); // Holds fetched subject names
+            const [departments] = React.useState(['Computer Science', 'Electrical', 'Mechanical', 'Civil', 'Other']); // Departments for registration
+            const [formData, setFormData] = React.useState({...initialFormData}); // Holds all form inputs and temporary data
+            const [lastSubmissionId, setLastSubmissionId] = React.useState(null); // Holds ID after student submits exam
+            const [examResultData, setExamResultData] = React.useState(null); // Holds fetched results for student view
+            const [toast, setToast] = React.useState({ message: '', type: '', visible: false }); // State for toast notifications
+
+            // --- Effects ---
+            // Fetch subjects only once when the app mounts
+            React.useEffect(() => { fetchSubjects(); }, []);
+            // Timer to hide toast notifications automatically
+            React.useEffect(() => { let timer; if (toast.visible) { timer = setTimeout(() => setToast(p => ({...p, visible: false})), 4500); } return () => clearTimeout(timer); }, [toast.visible]);
+
+            // --- Helper Functions ---
+            // Function to display toast messages
+            const showToast = (message, type = 'info') => { setToast({ message: '', type:'', visible: false}); setTimeout(() => setToast({ message, type, visible: true }), 50); };
+            // Fetch list of subject names from backend
+            const fetchSubjects = async () => { setFormData(prev => ({...prev, isLoading: true})); try {const r=await fetch(`${API_URL}/subjects`); if(!r.ok) throw new Error(`HTTP ${r.status}`); const d=await r.json(); setSubjects(Array.isArray(d)?d.map(s=>s.name||'?'):[]); console.log("Fetched subjects names:", subjects); } catch(e){console.error('Subject fetch err:',e);showToast(`Cannot fetch subjects: ${e.message}`,'error'); setSubjects([]);} finally { setFormData(prev => ({...prev, isLoading: false}));}};
+            // Handle changes in form input fields
+            const handleInputChange = (e) => { const {name, value, type} = e.target; setFormData(p => ({...p, [name]: type === 'number' ? parseFloat(value) || 0 : value})); };
+            // Handle changes in exam answer textareas
+            const handleAnswerChange = (qid, value) => { setFormData(p => ({...p, answers: {...p.answers, [qid]: value}})); };
+            // Reset form state, optionally keep basic user info
+            const resetForm = (keepUser = false) => { const currentUser = keepUser ? { name: formData.name, rollNo: formData.rollNo } : {}; setFormData({...initialFormData, ...currentUser, userType}); setLastSubmissionId(null); setExamResultData(null); };
+
+            // --- Central API Request Helper ---
+            const makeApiRequest = async (endpoint, method = 'GET', body = null) => {
+                setFormData(prev => ({ ...prev, isLoading: true, errorMsg: null }));
+                console.log(`API Call Start: ${method} ${API_URL}${endpoint}`);
+                try {
+                    const options = { method, headers: {'Content-Type': 'application/json'} };
+                    if (body) { options.body = JSON.stringify(body); }
+                    const response = await fetch(`${API_URL}${endpoint}`, options);
+                    // Try parsing JSON regardless of status code first
+                    let result;
+                    try {
+                         result = await response.json();
+                         console.log(`API Response (${response.status}):`, result);
+                    } catch (jsonError) {
+                         // Handle cases where response isn't valid JSON (e.g., unexpected server errors)
+                         console.error("Failed to parse API JSON response:", jsonError);
+                         // Use status text or a generic message if JSON parsing fails
+                         throw new Error(response.statusText || `Request failed with status ${response.status} (Invalid Response Body)`);
+                    }
+                    if (!response.ok) throw new Error(result.detail || `Request failed: ${response.statusText || 'Unknown error'}`);
+                    setFormData(prev => ({ ...prev, isLoading: false }));
+                    return result; // Return successful parsed JSON
+                } catch (error) {
+                    console.error(`API Request Error (${method} ${endpoint}):`, error);
+                    const errorMsg = `API Error: ${error.message}`;
+                    setFormData(prev => ({ ...prev, isLoading: false, errorMsg: errorMsg }));
+                    showToast(errorMsg, 'error'); // Show toast on any API error
+                    throw error; // Propagate error for caller .catch() blocks
+                }
+             };
+
+
+            // --- Event Handlers for API calls (Simplified using makeApiRequest) ---
+            const handleStudentRegister=async(e)=>{e.preventDefault();try{const p={name:formData.name,roll_no:formData.rollNo,password:formData.password,department:formData.department,semester:formData.semester};const r=await makeApiRequest('/register_student','POST',p);showToast(r.message||"Registered!",'success');setView('login');resetForm(false);}catch(e){/*error handled*/}};
+            const handleTeacherRegister=async(e)=>{e.preventDefault();try{const p={name:formData.name,password:formData.password,department:formData.department};const r=await makeApiRequest('/register_teacher','POST',p);showToast(r.message||"Registered!",'success');setView('login');resetForm(false);}catch(e){/*error handled*/}};
+            const handleStudentLogin=async(e)=>{e.preventDefault();try{const p={roll_no:formData.rollNo,password:formData.password};const r=await makeApiRequest('/login_student','POST',p);showToast(r.message||"Logged In!",'success');setFormData(p=>({...p,name:r.student_name}));setView('subject_select');}catch(e){/*error handled*/}};
+            const handleTeacherLogin=async(e)=>{e.preventDefault();try{const p={name:formData.name,password:formData.password};const r=await makeApiRequest('/login_teacher','POST',p);showToast(r.message||"Logged In!",'success');setFormData(p=>({...p,name:r.teacher_name}));setView('teacher_dashboard');}catch(e){/*error handled*/}};
+            const fetchQuestions = async() => {
+  try {
+    const s = formData.subject;
+    if(!s) {
+      showToast('Select subject!', 'warning');
+      return;
+    }
+    showToast('Loading questions...', 'info');
+    const r = await makeApiRequest(`/questions?subject=${encodeURIComponent(s)}`);
+    if(!r.questions || r.questions.length === 0) {
+      showToast("No questions found.", 'warning');
+      return;
+    }
+    setFormData(p => ({...p, questions: r.questions}));
+    setView('exam');
+  } catch(e) {
+    /*error handled*/
+  }
+};
+            const submitExam=async(e)=>{e.preventDefault();const qA=Object.keys(formData.answers).filter(k=>formData.answers[k].trim()!=='').length;const qT=formData.questions.length;if(qA<qT&&!window.confirm(`Submit ${qA}/${qT} answered?`))return;const p={roll_no:formData.rollNo,subject:formData.subject,answers:formData.answers};try{const r=await makeApiRequest('/submit_exam','POST',p);showToast(r.message||"Submitted!",'success');setLastSubmissionId(r.submission_id);setView('submission_success');}catch(err){/*error handled*/}};
+            const handleQuestionUpload=async(e)=>{e.preventDefault();const p={question_id:formData.uploadQid,subject_name:formData.uploadSubject,question_text:formData.uploadQText,correct_answer_text:formData.uploadCorrectAnswer,max_marks:formData.uploadMarks,concepts:formData.uploadConcepts.split(',').map(c=>c.trim()).filter(Boolean)};try{const r=await makeApiRequest('/upload_question','POST',p);showToast(r.message||"Processed!",'success');setFormData(p=>({...p,isLoading:false,uploadQid:'',uploadQText:'',uploadCorrectAnswer:'',uploadMarks:5.0,uploadConcepts:''}));fetchSubjects();}catch(err){/*error handled*/}};
+            const handleFetchTeacherResults=async(e)=>{e.preventDefault();const rN=formData.viewStudentRollNo;if(!rN){showToast('Enter Roll No','warning');return;}try{const r=await makeApiRequest(`/teacher/student_results/${rN}`);if(r.evaluations&&Array.isArray(r.evaluations)){setFormData(p=>({...p,studentResults:r.evaluations,viewStudentRollNo:r.student_roll_no}));setView('view_results_display');if(r.evaluations.length===0){showToast('No evaluated results found.','info');}}else{throw new Error("Invalid data.");}}catch(err){/*error handled*/}};
+            const fetchMyExamResult=async()=>{if(!lastSubmissionId){showToast("No Sub ID.",'error');return;}try{const r=await makeApiRequest(`/student/exam_result/${lastSubmissionId}`);setExamResultData(r);setView('view_my_exam_result');}catch(err){setView('subject_select');}};
+            const handleLogout=()=>{resetForm();setView('home');showToast('Logged out.','info');};
+
+            // --- Render Functions (Using direct Tailwind Classes) ---
+
+            const RenderHome = () => (<div className="max-w-md mx-auto mt-20 p-8 bg-white rounded-xl shadow-lg text-center"><h1 className="text-3xl font-bold mb-8 text-gray-800">Exam Portal</h1><div><h2 className="text-xl font-semibold mb-4 text-gray-600">Login As:</h2><div className="flex justify-center space-x-4"><button onClick={()=>{setUserType('student');resetForm();setView('login');}} className="py-2 px-6 rounded font-semibold transition-colors duration-150 bg-blue-600 text-white hover:bg-blue-700 shadow">Student</button><button onClick={()=>{setUserType('teacher');resetForm();setView('login');}} className="py-2 px-6 rounded font-semibold transition-colors duration-150 bg-purple-600 text-white hover:bg-purple-700 shadow">Teacher</button></div></div></div>);
+
+            const RenderLogin = () => (<div className="max-w-sm mx-auto mt-16 p-6 bg-white rounded-lg shadow-xl"><h2 className="text-2xl font-bold mb-6 text-center text-gray-700">{userType==='student'?'Student Login':'Teacher Login'}</h2><form onSubmit={userType==='student'?handleStudentLogin:handleTeacherLogin} className="space-y-4">{userType==='student'?<input type="text" name="rollNo" placeholder="Roll Number*" className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" value={formData.rollNo} onChange={handleInputChange} required/>:<input type="text" name="name" placeholder="Teacher Name*" className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-purple-500" value={formData.name} onChange={handleInputChange} required/>}<input type="password" name="password" placeholder="Password*" value={formData.password} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"/>{formData.isLoading&&<div className="spinner"></div>}{formData.errorMsg&&<p className="text-red-500 text-xs text-center">{formData.errorMsg}</p>}<button type="submit" disabled={formData.isLoading} className={`w-full py-2 px-4 rounded font-medium text-center transition duration-150 disabled:opacity-60 ${userType==='student'?'bg-blue-600 text-white hover:bg-blue-700':'bg-purple-600 text-white hover:bg-purple-700'}`}>{formData.isLoading?'Logging In...':'Login'}</button><div className="flex justify-between items-center mt-4 text-sm"><p>No account? <button type="button" onClick={()=>{resetForm(false);setView('register');}} className="text-blue-600 hover:underline font-medium">Register</button></p><button type="button" onClick={()=>{resetForm();setView('home');}} className="text-gray-500 hover:text-gray-700 text-sm">Back</button></div></form></div>);
+
+            const RenderRegister = () => (<div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl"><h2 className="text-2xl font-bold mb-6 text-center text-gray-700">{userType === 'student' ? 'Student Registration' : 'Teacher Registration'}</h2><form onSubmit={userType === 'student' ? handleStudentRegister : handleTeacherRegister} className="space-y-3"><input type="text" name="name" placeholder={userType === 'student' ? 'Full Name*' : 'Teacher Name*'} value={formData.name} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" />{userType === 'student' && <input type="text" name="rollNo" placeholder="Roll Number*" value={formData.rollNo} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" /> }<input type="password" name="password" placeholder="Password*" value={formData.password} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" /><select name="department" value={formData.department} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8"><option value="">Select Department*</option>{departments.map(d=><option key={d} value={d}>{d}</option>)}</select>{userType === 'student' && <select name="semester" value={formData.semester} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8">{[...Array(8)].map((_,i)=><option key={i+1} value={i+1}>Semester {i+1}</option>)}</select>}{formData.isLoading && <div className="spinner"></div>}{formData.errorMsg && <p className="text-red-500 text-xs text-center">{formData.errorMsg}</p>}<button type="submit" disabled={formData.isLoading} className={`w-full py-2 px-4 rounded font-semibold text-center transition duration-150 ease-in-out disabled:opacity-60 ${userType === 'student' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-purple-600 hover:bg-purple-700'}`}>{formData.isLoading ? 'Registering...' : 'Register'}</button><div className="flex justify-between items-center mt-4 text-sm"><p>Have account? <button type="button" onClick={()=>{resetForm(false);setView('login');}} className="text-blue-600 hover:underline font-medium">Login</button></p><button type="button" onClick={()=>{resetForm();setView('home');}} className="text-sm text-gray-500 hover:text-gray-700">Back</button></div></form></div>);
+
+            const RenderSubjectSelect = () => (<div className="max-w-md mx-auto mt-16 p-6 bg-white rounded-lg shadow-xl"><h2 className="text-2xl font-bold mb-6 text-center text-gray-700">Select Subject</h2><p className="text-center text-sm text-gray-600 mb-4">Welcome, {formData.name}!</p><form onSubmit={e=>{e.preventDefault();fetchQuestions();}} className="space-y-4"><select name="subject" value={formData.subject} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8"><option value="">-- Select Subject --</option>{/* Subjects now only contains names */ Array.isArray(subjects)&&subjects.map(name=><option key={name} value={name}>{name}</option>)}</select>{formData.isLoading&&<div className="spinner"></div>}{formData.errorMsg&&<p className="text-red-500 text-xs text-center">{formData.errorMsg}</p>}<button type="submit" disabled={!formData.subject||formData.isLoading} className="w-full py-2 px-4 rounded font-medium text-center transition duration-150 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed bg-blue-600 text-white hover:bg-blue-700 shadow">{formData.isLoading?'Loading...':'Start Exam'}</button><button type="button" onClick={handleLogout} className="w-full py-2 px-4 rounded font-medium text-center transition duration-150 ease-in-out bg-gray-500 text-white hover:bg-gray-600 shadow-sm">Logout</button></form></div>);
+
+            const RenderExam = () => (
+                 <div className="max-w-3xl mx-auto mt-6 p-6 bg-white rounded-lg shadow-xl">
+                     <div className="flex justify-between items-center mb-8 pb-3 border-b">
+                         <h2 className="text-2xl font-bold text-gray-700">Exam: {formData.subject}</h2>
+                         <div className="text-sm text-gray-600">Student: {formData.name} ({formData.rollNo})</div>
+                     </div>
+                    <form onSubmit={submitExam} className="space-y-6">
+                        {Array.isArray(formData.questions) && formData.questions.map((q, idx) => (
+                             // Corrected structure - key on the top div, ensure closing tag exists
+                            <div key={q.id || idx} className="p-4 border rounded-lg bg-gray-50 shadow-sm">
+                                 <div className="flex justify-between mb-2">
+                                     <h3 className="font-medium text-lg">Question {idx + 1}</h3>
+                                     <span className="text-sm font-medium text-gray-600">Marks: {q.marks || 'N/A'}</span>
+                                 </div>
+                                <p className="mb-3 whitespace-pre-wrap text-gray-800">{q.question || '[Question text unavailable]'}</p>
+                                <textarea
+                                     name={`answer_${q.id}`}
+                                    value={formData.answers[q.id] || ""}
+                                     onChange={e => handleAnswerChange(q.id, e.target.value)}
+                                    placeholder="Type your answer here, or upload a file below..."
+                                     className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[100px]"
+                                     required // Make it simple: always required (upload is secondary)
+                                />
+                                 <div className="mt-2">
+                                     <label className="text-xs text-gray-600 hover:text-black cursor-pointer">Upload File (Optional Image/PDF):
+                                        <input type="file" accept="image/*,application/pdf" onChange={e => handleFileUpload(e, q.id)} className="text-xs file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
+                                     </label>
+                                 </div>
+                             </div> // <-- ***** This closing div is CRUCIAL and was missing *****
+                         ))}
+                        {formData.isLoading && <div className="spinner"></div>}
+                         {formData.errorMsg && <p className="text-red-500 text-xs text-center">{formData.errorMsg}</p>}
+                         <div className="flex justify-end mt-8">
+                             <button type="submit" disabled={formData.isLoading} className="py-2 px-6 rounded font-semibold transition duration-150 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed bg-blue-600 text-white hover:bg-blue-700 shadow">
+                                 {formData.isLoading ? 'Submitting...' : 'Submit Exam'}
+                             </button>
+                         </div>
+                     </form>
+                </div>);
+
+            // Other render functions (placeholders or full versions)
+            const RenderSubmissionSuccess = () => (<div className="max-w-md mx-auto mt-16 p-8 bg-white rounded-lg shadow-xl text-center"><div className="mb-4 text-green-500"><svg className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><h2 className="text-xl font-bold text-gray-700 mb-3">Submission Successful!</h2><p className="text-sm text-gray-600 mb-6">Evaluation is processing...</p>{lastSubmissionId && (<button onClick={fetchMyExamResult} disabled={formData.isLoading} className="w-full py-2 px-4 rounded font-semibold transition duration-150 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed bg-purple-600 text-white hover:bg-purple-700 shadow">{formData.isLoading ? 'Loading...' : 'View My Result'}</button>)}<button onClick={()=>{resetForm(true);setView('home');}} className="block w-full mt-3 text-sm text-gray-600 hover:underline">Back to Home</button>{formData.errorMsg && <p className="text-red-500 text-xs text-center mt-4">{formData.errorMsg}</p>}</div>);
+                        // --- NEW: Render Display for Student's Own Exam Result ---
+                        const RenderMyExamResult = () => {
+                 // ... (the existing checks for isLoading and !examResultData) ...
+                 if(formData.isLoading) return <div className="p-10 text-center"><div className="spinner"></div><p>Loading results...</p></div>;
+                 if(!examResultData) return <div className="view-container text-center"><p className="text-gray-600 my-10">Result data not found or loading failed.</p><button onClick={()=>setView('subject_select')} className="py-2 px-4 rounded font-medium border border-gray-400 bg-white text-gray-700 hover:bg-gray-100 shadow-sm">Back to Subjects</button></div>;
+
+                 // ... (the rest of the JSX structure to display summary and details) ...
+                 const summary = examResultData.overall_summary || {};
+                 const details = examResultData.details || [];
+                 return (
+                     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl">
+                        {/* ... JSX for title, summary, details ... */}
+                        <div className="mt-8 text-center">
+                            <button onClick={() => { resetForm(true); setView('home'); }} className="py-2 px-6 rounded font-medium text-center transition duration-150 ease-in-out bg-gray-500 text-white hover:bg-gray-600 shadow-sm">Back to Home</button>
+                        </div>
+                     </div>
+                ); // <-- NO semicolon needed here
+             }; // <-- Semicolon REMOVED from here
+            const RenderTeacherDashboard = () => (<div className="max-w-4xl mx-auto mt-10 p-8 bg-white rounded-lg shadow-xl"><div className="flex justify-between items-center mb-8 pb-4 border-b"><h2 className="text-3xl font-bold text-gray-800">Teacher Dashboard</h2><button onClick={handleLogout} className="py-2 px-4 rounded font-medium text-center transition duration-150 ease-in-out bg-red-500 text-white hover:bg-red-600 shadow-sm text-sm">Logout</button></div><p className="text-xl mb-6 text-gray-700">Welcome, {formData.name||'Teacher'}!</p><p className="text-gray-500 mb-10">Manage questions and view student results.</p><div className="grid grid-cols-1 md:grid-cols-2 gap-6"><div className="border p-6 rounded-lg shadow hover:shadow-lg cursor-pointer flex items-center space-x-4 transition duration-150 ease-in-out border-purple-200 bg-purple-50 hover:bg-purple-100" onClick={()=>setView('upload_question')}><div className="text-purple-600 p-2 bg-purple-100 rounded-full"><svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div><div><h3 className="font-semibold text-lg text-purple-800">Add / Update Questions</h3><p className="text-sm text-gray-600">Create new questions or modify existing ones.</p></div></div><div className="border p-6 rounded-lg shadow hover:shadow-lg cursor-pointer flex items-center space-x-4 transition duration-150 ease-in-out border border-teal-200 bg-teal-50 hover:bg-teal-100" onClick={()=>{resetForm(false);setView('view_results_prompt');}}><div className="text-teal-600 p-2 bg-teal-100 rounded-full"><svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div><div><h3 className="font-semibold text-lg text-teal-800">View Student Results</h3><p className="text-sm text-gray-600">Check evaluated submissions.</p></div></div></div></div>);
+            const RenderUploadQuestionForm = () => {const names=Array.isArray(subjects)?subjects:[];return(<div className="max-w-2xl mx-auto mt-10 p-8 bg-white rounded-lg shadow-xl"><h2 className="text-2xl font-bold mb-8 text-center text-gray-800">Add / Update Question</h2><form onSubmit={handleQuestionUpload} className="space-y-4"><div className="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label className="block text-sm font-medium text-gray-600 mb-1">Question ID*</label><input name="uploadQid" placeholder="Unique ID*" value={formData.uploadQid} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"/></div><div><label className="block text-sm font-medium text-gray-600 mb-1">Subject*</label><select name="uploadSubject" value={formData.uploadSubject} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 pr-8"><option value="">-- Select --</option>{names.map(n=><option key={n} value={n}>{n}</option>)}</select></div></div><div><label className="block text-sm font-medium text-gray-600 mb-1">Question Text*</label><textarea name="uploadQText" value={formData.uploadQText} onChange={handleInputChange} rows="4" required className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[100px]"/></div><div><label className="block text-sm font-medium text-gray-600 mb-1">Correct Answer*</label><textarea name="uploadCorrectAnswer" value={formData.uploadCorrectAnswer} onChange={handleInputChange} rows="4" required className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[100px]"/></div><div className="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label className="block text-sm font-medium text-gray-600 mb-1">Max Marks*</label><input name="uploadMarks" type="number" step="0.5" min="0.1" value={formData.uploadMarks} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"/></div><div><label className="block text-sm font-medium text-gray-600 mb-1">Concepts (comma-sep.)</label><input name="uploadConcepts" placeholder="concept1, concept2" value={formData.uploadConcepts} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"/></div></div>{formData.isLoading&&<div className="spinner"></div>}{formData.errorMsg&&<p className="text-red-500 text-sm text-center">{formData.errorMsg}</p>}<div className="flex justify-between items-center mt-6 pt-4 border-t"><button type="button" onClick={()=>setView('teacher_dashboard')} className="py-2 px-4 rounded font-medium text-center transition duration-150 ease-in-out border border-gray-400 bg-white text-gray-700 hover:bg-gray-100 shadow-sm">Back</button><button type="submit" disabled={formData.isLoading} className="py-2 px-6 rounded font-medium text-center transition duration-150 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed bg-purple-600 text-white hover:bg-purple-700 shadow">{formData.isLoading?'Saving...':'Submit Question'}</button></div></form></div>);};
+            const RenderViewResultsPrompt = () => (<div className="max-w-md mx-auto mt-16 p-8 bg-white rounded-lg shadow-xl"><h2 className="text-2xl font-bold mb-6 text-center text-gray-700">View Student Submissions</h2><form onSubmit={handleFetchTeacherResults} className="space-y-4"><label className="block text-sm font-medium text-gray-600 mb-1">Enter Student Roll No.*</label><input name="viewStudentRollNo" placeholder="Roll Number" value={formData.viewStudentRollNo} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"/>{formData.isLoading&&<div className="spinner"></div>}{formData.errorMsg&&<p className="text-red-500 text-xs text-center">{formData.errorMsg}</p>}<div className="flex justify-between items-center mt-6 pt-4 border-t"><button type="button" onClick={()=>{resetForm(false);setView('teacher_dashboard');}} className="py-2 px-4 rounded font-medium text-center transition duration-150 ease-in-out border border-gray-400 bg-white text-gray-700 hover:bg-gray-100 shadow-sm">Back</button><button type="submit" disabled={formData.isLoading} className="py-2 px-6 rounded font-medium text-center transition duration-150 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed bg-teal-600 text-white hover:bg-teal-700 shadow">{formData.isLoading?'Fetching...':'Fetch Results'}</button></div></form></div>);
+             // Corrected: Apply direct tailwind classes + fixed JSX in Marks display
+            const RenderStudentResultsDisplay = () => (<div className="max-w-4xl mx-auto mt-10 p-6 bg-gray-50 rounded-lg shadow-md"><div className="flex justify-between items-center mb-6 pb-3 border-b"><h2 className="text-xl font-bold text-gray-800">Evaluations for Roll No: {formData.viewStudentRollNo}</h2><button onClick={()=>{resetForm(false);setView('view_results_prompt');}} className="py-1 px-3 rounded font-medium text-center transition duration-150 ease-in-out border border-gray-400 bg-white text-gray-700 hover:bg-gray-100 shadow-sm text-sm">Check Another</button></div>{formData.isLoading&&<div className="spinner"></div>}{formData.errorMsg&&<p className="text-red-500 text-center my-4">Error: {formData.errorMsg}</p>}{!formData.isLoading&&formData.studentResults.length===0&&!formData.errorMsg&&<p className="text-center text-gray-500 my-6">No evaluated submissions found for this student.</p>}{!formData.isLoading&&formData.studentResults.length>0&&(<div className="space-y-5">{formData.studentResults.map((sub,index)=>(<div key={`${sub.submission_id}-${sub.question_id}-${index}`||index} className="p-4 border bg-white rounded-lg shadow-sm"><div className="flex justify-between items-center text-xs text-gray-500 mb-2 pb-2 border-b"><span>Subject: <span className="font-medium">{sub.subject_name||'N/A'}</span></span><span>Evaluated: <span className="font-medium">{sub.evaluated_time?new Date(sub.evaluated_time).toLocaleString():'Pending'}</span></span></div><p className="font-semibold mt-2 mb-1 text-gray-900">Q{sub.question_id}: {sub.question_text||'[?]'}</p><p className="text-xs text-gray-600 mb-3">Max Marks Possible: {sub.max_marks_possible||'N/A'}</p><div className="mb-3 p-3 border rounded bg-gray-50 text-sm"><p className="font-medium text-gray-800 mb-1">Submitted Answer:</p><p className="whitespace-pre-wrap">{sub.submitted_answer||'[No answer provided]'}</p></div><div className="p-3 bg-blue-50 border border-blue-100 rounded"><h5 className="text-sm font-semibold text-blue-800 mb-2">Evaluation Result</h5>{sub.evaluation_error?<p className="text-red-600 font-medium text-sm">⚠️ Eval Error: {sub.evaluation_error}</p>:(sub.status?<React.Fragment><div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-1 text-sm mb-2"><span><strong className="text-gray-600">Score:</strong> {sub.score_str||'N/A'}</span>{/* *** CORRECTED MARKS LINE *** */}<span><strong className="text-gray-600">Marks:</strong> {sub.marks_obtained!=null?sub.marks_obtained:'N/A'} / {sub.max_marks_possible||'N/A'}</span>{/* Corrected Status display */} <span className={`font-semibold ${sub.status==='Pass'?'text-green-600':sub.status==='Fail'?'text-red-600':'text-gray-700'}`}><strong className="font-medium text-gray-600">Status:</strong> {sub.status||'N/A'}</span><span><strong className="text-gray-600">Grade:</strong> {sub.letter_grade||'N/A'}</span><span className="col-span-2 sm:col-span-1"><strong className="text-gray-600">Percentage:</strong> {sub.percentage!=null?sub.percentage:'N/A'}%</span></div><div><p className="text-sm font-medium text-gray-600 mt-2">Feedback:</p><p className="text-sm whitespace-pre-wrap italic mt-1">{sub.feedback||'[No feedback provided]'}</p></div></React.Fragment>:<p className="text-sm text-gray-500 italic">Evaluation pending...</p>)}</div></div>))}</div>)}{<div className="mt-8 text-center"><button onClick={()=>setView('teacher_dashboard')} className="py-2 px-4 rounded font-medium text-center transition duration-150 ease-in-out bg-gray-500 text-white hover:bg-gray-600 shadow-sm">Back to Dashboard</button></div>}</div>);
+
+             // --- Define Toast Component ---
+             const Toast = ({ message, type, visible }) => { if (!visible) return null; const typeClass = `toast-${type}`; return (<div className={`toast ${typeClass}`}>{message}</div>);};
+
+             // --- Main View Router ---
+            return (
+                 <React.Fragment>
+                     {/* Overall page structure and styles */}
+                     <div className="min-h-screen bg-gray-100 font-sans">
+                         {/* Consistent Header */}
+                         <header className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white shadow-lg p-4 sticky top-0 z-50">
+                             <h1 className="text-2xl font-bold text-center tracking-tight">AI Powered Evaluation Portal</h1>
+                         </header>
+                         {/* Main Content Area - dynamically renders the current view */}
+                         <main className="p-4 md:p-6 lg:p-8">
+                             {view==='home'&&<RenderHome/>}
+                             {view==='login'&&<RenderLogin/>}
+                             {view==='register'&&<RenderRegister/>}
+                             {/* Student */}
+                             {view==='subject_select'&&userType==='student'&&<RenderSubjectSelect/>}
+                             {view==='exam'&&userType==='student'&&<RenderExam/>}
+                             {view==='submission_success'&&userType==='student'&&<RenderSubmissionSuccess/>}
+                             {view==='view_my_exam_result'&&userType==='student'&&<RenderMyExamResult/>}
+                             {/* Teacher */}
+                             {view==='teacher_dashboard'&&userType==='teacher'&&<RenderTeacherDashboard/>}
+                             {view==='upload_question'&&userType==='teacher'&&<RenderUploadQuestionForm/>}
+                             {view==='view_results_prompt'&&userType==='teacher'&&<RenderViewResultsPrompt/>}
+                             {view==='view_results_display'&&userType==='teacher'&&<RenderStudentResultsDisplay/>}
+                         </main>
+                         {/* Global Toast Notification Area */}
+                         <Toast message={toast.message} type={toast.type} visible={toast.visible} />
+                         {/* Consistent Footer */}
+                         <footer className="text-center text-xs text-gray-400 p-4 mt-8 border-t">© {new Date().getFullYear()} AI Eval System</footer>
+                    </div>
+                </React.Fragment>
+             );
+        }
+
+        // Final Render call
+        ReactDOM.render(<App />, document.getElementById('root'));
+
+    </script>
+</body>
+</html>

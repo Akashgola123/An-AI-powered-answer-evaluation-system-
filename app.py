@@ -26,8 +26,6 @@ from AIAnswerEvaluationSystem.evaluting import EvaluationProcessor
 load_dotenv()
 
 
-
-# --- DEFINE Grading Logic Constants and Function ---
 PASS_FAIL_THRESHOLD_PERCENTAGE = 60.0 # Define threshold here
 
 GRADE_SCALE_RULES = { # Use tuples for range checks if preferred, or direct mapping
@@ -44,25 +42,24 @@ def calculate_grade_and_status(marks_obtained: Optional[float], max_marks_possib
     results = {"percentage": None, "letter_grade": "N/A", "status": "N/A"}
     if marks_obtained is None or marks_obtained < 0 or max_marks_possible <= 0:
          logger.warning(f"Grading skipped: Invalid marks_obtained ({marks_obtained}) or max_marks ({max_marks_possible}).")
-         return results # Return defaults if marks invalid
+         return results 
 
     percentage = round((marks_obtained / max_marks_possible) * 100, 2)
     results["percentage"] = percentage
 
-    grade = 'F' # Default to F
-    # Iterate through sorted thresholds (high to low)
+    grade = 'F' 
     for threshold, letter in sorted(GRADE_SCALE_RULES.items(), key=lambda item: item[0], reverse=True):
         if percentage >= threshold:
              grade = letter
-             break # Stop at the first matching (highest) grade
+             break 
     results["letter_grade"] = grade
 
     # Determine status based on percentage threshold
     results["status"] = "Pass" if percentage >= PASS_FAIL_THRESHOLD_PERCENTAGE else "Fail"
     return results
-# --- END Grading Logic ---
 
-# Configure Neo4j
+
+
 NEO4J_URI = os.getenv("NEO4J_URI", "neo4j://localhost:7687")
 NEO4J_USER = os.getenv("NEO4J_USER", "neo4j")
 NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD", "your_secure_password")
@@ -288,7 +285,7 @@ async def get_exam_service() -> ExamService:
         )
     return service
 
-# Helper function to check Neo4j connection
+
 async def check_neo4j(manager=Depends(get_neo4j_manager)):
     """Check if Neo4j is connected before allowing requests."""
     try:
@@ -387,7 +384,7 @@ async def login_teacher(data: TeacherLogin, driver=Depends(check_neo4j)):
         }
     
     except HTTPException as e:
-        # Re-throw HTTP exceptions
+        
         raise e
     except Exception as e:
         logger.error(f"Error during teacher login: {str(e)}")
@@ -397,7 +394,7 @@ async def login_teacher(data: TeacherLogin, driver=Depends(check_neo4j)):
 async def register_student(data: StudentRegister, driver=Depends(check_neo4j)):
     """Register a new student in the system."""
     try:
-        # Check if student already exists
+       
         with driver.session() as session:
             result = session.run(
                 "MATCH (s:Student {roll_no: $roll_no}) RETURN s", 
@@ -406,10 +403,9 @@ async def register_student(data: StudentRegister, driver=Depends(check_neo4j)):
             if result.single():
                 raise HTTPException(status_code=400, detail="Roll number already registered")
 
-        # Hash password
+  
         hashed_password = bcrypt.hashpw(data.password.encode(), bcrypt.gensalt()).decode()
-        
-        # Create student node
+       
         query = """
         MERGE (d:Department {name: $department})
         CREATE (s:Student {
@@ -440,7 +436,7 @@ async def register_student(data: StudentRegister, driver=Depends(check_neo4j)):
         return {"status": "success", "message": "Student registered successfully!"}
     
     except HTTPException as e:
-        # Re-throw HTTP exceptions
+        
         raise e
     except Exception as e:
         logger.error(f"Error registering student: {str(e)}")
@@ -506,7 +502,7 @@ async def get_questions(subject: str, limit: int = 50, driver=Depends(check_neo4
         raise HTTPException(status_code=400, detail="Subject parameter is required")
 
     try:
-        # Initialize fetcher with the current driver
+       
         fetcher = QuestionFetcher(NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD)
         questions = fetcher.fetch_questions(subject, limit)
         
@@ -538,8 +534,7 @@ async def upload_answer(file: UploadFile = File(...)):
         content = await file.read()
         if not content:
             raise HTTPException(status_code=400, detail="Empty file uploaded")
-            
-        # Initialize extractor
+      
         extractor = GeminiTextExtractor()
         extracted_text = extractor.extract_text(content, file.content_type)
 
@@ -554,7 +549,7 @@ async def upload_answer(file: UploadFile = File(...)):
         }
 
     except HTTPException as e:
-        # Re-throw HTTP exceptions
+      
         raise e
     except Exception as e:
         logger.error(f"Error processing file {file.filename}: {str(e)}")
@@ -595,7 +590,7 @@ async def upload_question_endpoint(
             }
         else:
             logger.warning(f"Failed processing QID {request.question_id}. Reason: {message}")
-            # Determine appropriate HTTP status code based on error message
+           
             status_code = status.HTTP_400_BAD_REQUEST
             if "duplicate check failed" in message.lower() or "already exists" in message.lower():
                 status_code = status.HTTP_409_CONFLICT
@@ -606,10 +601,10 @@ async def upload_question_endpoint(
             raise HTTPException(status_code=status_code, detail=message)
 
     except HTTPException as http_exc:
-        # Re-raise expected HTTP exceptions
+     
         raise http_exc
     except Exception as e:
-        # Catch unexpected internal errors during the process
+  
         logger.exception(f"Unexpected error during /upload_question processing for QID '{request.question_id}'")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -626,28 +621,28 @@ async def submit_exam_endpoint(
     Submits student's collected answers and triggers automatic evaluation.
     """
     try:
-        # The ExamService now handles submission AND triggering evaluation
+        
         result_dict = service.submit_exam(submission)
-        # Assuming result_dict is {'status': 'success', 'message': '...', 'submission_id': '...'}
+        
         return JSONResponse(status_code=status.HTTP_201_CREATED, content=result_dict)
     except HTTPException as http_exc:
-        # Log FastAPI known errors specifically maybe?
+        
         logger.warning(f"HTTPException during exam submission: {http_exc.status_code} - {http_exc.detail}")
         raise http_exc
     except Exception as e:
-        # Log unexpected errors from the service layer
+       
         logger.exception(f"Unexpected error in /submit_exam for student {submission.roll_no}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error during exam submission.")
 # == Teacher Route ==
 @router.get(
-    "/teacher/student_results/{roll_no}", # Clearer path for teacher access
+    "/teacher/student_results/{roll_no}", 
     tags=["Teacher Portal", "Results"],
     summary="Fetch All Stored Evaluations for a Student",
     response_model=StudentEvaluationsResponse
 )
 async def teacher_get_student_results(
     roll_no: str = Path(..., description="Roll number of the student to fetch results for"),
-    subject: Optional[str] = None, # Optional query parameter to filter by subject
+    subject: Optional[str] = None,
     processor: EvaluationProcessor = Depends(get_evaluation_processor)
 ):
     """
@@ -657,21 +652,21 @@ async def teacher_get_student_results(
     logger.info(f"Teacher request: Fetching results for student '{roll_no}', subject '{subject or 'ALL'}'")
     try:
         results = processor.get_student_evaluations(roll_no=roll_no, subject=subject)
-        # get_student_evaluations should return empty list if student not found or no results
+
         if not results and isinstance(results, list):
-             # Optional: check if student exists for better error message
-             manager = await get_neo4j_manager() # Need manager to check existence
+
+             manager = await get_neo4j_manager() 
              student_exists = manager.execute_read("MATCH (s:Student {roll_no:$r}) RETURN count(s)>0 as exists",{'r':roll_no})
              if not student_exists or not student_exists[0]['exists']:
                    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Student '{roll_no}' not found.")
 
-        # Return validated response using Pydantic model
+      
         return StudentEvaluationsResponse(
             student_roll_no=roll_no,
-            evaluations=results, # Already processed list of dicts/models
+            evaluations=results, 
             total_evaluated=len(results)
         )
-    except HTTPException as e: raise e # Re-raise FastAPI errors
+    except HTTPException as e: raise e 
     except Exception as e:
         logger.exception(f"Error fetching evaluations for teacher view, student {roll_no}")
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal error fetching student results.")
@@ -682,21 +677,21 @@ async def teacher_get_student_results(
 
 @router.get(
     "/student/exam_result/{submission_id}",
-    # ...(other decorator arguments)...
+
     response_model=ExamResultSummary
 )
 async def student_get_exam_result(
     submission_id: str = Path(..., description="The unique ID of the exam submission"),
-    manager: Neo4jManager = Depends(get_neo4j_manager) # Assuming dependency function exists
+    manager: Neo4jManager = Depends(get_neo4j_manager) 
 ):
     """ Retrieves the evaluated results for a completed exam submission. """
-    # ...(query and params definition remain the same)...
+
     query = """ MATCH (s:Student)-[:SUBMITTED]->(e:ExamSubmission {id: $p_submission_id}) MATCH (e)-[:HAS_ANSWER]->(a:Answer)-[:ANSWERS_QUESTION]->(q:Question) MATCH (e)-[:FOR_SUBJECT]->(sub:Subject) WHERE a.evaluated_at IS NOT NULL OR a.evaluation_status IS NOT NULL RETURN s.roll_no AS student_roll_no, s.name AS student_name, e.id AS submission_id, sub.name as subject_name, q.id as question_id, q.text as question_text, a.text as submitted_answer, COALESCE(q.max_marks, 5.0) as max_marks_possible, a.evaluation_numeric_score AS numeric_score, a.evaluation_score_str AS score_str, a.evaluation_marks_obtained AS marks_obtained, a.evaluation_percentage AS percentage, a.evaluation_letter_grade AS letter_grade, a.evaluation_status AS status, a.evaluation_feedback AS feedback, a.evaluated_at AS evaluated_time, 'N/A' AS evaluation_error ORDER BY q.id """
     params = {"p_submission_id": submission_id}
 
     try:
         raw_eval_details: List[Dict] = manager.execute_read(query, params)
-        # ...(check if raw_eval_details is empty, raise 404 or 202)...
+        
         if not raw_eval_details:
              exists=manager.execute_read("MATCH (e:ExamSubmission {id:$sid}) RETURN e", {"sid":submission_id})
              if not exists: raise HTTPException(404, f"Submission '{submission_id}' not found.")
@@ -708,9 +703,9 @@ async def student_get_exam_result(
         processed_details_list: List[EvaluationResultDetail] = []
         subject_name = raw_eval_details[0].get("subject_name", "Unknown Subject")
 
-        # --- Process loop ---
+    
         for detail_row in raw_eval_details:
-             # ...(Data cleaning/validation for marks_raw, max_marks_raw remains the same)...
+             
              marks_obt_num = None; max_marks_num = None; valid_marks = False
              marks_raw=detail_row.get("marks_obtained"); max_marks_raw=detail_row.get("max_marks_possible")
              if isinstance(max_marks_raw, (int, float)) and max_marks_raw > 0: max_marks_num = float(max_marks_raw)
@@ -719,27 +714,26 @@ async def student_get_exam_result(
              elif max_marks_num is not None: logger.warning(f"Q:{detail_row.get('qid','?')} invalid marks_obtained: {marks_raw}")
              if valid_marks: total_obtained += marks_obt_num; total_possible += max_marks_num
 
-             # Prepare data for Pydantic, use validated marks or None
              data_for_pydantic = {k: detail_row.get(k) for k in detail_row} # Start with all fetched data
-             data_for_pydantic['max_marks_possible'] = max_marks_num # Override with float or None
-             data_for_pydantic['marks_obtained'] = marks_obt_num     # Override with float or None
+             data_for_pydantic['max_marks_possible'] = max_marks_num 
+             data_for_pydantic['marks_obtained'] = marks_obt_num     
              data_for_pydantic['evaluated_time'] = str(data_for_pydantic.get('evaluated_time')) if data_for_pydantic.get('evaluated_time') else None
 
-             # --- Validate and Append detail model ---
+             
              try:
                  detail_model = EvaluationResultDetail(**data_for_pydantic)
                  processed_details_list.append(detail_model)
              except Exception as pydantic_error:
                  logger.error(f"Pydantic validation fail Q:{detail_row.get('qid','?')}: {pydantic_error}", exc_info=False)
-                 # Continue processing other rows
+                 
 
-        # --- Calculate Overall Summary ---
+        
         overall_percentage = None
         overall_grade_info = {"letter_grade": "N/A", "status": "N/A"} # Defaults
 
         if total_possible > 0: # Check if any questions had valid max_marks
             overall_percentage = round((total_obtained / total_possible) * 100, 2)
-            # --- CALL THE HELPER FUNCTION DEFINED ABOVE ---
+            
             overall_grade_info = calculate_grade_and_status(total_obtained, total_possible)
         else:
              logger.warning(f"Cannot calculate overall summary for {submission_id}: total_possible is 0.")
@@ -770,7 +764,7 @@ async def student_get_exam_result(
 def serve_frontend():
     """Serve frontend HTML page"""
     try:
-        with open("templates/id.html", "r") as f:
+        with open("/home/gola/GRAPH_RAG/Exam_Portal/An-AI-powered-answer-evaluation-system-/templates/index.html", "r") as f:
             content = f.read()
             return HTMLResponse(content=content, status_code=200)
     except FileNotFoundError:
@@ -784,6 +778,6 @@ def serve_frontend():
 app.include_router(router)
 
 if __name__ == "__main__":
-    # Initialize database before starting the server
+    
     logger.info("Starting AI Answer Evaluation System API")
     uvicorn.run(app, host="0.0.0.0", port=8000)

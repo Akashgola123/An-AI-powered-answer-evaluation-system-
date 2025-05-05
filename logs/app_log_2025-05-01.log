@@ -1,0 +1,112 @@
+[2025-05-01 13:07:08] root:156 - INFO - Logging configured. Level: INFO. File: /home/gola/GRAPH_RAG/Exam_Portal/An-AI-powered-answer-evaluation-system-/logs/app_log_2025-05-01.log
+[2025-05-01 13:07:08] AIAnswerEvaluationSystem:179 - INFO - Logger 'AIAnswerEvaluationSystem' obtained and ready for import.
+[2025-05-01 13:07:11] datasets:54 - INFO - PyTorch version 2.6.0 available.
+[2025-05-01 13:07:16] AIAnswerEvaluationSystem:782 - INFO - Starting AI Answer Evaluation System API
+[2025-05-01 13:07:16] AIAnswerEvaluationSystem:74 - INFO - App startup: Initializing resources...
+[2025-05-01 13:07:16] AIAnswerEvaluationSystem.neo4j_Manager:56 - INFO - Creating new Neo4jManager instance for ('neo4j://localhost:7687', 'neo4j')
+[2025-05-01 13:07:16] AIAnswerEvaluationSystem.neo4j_Manager:34 - INFO - Neo4jManager instance configured for URI: neo4j://localhost:7687
+[2025-05-01 13:07:16] AIAnswerEvaluationSystem:85 - INFO - Neo4jManager initialized.
+[2025-05-01 13:07:16] AIAnswerEvaluationSystem.question_answer_store:19 - INFO - Neo4j connection initialized and verified for URI: neo4j://localhost:7687
+[2025-05-01 13:07:16] AIAnswerEvaluationSystem.question_answer_store:124 - INFO - QuestionUploader initialized.
+[2025-05-01 13:07:16] AIAnswerEvaluationSystem:91 - INFO - QuestionUploader initialized.
+[2025-05-01 13:07:16] AIAnswerEvaluationSystem.llmss:73 - INFO - LLMEvaluator configured for model: /home/gola/GRAPH_RAG/Exam_Portal/llama-3.2-3b-qa-finetuned/final_model on device cuda
+[2025-05-01 13:07:16] AIAnswerEvaluationSystem:96 - INFO - FineTunedLLMEvaluator configured.
+[2025-05-01 13:07:16] AIAnswerEvaluationSystem:80 - INFO - EvaluationProcessor initialized successfully.
+[2025-05-01 13:07:16] AIAnswerEvaluationSystem:102 - INFO - EvaluationProcessor initialized.
+[2025-05-01 13:07:16] AIAnswerEvaluationSystem.database_login_rigister:31 - INFO - ExamService initialized.
+[2025-05-01 13:07:16] AIAnswerEvaluationSystem:110 - INFO - ExamService initialized.
+[2025-05-01 13:07:16] AIAnswerEvaluationSystem:119 - INFO - All core services initialized successfully.
+[2025-05-01 13:08:07] AIAnswerEvaluationSystem:128 - INFO - App shutdown: Cleaning up resources...
+[2025-05-01 13:08:07] AIAnswerEvaluationSystem:132 - INFO - Shutdown complete.
+[2025-05-01 13:08:10] root:156 - INFO - Logging configured. Level: INFO. File: /home/gola/GRAPH_RAG/Exam_Portal/An-AI-powered-answer-evaluation-system-/logs/app_log_2025-05-01.log
+[2025-05-01 13:08:10] AIAnswerEvaluationSystem:179 - INFO - Logger 'AIAnswerEvaluationSystem' obtained and ready for import.
+[2025-05-01 13:08:12] datasets:54 - INFO - PyTorch version 2.6.0 available.
+[2025-05-01 13:08:15] AIAnswerEvaluationSystem:782 - INFO - Starting AI Answer Evaluation System API
+[2025-05-01 13:08:15] AIAnswerEvaluationSystem:74 - INFO - App startup: Initializing resources...
+[2025-05-01 13:08:15] AIAnswerEvaluationSystem.neo4j_Manager:56 - INFO - Creating new Neo4jManager instance for ('neo4j://localhost:7687', 'neo4j')
+[2025-05-01 13:08:15] AIAnswerEvaluationSystem.neo4j_Manager:34 - INFO - Neo4jManager instance configured for URI: neo4j://localhost:7687
+[2025-05-01 13:08:15] AIAnswerEvaluationSystem:85 - INFO - Neo4jManager initialized.
+[2025-05-01 13:08:15] AIAnswerEvaluationSystem.question_answer_store:19 - INFO - Neo4j connection initialized and verified for URI: neo4j://localhost:7687
+[2025-05-01 13:08:15] AIAnswerEvaluationSystem.question_answer_store:124 - INFO - QuestionUploader initialized.
+[2025-05-01 13:08:15] AIAnswerEvaluationSystem:91 - INFO - QuestionUploader initialized.
+[2025-05-01 13:08:15] AIAnswerEvaluationSystem.llmss:73 - INFO - LLMEvaluator configured for model: /home/gola/GRAPH_RAG/Exam_Portal/llama-3.2-3b-qa-finetuned/final_model on device cuda
+[2025-05-01 13:08:15] AIAnswerEvaluationSystem:96 - INFO - FineTunedLLMEvaluator configured.
+[2025-05-01 13:08:15] AIAnswerEvaluationSystem:80 - INFO - EvaluationProcessor initialized successfully.
+[2025-05-01 13:08:15] AIAnswerEvaluationSystem:102 - INFO - EvaluationProcessor initialized.
+[2025-05-01 13:08:15] AIAnswerEvaluationSystem.database_login_rigister:31 - INFO - ExamService initialized.
+[2025-05-01 13:08:15] AIAnswerEvaluationSystem:110 - INFO - ExamService initialized.
+[2025-05-01 13:08:15] AIAnswerEvaluationSystem:119 - INFO - All core services initialized successfully.
+[2025-05-01 13:08:43] AIAnswerEvaluationSystem:128 - INFO - App shutdown: Cleaning up resources...
+[2025-05-01 13:08:43] AIAnswerEvaluationSystem:132 - INFO - Shutdown complete.
+[2025-05-01 13:09:11] root:156 - INFO - Logging configured. Level: INFO. File: /home/gola/GRAPH_RAG/Exam_Portal/An-AI-powered-answer-evaluation-system-/logs/app_log_2025-05-01.log
+[2025-05-01 13:09:11] AIAnswerEvaluationSystem:179 - INFO - Logger 'AIAnswerEvaluationSystem' obtained and ready for import.
+[2025-05-01 13:09:13] datasets:54 - INFO - PyTorch version 2.6.0 available.
+[2025-05-01 13:09:16] AIAnswerEvaluationSystem:790 - INFO - Starting AI Answer Evaluation System API
+[2025-05-01 13:09:16] AIAnswerEvaluationSystem:79 - INFO - App startup: Initializing resources...
+[2025-05-01 13:09:16] AIAnswerEvaluationSystem.neo4j_Manager:56 - INFO - Creating new Neo4jManager instance for ('neo4j://localhost:7687', 'neo4j')
+[2025-05-01 13:09:16] AIAnswerEvaluationSystem.neo4j_Manager:34 - INFO - Neo4jManager instance configured for URI: neo4j://localhost:7687
+[2025-05-01 13:09:16] AIAnswerEvaluationSystem:90 - INFO - Neo4jManager initialized.
+[2025-05-01 13:09:16] AIAnswerEvaluationSystem.question_answer_store:19 - INFO - Neo4j connection initialized and verified for URI: neo4j://localhost:7687
+[2025-05-01 13:09:16] AIAnswerEvaluationSystem.question_answer_store:124 - INFO - QuestionUploader initialized.
+[2025-05-01 13:09:16] AIAnswerEvaluationSystem:96 - INFO - QuestionUploader initialized.
+[2025-05-01 13:09:16] AIAnswerEvaluationSystem.llmss:73 - INFO - LLMEvaluator configured for model: /home/gola/GRAPH_RAG/Exam_Portal/llama-3.2-3b-qa-finetuned/final_model on device cuda
+[2025-05-01 13:09:16] AIAnswerEvaluationSystem:101 - INFO - FineTunedLLMEvaluator configured.
+[2025-05-01 13:09:16] AIAnswerEvaluationSystem:80 - INFO - EvaluationProcessor initialized successfully.
+[2025-05-01 13:09:16] AIAnswerEvaluationSystem:107 - INFO - EvaluationProcessor initialized.
+[2025-05-01 13:09:16] AIAnswerEvaluationSystem.database_login_rigister:31 - INFO - ExamService initialized.
+[2025-05-01 13:09:16] AIAnswerEvaluationSystem:115 - INFO - ExamService initialized.
+[2025-05-01 13:09:16] AIAnswerEvaluationSystem:124 - INFO - All core services initialized successfully.
+[2025-05-01 13:10:21] AIAnswerEvaluationSystem.neo4j_Manager:75 - INFO - Attempting Neo4j Driver connection to neo4j://localhost:7687...
+[2025-05-01 13:10:21] AIAnswerEvaluationSystem.neo4j_Manager:81 - INFO - ✅ Neo4j Driver connected and verified.
+[2025-05-01 13:10:21] AIAnswerEvaluationSystem:491 - INFO - Retrieved 5 subjects
+[2025-05-01 13:10:46] AIAnswerEvaluationSystem:469 - INFO - Student login successful: 2115500009
+[2025-05-01 13:12:24] root:140 - INFO - 📚 Fetching questions for subject: 'Aritifical Intellegnce' (Limit: 50)...
+[2025-05-01 13:12:24] root:162 - INFO - ✅ Successfully fetched 2 questions for 'Aritifical Intellegnce'
+[2025-05-01 13:12:24] AIAnswerEvaluationSystem:519 - INFO - Retrieved 2 questions for subject: Aritifical Intellegnce
+[2025-05-01 13:13:37] AIAnswerEvaluationSystem.database_login_rigister:64 - INFO - Attempting to save submission SUB_2115500009_Aritifical Intellegnce_1746085417_7c06f2...
+[2025-05-01 13:13:37] AIAnswerEvaluationSystem.database_login_rigister:79 - INFO - Submission SUB_2115500009_Aritifical Intellegnce_1746085417_7c06f2 saved successfully to DB.
+[2025-05-01 13:13:37] AIAnswerEvaluationSystem.database_login_rigister:84 - INFO - Starting automatic evaluation for 2 answers in submission SUB_2115500009_Aritifical Intellegnce_1746085417_7c06f2...
+[2025-05-01 13:13:37] AIAnswerEvaluationSystem:181 - INFO - Processing evaluation request: S='2115500009', Q='Ai_q1'
+[2025-05-01 13:13:37] AIAnswerEvaluationSystem.llmss:82 - INFO - Attempting to load model and tokenizer from: /home/gola/GRAPH_RAG/Exam_Portal/llama-3.2-3b-qa-finetuned/final_model
+[2025-05-01 13:14:05] AIAnswerEvaluationSystem.llmss:146 - INFO - Successfully loaded model and tokenizer (device assigned by framework) in 27.77s.
+[2025-05-01 13:14:09] AIAnswerEvaluationSystem.llmss:215 - INFO - Generation completed in 3.71s
+[2025-05-01 13:14:09] AIAnswerEvaluationSystem:169 - INFO - Successfully stored evaluation results for Answer ID: SUB_2115500009_Aritifical Intellegnce_1746085417_7c06f2_Ai_q1
+[2025-05-01 13:14:09] AIAnswerEvaluationSystem:250 - INFO - Processed evaluation request (stored) S:2115500009, Q:Ai_q1 in 31.81s. Grade: F
+[2025-05-01 13:14:09] AIAnswerEvaluationSystem:181 - INFO - Processing evaluation request: S='2115500009', Q='ARTIF_INTELL_Q1'
+[2025-05-01 13:14:11] AIAnswerEvaluationSystem.llmss:215 - INFO - Generation completed in 1.47s
+[2025-05-01 13:14:11] AIAnswerEvaluationSystem:169 - INFO - Successfully stored evaluation results for Answer ID: SUB_2115500009_Aritifical Intellegnce_1746085417_7c06f2_ARTIF_INTELL_Q1
+[2025-05-01 13:14:11] AIAnswerEvaluationSystem:250 - INFO - Processed evaluation request (stored) S:2115500009, Q:ARTIF_INTELL_Q1 in 1.66s. Grade: F
+[2025-05-01 13:14:11] AIAnswerEvaluationSystem.database_login_rigister:104 - INFO - Automatic evaluation finished for SUB_2115500009_Aritifical Intellegnce_1746085417_7c06f2. Errors: 0. Total time: 33.47s
+[2025-05-01 13:14:20] AIAnswerEvaluationSystem:762 - INFO - Successfully generated result summary for submission SUB_2115500009_Aritifical Intellegnce_1746085417_7c06f2
+[2025-05-01 13:14:31] AIAnswerEvaluationSystem:384 - INFO - Teacher login successful: gagan
+[2025-05-01 13:14:35] AIAnswerEvaluationSystem:659 - INFO - Teacher request: Fetching results for student '2115500009', subject 'ALL'
+[2025-05-01 13:14:35] AIAnswerEvaluationSystem:263 - INFO - Processor: Fetching stored evaluation results for S:2115500009, Sub:ALL
+[2025-05-01 13:14:35] AIAnswerEvaluationSystem.neo4j_Manager:255 - INFO - Fetching EVALUATED answers for student '2115500009', subject 'ALL'
+[2025-05-01 13:14:35] neo4j.notifications:337 - WARNING - Received notification from DBMS server: {severity: WARNING} {code: Neo.ClientNotification.Statement.UnknownPropertyKeyWarning} {category: UNRECOGNIZED} {title: The provided property key is not in the database} {description: One of the property names in your query is not available in the database, make sure you didn't misspell it or that the label is available when you run this statement in your application (the missing property name is: evaluation_error)} {position: line: 23, column: 15, offset: 1443} for query: '\n        MATCH (s:Student {roll_no: $p_roll_no})-[:SUBMITTED]->(e:ExamSubmission)\n              -[:HAS_ANSWER]->(a:Answer)-[:ANSWERS_QUESTION]->(q:Question)\n        MATCH (e)-[:FOR_SUBJECT]->(sub:Subject)\n        // Ensure evaluation has been done - check for a specific property like evaluated_at or evaluation_status\n        WHERE a.evaluated_at IS NOT NULL OR a.evaluation_status IS NOT NULL\n        \n        RETURN\n            s.roll_no as student_roll_no,\n            s.name as student_name,\n            sub.name as subject_name,\n            q.id as question_id,\n            q.text as question_text,\n            a.text as submitted_answer,\n            COALESCE(q.max_marks, 5.0) as max_marks_possible, // Max marks from Question node\n            a.evaluation_numeric_score AS numeric_score,    // Evaluation results from Answer node\n            a.evaluation_score_str AS score_str,           // Evaluation results from Answer node\n            a.evaluation_marks_obtained AS marks_obtained,   // Evaluation results from Answer node\n            a.evaluation_percentage AS percentage,        // Evaluation results from Answer node\n            a.evaluation_letter_grade AS letter_grade,       // Evaluation results from Answer node\n            a.evaluation_status AS status,                // Evaluation results from Answer node\n            a.evaluation_feedback AS feedback,              // Evaluation results from Answer node\n            a.evaluation_error AS eval_error,             // Potential errors during eval\n            a.evaluated_at as evaluated_time            // Timestamp of evaluation\n        ORDER BY e.submitted_at DESC, q.id\n        '
+[2025-05-01 13:14:35] AIAnswerEvaluationSystem.neo4j_Manager:258 - INFO - Found 10 evaluated answers for student 2115500009.
+[2025-05-01 13:14:35] AIAnswerEvaluationSystem:280 - INFO - Processor: Returning 10 stored evaluations for S:2115500009
+[2025-05-01 13:45:47] AIAnswerEvaluationSystem:133 - INFO - App shutdown: Cleaning up resources...
+[2025-05-01 13:45:47] AIAnswerEvaluationSystem.neo4j_Manager:105 - INFO - Closing Neo4j Driver for ('neo4j://localhost:7687', 'neo4j')...
+[2025-05-01 13:45:47] AIAnswerEvaluationSystem.neo4j_Manager:108 - INFO - 🔒 Neo4j Driver closed.
+[2025-05-01 13:45:47] AIAnswerEvaluationSystem.neo4j_Manager:116 - INFO - Removed instance ('neo4j://localhost:7687', 'neo4j') from registry.
+[2025-05-01 13:45:47] AIAnswerEvaluationSystem:137 - INFO - Shutdown complete.
+[2025-05-01 16:01:42] root:156 - INFO - Logging configured. Level: INFO. File: /home/gola/GRAPH_RAG/Exam_Portal/An-AI-powered-answer-evaluation-system-/logs/app_log_2025-05-01.log
+[2025-05-01 16:01:42] AIAnswerEvaluationSystem:179 - INFO - Logger 'AIAnswerEvaluationSystem' obtained and ready for import.
+[2025-05-01 16:01:45] datasets:54 - INFO - PyTorch version 2.6.0 available.
+[2025-05-01 16:01:48] AIAnswerEvaluationSystem:790 - INFO - Starting AI Answer Evaluation System API
+[2025-05-01 16:01:48] AIAnswerEvaluationSystem:79 - INFO - App startup: Initializing resources...
+[2025-05-01 16:01:48] AIAnswerEvaluationSystem.neo4j_Manager:56 - INFO - Creating new Neo4jManager instance for ('neo4j://localhost:7687', 'neo4j')
+[2025-05-01 16:01:48] AIAnswerEvaluationSystem.neo4j_Manager:34 - INFO - Neo4jManager instance configured for URI: neo4j://localhost:7687
+[2025-05-01 16:01:48] AIAnswerEvaluationSystem:90 - INFO - Neo4jManager initialized.
+[2025-05-01 16:01:48] AIAnswerEvaluationSystem.question_answer_store:19 - INFO - Neo4j connection initialized and verified for URI: neo4j://localhost:7687
+[2025-05-01 16:01:48] AIAnswerEvaluationSystem.question_answer_store:124 - INFO - QuestionUploader initialized.
+[2025-05-01 16:01:48] AIAnswerEvaluationSystem:96 - INFO - QuestionUploader initialized.
+[2025-05-01 16:01:48] AIAnswerEvaluationSystem.llmss:73 - INFO - LLMEvaluator configured for model: /home/gola/GRAPH_RAG/Exam_Portal/llama-3.2-3b-qa-finetuned/final_model on device cuda
+[2025-05-01 16:01:48] AIAnswerEvaluationSystem:101 - INFO - FineTunedLLMEvaluator configured.
+[2025-05-01 16:01:48] AIAnswerEvaluationSystem:80 - INFO - EvaluationProcessor initialized successfully.
+[2025-05-01 16:01:48] AIAnswerEvaluationSystem:107 - INFO - EvaluationProcessor initialized.
+[2025-05-01 16:01:48] AIAnswerEvaluationSystem.database_login_rigister:31 - INFO - ExamService initialized.
+[2025-05-01 16:01:48] AIAnswerEvaluationSystem:115 - INFO - ExamService initialized.
+[2025-05-01 16:01:48] AIAnswerEvaluationSystem:124 - INFO - All core services initialized successfully.
+[2025-05-01 16:05:49] AIAnswerEvaluationSystem:133 - INFO - App shutdown: Cleaning up resources...
+[2025-05-01 16:05:49] AIAnswerEvaluationSystem:137 - INFO - Shutdown complete.

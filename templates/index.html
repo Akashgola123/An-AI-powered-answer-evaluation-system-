@@ -1,1036 +1,414 @@
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exam Portal</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@17.0.2/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-</head>
-<body>
-    <div id="root" class="container mx-auto p-4"></div>
-    <script type="text/babel">
-        function App() {
-            const [view, setView] = React.useState('login');
-            const [subjects, setSubjects] = React.useState([]);
-            const [departments] = React.useState([
-                'Computer Science', 'Electrical Engineering', 
-                'Mechanical Engineering', 'Civil Engineering'
-            ]);
-            const [formData, setFormData] = React.useState({
-                name: '',
-                rollNo: '',
-                password: '',
-                department: '',
-                semester: 1,
-                subject: '',
-                questions: [],
-                answers: {}
-            });
-
-            const API_URL = "http://127.0.0.1:8000";
-
-            React.useEffect(() => {
-                fetchSubjects();
-            }, []);
-
-            const fetchSubjects = async () => {
-                try {
-                    const response = await fetch(`${API_URL}/subjects`);
-                    const fetchedSubjects = await response.json();
-                    setSubjects(fetchedSubjects);
-                } catch (error) {
-                    console.error('Error fetching subjects');
-                }
-            };
-
-            const handleInputChange = (e) => {
-                const { name, value } = e.target;
-                console.log(`Input change: ${name} = ${value}`); // Debug log
-                setFormData(prev => ({
-                    ...prev,
-                    [name]: name === 'semester' ? parseInt(value) : value
-                }));
-            };
-
-            const handleAnswerChange = (qid, value) => {
-                setFormData(prev => ({
-                    ...prev,
-                    answers: { ...prev.answers, [qid]: value }
-                }));
-            };
-
-            const handleRegister = async (e) => {
-                e.preventDefault();
-                console.log("Submitting registration with data:", formData); // Debug log
-                try {
-                    const response = await fetch(`${API_URL}/register_student`, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({
-                            name: formData.name,
-                            roll_no: formData.rollNo,
-                            password: formData.password,
-                            department: formData.department,
-                            semester: formData.semester
-                        })
-                    });
-                    const result = await response.json();
-                    alert(result.message);
-                    setView('login');
-                } catch (error) {
-                    alert('Registration failed!');
-                }
-            };
-
-            const handleLogin = async (e) => {
-                e.preventDefault();
-                try {
-                    const response = await fetch(`${API_URL}/login_student`, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({
-                            roll_no: formData.rollNo,
-                            password: formData.password
-                        })
-                    });
-                    const result = await response.json();
-                    alert(result.message);
-                    setView('subject_select');
-                } catch (error) {
-                    alert('Login failed!');
-                }
-            };
-
-            // const fetchQuestions = async () => {
-            //     try {
-            //         console.log("Fetching questions for subject:", formData.subject); 
-
-            //         const response = await fetch(`${API_URL}/questions?subject=${formData.subject}`);
-            //         if (!response.ok) {
-            //             throw new Error(`HTTP error! Status: ${response.status}`);
-            //         }
-
-            //         const data = await response.json();
-            //         console.log("Received data:", data);
-
-            //         if (!data.questions || !Array.isArray(data.questions) || data.questions.length === 0) {
-            //             alert("No questions available for this subject.");
-            //             return;
-            //         }
-
-            //         setFormData(prev => ({ ...prev, questions: data.questions })); 
-            //         setView('exam');
-
-            //     } catch (error) {
-            //         console.error("Error fetching questions:", error);
-            //         alert("Failed to fetch questions");
-            //     }
-            // };
-            const fetchQuestions = async () => {
-                try {
-                    console.log("Fetching questions for subject:", formData.subject);
-                    
-                    // Show loading state to user
-                    alert("Loading questions... Please wait.");
-                    
-                    const response = await fetch(`${API_URL}/questions?subject=${formData.subject}`);
-                    
-                    // Log detailed response info for debugging
-                    console.log("Response status:", response.status);
-                    console.log("Response headers:", Object.fromEntries([...response.headers]));
-                    
-                    if (!response.ok) {
-                        if (response.status === 500) {
-                            console.error("Server error (500) - likely an issue with the backend application");
-                            throw new Error(`Server error (500). There may be an issue with the database or the backend code.`);
-                        } else {
-                            throw new Error(`HTTP error! Status: ${response.status}`);
-                        }
-                    }
-
-                    let data;
-                    try {
-                        data = await response.json();
-                    } catch (parseError) {
-                        console.error("Error parsing JSON response:", parseError);
-                        throw new Error("Invalid response format from server");
-                    }
-                    
-                    console.log("Received data:", data);
-
-                    if (!data.questions || !Array.isArray(data.questions) || data.questions.length === 0) {
-                        alert("No questions available for this subject.");
-                        return;
-                    }
-
-                    setFormData(prev => ({ ...prev, questions: data.questions })); 
-                    setView('exam');
-
-                } catch (error) {
-                    console.error("Error fetching questions:", error);
-                    alert(`Failed to fetch questions: ${error.message}\n\nPlease check the server logs for more details.`);
-                }
-            };
-
-            const handleFileUpload = async (event, questionId) => {
-                const file = event.target.files[0];
-                if (!file) return;
-
-                const fileFormData = new FormData();
-                fileFormData.append("file", file);
-
-                try {
-                    const response = await fetch(`${API_URL}/upload-answer`, {
-                        method: "POST",
-                        body: fileFormData
-                    });
-
-                    const data = await response.json();
-                    console.log("Extracted text:", data);
-
-                    if (data.status === "success") {
-                        handleAnswerChange(questionId, data.extracted_text);
-                    } else {
-                        alert("Failed to extract text from file.");
-                    }
-
-                } catch (error) {
-                    console.error("Error uploading file:", error);
-                    alert("Error processing file.");
-                }
-            };
-
-            const submitExam = async (e) => {
-                e.preventDefault();
-                try {
-                    const response = await fetch(`${API_URL}/submit_exam`, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({
-                            roll_no: formData.rollNo,
-                            subject: formData.subject,
-                            answers: formData.answers
-                        })
-                    });
-                    const result = await response.json();
-                    alert(result.message);
-                    setView('login');
-                } catch (error) {
-                    console.error('Error submitting exam');
-                    alert('Failed to submit exam');
-                }
-            };
-
-            const renderLogin = () => (
-                <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-                    <h2 className="text-2xl font-bold mb-6 text-center">Student Login</h2>
-                    <form onSubmit={handleLogin}>
-                        <input
-                            type="text"
-                            name="rollNo"
-                            placeholder="Roll Number"
-                            value={formData.rollNo}
-                            onChange={handleInputChange}
-                            className="w-full p-2 mb-4 border rounded"
-                            required
-                        />
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="Password"
-                            value={formData.password}
-                            onChange={handleInputChange}
-                            className="w-full p-2 mb-4 border rounded"
-                            required
-                        />
-                        <button 
-                            type="submit" 
-                            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-                        >
-                            Login
-                        </button>
-                        <p className="text-center mt-4">
-                            Don't have an account? 
-                            <button 
-                                type="button"
-                                onClick={() => setView('register')}
-                                className="text-blue-500 ml-2"
-                            >
-                                Register
-                            </button>
-                        </p>
-                    </form>
-                </div>
-            );
-
-            const renderRegister = () => (
-                <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-                    <h2 className="text-2xl font-bold mb-6 text-center">Student Registration</h2>
-                    <form onSubmit={handleRegister}>
-                        <div className="mb-4">
-                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Full Name</label>
-                            <input
-                                id="name"
-                                type="text"
-                                name="name"
-                                placeholder="Full Name"
-                                value={formData.name}
-                                onChange={handleInputChange}
-                                className="w-full p-2 mt-1 border rounded"
-                                required
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label htmlFor="rollNo" className="block text-sm font-medium text-gray-700">Roll Number</label>
-                            <input
-                                id="rollNo"
-                                type="text"
-                                name="rollNo"
-                                placeholder="Roll Number"
-                                value={formData.rollNo}
-                                onChange={handleInputChange}
-                                className="w-full p-2 mt-1 border rounded"
-                                required
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-                            <input
-                                id="password"
-                                type="password"
-                                name="password"
-                                placeholder="Password"
-                                value={formData.password}
-                                onChange={handleInputChange}
-                                className="w-full p-2 mt-1 border rounded"
-                                required
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label htmlFor="department" className="block text-sm font-medium text-gray-700">Department</label>
-                            <select
-                                id="department"
-                                name="department"
-                                value={formData.department}
-                                onChange={handleInputChange}
-                                className="w-full p-2 mt-1 border rounded"
-                                required
-                            >
-                                <option value="">Select Department</option>
-                                {departments.map(dept => (
-                                    <option key={dept} value={dept}>{dept}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="mb-4">
-                            <label htmlFor="semester" className="block text-sm font-medium text-gray-700">Semester</label>
-                            <select
-                                id="semester"
-                                name="semester"
-                                value={formData.semester}
-                                onChange={handleInputChange}
-                                className="w-full p-2 mt-1 border rounded"
-                                required
-                            >
-                                {[1,2,3,4,5,6,7,8].map(sem => (
-                                    <option key={sem} value={sem}>Semester {sem}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <button
-                            type="submit"
-                            className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600"
-                        >
-                            Register
-                        </button>
-                        <p className="text-center mt-4">
-                            Already have an account? 
-                            <button 
-                                type="button"
-                                onClick={() => setView('login')}
-                                className="text-blue-500 ml-2"
-                            >
-                                Login
-                            </button>
-                        </p>
-                    </form>
-                </div>
-            );
-
-            const renderSubjectSelect = () => (
-                <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-                    <h2 className="text-2xl font-bold mb-6 text-center">Select Subject</h2>
-                    <select 
-                        name="subject" 
-                        value={formData.subject} 
-                        onChange={handleInputChange} 
-                        className="w-full p-2 mb-4 border rounded" 
-                        required
-                    >
-                        <option value="">Select a Subject</option>
-                        {subjects.map(subject => (
-                            <option key={subject.name} value={subject.name}>
-                                {subject.name} ({subject.department})
-                            </option>
-                        ))}
-                    </select>
-                    <button
-                        onClick={fetchQuestions}
-                        className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-                        disabled={!formData.subject}
-                    >
-                        Start Exam
-                    </button>
-                </div>
-            );
-
-            const renderExam = () => (
-                <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-                    <h2 className="text-2xl font-bold mb-6 text-center">Exam: {formData.subject}</h2>
-                    <form onSubmit={submitExam}>
-                        {formData.questions.map((q) => (
-                            <div key={q.id} className="mb-6 p-4 border rounded">
-                                <p className="font-bold mb-2">
-                                    Q{q.id}: {q.question} ({q.marks} Marks)
-                                </p>
-                                <textarea
-                                    className="w-full p-2 border rounded"
-                                    placeholder="Type your answer here"
-                                    value={formData.answers[q.id] || ""}
-                                    onChange={(e) => handleAnswerChange(q.id, e.target.value)}
-                                    required
-                                />
-                                <div className="mt-2">
-                                    <p className="text-sm text-gray-600 mb-1">Or upload an image/PDF with your answer:</p>
-                                    <input 
-                                        type="file" 
-                                        accept="image/*,application/pdf" 
-                                        onChange={(e) => handleFileUpload(e, q.id)} 
-                                    />
-                                </div>
-                            </div>
-                        ))}
-                        <button
-                            type="submit"
-                            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-                        >
-                            Submit Exam
-                        </button>
-                    </form>
-                </div>
-            );
-
-            return (
-                <div className="min-h-screen bg-gray-100">
-                    {view === 'login' && renderLogin()}
-                    {view === 'register' && renderRegister()}
-                    {view === 'subject_select' && renderSubjectSelect()}
-                    {view === 'exam' && renderExam()}
-                </div>
-            );
-        }
-
-        ReactDOM.render(<App />, document.getElementById('root'));
-    </script>
-</body>
-</html> -->
-
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Exam Portal</title>
+    {/* Tailwind CSS via CDN */}
     <script src="https://cdn.tailwindcss.com"></script>
+    {/* React and ReactDOM via CDN */}
     <script src="https://unpkg.com/react@17.0.2/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    {/* Babel Standalone for JSX transpilation */}
+     <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script> {/* Using Babel 7 */}
+    <style>
+        /* Basic spinner styles */
+        .spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: #09f; animation: spin 1s ease infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Preserve whitespace for answers/feedback */
+        .whitespace-pre-wrap { white-space: pre-wrap; }
+         /* Toast styles */
+         .toast { position: fixed; top: 20px; right: 20px; padding: 12px 20px; border-radius: 6px; z-index: 1000; color: white; animation: fadeOutToast 5s ease-out forwards; box-shadow: 0 2px 10px rgba(0,0,0,0.2); font-size: 0.9rem; }
+         .toast-success { background-color: #2f855a; }
+         .toast-error { background-color: #c53030; }
+         .toast-warning { background-color: #dd6b20; color: #333 }
+         .toast-info { background-color: #3182ce; }
+         @keyframes fadeOutToast { 0%, 80% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-20px); } }
+    </style>
 </head>
 <body>
-    <div id="root" class="container mx-auto p-4"></div>
-    <script type="text/babel">
+    <div id="root" class="container mx-auto p-0"></div> {/* Removed p-4 from root container */}
+
+    <script type="text/babel"> // Use text/babel type
+
+        // --- Constants and Initial State ---
+        const API_URL = "http://127.0.0.1:8000"; // Make sure backend API runs on this address
+        const initialFormData = { name: '', rollNo: '', password: '', department: '', semester: 1, subject: '', questions: [], answers: {}, uploadQid: '', uploadSubject: '', uploadQText: '', uploadCorrectAnswer: '', uploadMarks: 5.0, uploadConcepts: '', viewStudentRollNo: '', studentResults: [], lastSubmissionId: null, examResultData: null, isLoading: false, errorMsg: null };
+
+        // --- Main React Application ---
         function App() {
-            const [view, setView] = React.useState('home');
-            const [userType, setUserType] = React.useState('student');
-            const [subjects, setSubjects] = React.useState([]);
-            const [departments] = React.useState([
-                'Computer Science', 'Electrical Engineering', 
-                'Mechanical Engineering', 'Civil Engineering'
-            ]);
-            const [formData, setFormData] = React.useState({
-                name: '',
-                rollNo: '',
-                password: '',
-                department: '',
-                semester: 1,
-                subject: '',
-                questions: [],
-                answers: {}
-            });
+            // --- State Hooks ---
+            const [view, setView] = React.useState('home'); // Controls which UI component is shown
+            const [userType, setUserType] = React.useState('student'); // 'student' or 'teacher'
+            const [subjects, setSubjects] = React.useState([]); // Holds fetched subject names
+            const [departments] = React.useState(['Computer Science', 'Electrical', 'Mechanical', 'Civil', 'Other']); // Departments for registration
+            const [formData, setFormData] = React.useState({...initialFormData}); // Holds all form inputs and temporary data
+            const [lastSubmissionId, setLastSubmissionId] = React.useState(null); // Holds ID after student submits exam
+            const [examResultData, setExamResultData] = React.useState(null); // Holds fetched results for student view
+            const [toast, setToast] = React.useState({ message: '', type: '', visible: false }); // State for toast notifications
 
-            const API_URL = "http://127.0.0.1:8000";
+            // --- Effects ---
+            // Fetch subjects only once when the app mounts
+            React.useEffect(() => { fetchSubjects(); }, []);
+            // Timer to hide toast notifications automatically
+            React.useEffect(() => { let timer; if (toast.visible) { timer = setTimeout(() => setToast(p => ({...p, visible: false})), 4500); } return () => clearTimeout(timer); }, [toast.visible]);
 
-            React.useEffect(() => {
-                fetchSubjects();
-            }, []);
+            // --- Helper Functions ---
+            // Function to display toast messages
+            const showToast = (message, type = 'info') => { setToast({ message: '', type:'', visible: false}); setTimeout(() => setToast({ message, type, visible: true }), 50); };
+            // Fetch list of subject names from backend
+            const fetchSubjects = async () => { setFormData(prev => ({...prev, isLoading: true})); try {const r=await fetch(`${API_URL}/subjects`); if(!r.ok) throw new Error(`HTTP ${r.status}`); const d=await r.json(); setSubjects(Array.isArray(d)?d.map(s=>s.name||'?'):[]); console.log("Fetched subjects names:", d); } catch(e){console.error('Subject fetch err:',e);showToast(`Cannot fetch subjects: ${e.message}`,'error'); setSubjects([]);} finally { setFormData(prev => ({...prev, isLoading: false}));}};
+            // Handle changes in form input fields
+            const handleInputChange = (e) => { const {name, value, type} = e.target; setFormData(p => ({...p, [name]: type === 'number' ? parseFloat(value) || 0 : value})); };
+            // Handle changes in exam answer textareas
+            const handleAnswerChange = (qid, value) => { setFormData(p => ({...p, answers: {...p.answers, [qid]: value}})); };
+            // Reset form state, optionally keep basic user info
+            const resetForm = (keepUser = false) => { const currentUser = keepUser ? { name: formData.name, rollNo: formData.rollNo } : {}; setFormData({...initialFormData, ...currentUser, userType}); setLastSubmissionId(null); setExamResultData(null); };
 
-            const fetchSubjects = async () => {
+            // --- Central API Request Helper ---
+            const makeApiRequest = async (endpoint, method = 'GET', body = null) => {
+                setFormData(prev => ({ ...prev, isLoading: true, errorMsg: null }));
+                console.log(`API Call Start: ${method} ${API_URL}${endpoint}`);
                 try {
-                    const response = await fetch(`${API_URL}/subjects`);
-                    const fetchedSubjects = await response.json();
-                    setSubjects(fetchedSubjects);
-                } catch (error) {
-                    console.error('Error fetching subjects');
-                }
-            };
-
-            const handleInputChange = (e) => {
-                const { name, value } = e.target;
-                console.log(`Input change: ${name} = ${value}`); // Debug log
-                setFormData(prev => ({
-                    ...prev,
-                    [name]: name === 'semester' ? parseInt(value) : value
-                }));
-            };
-
-            const handleAnswerChange = (qid, value) => {
-                setFormData(prev => ({
-                    ...prev,
-                    answers: { ...prev.answers, [qid]: value }
-                }));
-            };
-
-            const resetForm = () => {
-                setFormData({
-                    name: '',
-                    rollNo: '',
-                    password: '',
-                    department: '',
-                    semester: 1,
-                    subject: '',
-                    questions: [],
-                    answers: {}
-                });
-            };
-
-            // Student Registration
-            const handleStudentRegister = async (e) => {
-                e.preventDefault();
-                console.log("Submitting student registration with data:", formData); // Debug log
-                try {
-                    const response = await fetch(`${API_URL}/register_student`, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({
-                            name: formData.name,
-                            roll_no: formData.rollNo,
-                            password: formData.password,
-                            department: formData.department,
-                            semester: formData.semester
-                        })
-                    });
-                    const result = await response.json();
-                    alert(result.message);
-                    setView('login');
-                } catch (error) {
-                    alert('Registration failed!');
-                }
-            };
-
-            // Teacher Registration
-            const handleTeacherRegister = async (e) => {
-                e.preventDefault();
-                console.log("Submitting teacher registration with data:", formData); // Debug log
-                try {
-                    const response = await fetch(`${API_URL}/register_teacher`, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({
-                            name: formData.name,
-                            password: formData.password,
-                            department: formData.department
-                        })
-                    });
-                    const result = await response.json();
-                    alert(result.message);
-                    setView('login');
-                } catch (error) {
-                    alert('Teacher registration failed!');
-                }
-            };
-
-            // Student Login
-            const handleStudentLogin = async (e) => {
-                e.preventDefault();
-                try {
-                    const response = await fetch(`${API_URL}/login_student`, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({
-                            roll_no: formData.rollNo,
-                            password: formData.password
-                        })
-                    });
-                    const result = await response.json();
-                    alert(result.message);
-                    setView('subject_select');
-                } catch (error) {
-                    alert('Login failed!');
-                }
-            };
-
-            // Teacher Login
-            const handleTeacherLogin = async (e) => {
-                e.preventDefault();
-                try {
-                    const response = await fetch(`${API_URL}/login_teacher`, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({
-                            name: formData.name,
-                            password: formData.password
-                        })
-                    });
-                    const result = await response.json();
-                    alert(result.message);
-                    setView('teacher_dashboard'); // Redirect to teacher dashboard
-                } catch (error) {
-                    alert('Teacher login failed!');
-                }
-            };
-
-            const fetchQuestions = async () => {
-                try {
-                    console.log("Fetching questions for subject:", formData.subject);
-                    
-                    // Show loading state to user
-                    alert("Loading questions... Please wait.");
-                    
-                    const response = await fetch(`${API_URL}/questions?subject=${formData.subject}`);
-                    
-                    // Log detailed response info for debugging
-                    console.log("Response status:", response.status);
-                    console.log("Response headers:", Object.fromEntries([...response.headers]));
-                    
-                    if (!response.ok) {
-                        if (response.status === 500) {
-                            console.error("Server error (500) - likely an issue with the backend application");
-                            throw new Error(`Server error (500). There may be an issue with the database or the backend code.`);
-                        } else {
-                            throw new Error(`HTTP error! Status: ${response.status}`);
-                        }
-                    }
-
-                    let data;
+                    const options = { method, headers: {'Content-Type': 'application/json'} };
+                    if (body) { options.body = JSON.stringify(body); }
+                    const response = await fetch(`${API_URL}${endpoint}`, options);
+                    // Try parsing JSON regardless of status code first
+                    let result;
                     try {
-                        data = await response.json();
-                    } catch (parseError) {
-                        console.error("Error parsing JSON response:", parseError);
-                        throw new Error("Invalid response format from server");
+                         result = await response.json();
+                         console.log(`API Response (${response.status}):`, result);
+                    } catch (jsonError) {
+                         // Handle cases where response isn't valid JSON (e.g., unexpected server errors)
+                         console.error("Failed to parse API JSON response:", jsonError);
+                         // Use status text or a generic message if JSON parsing fails
+                         throw new Error(response.statusText || `Request failed with status ${response.status} (Invalid Response Body)`);
                     }
-                    
-                    console.log("Received data:", data);
-
-                    if (!data.questions || !Array.isArray(data.questions) || data.questions.length === 0) {
-                        alert("No questions available for this subject.");
-                        return;
-                    }
-
-                    setFormData(prev => ({ ...prev, questions: data.questions })); 
-                    setView('exam');
-
+                    if (!response.ok) throw new Error(result.detail || `Request failed: ${response.statusText || 'Unknown error'}`);
+                    setFormData(prev => ({ ...prev, isLoading: false }));
+                    return result; // Return successful parsed JSON
                 } catch (error) {
-                    console.error("Error fetching questions:", error);
-                    alert(`Failed to fetch questions: ${error.message}\n\nPlease check the server logs for more details.`);
+                    console.error(`API Request Error (${method} ${endpoint}):`, error);
+                    const errorMsg = `API Error: ${error.message}`;
+                    setFormData(prev => ({ ...prev, isLoading: false, errorMsg: errorMsg }));
+                    showToast(errorMsg, 'error'); // Show toast on any API error
+                    throw error; // Propagate error for caller .catch() blocks
                 }
-            };
+             };
 
-            const handleFileUpload = async (event, questionId) => {
+
+            // --- Event Handlers for API calls (Simplified using makeApiRequest) ---
+            const handleStudentRegister=async(e)=>{e.preventDefault();try{const p={name:formData.name,roll_no:formData.rollNo,password:formData.password,department:formData.department,semester:formData.semester};const r=await makeApiRequest('/register_student','POST',p);showToast(r.message||"Registered!",'success');setView('login');resetForm(false);}catch(e){/*error handled*/}};
+            const handleTeacherRegister=async(e)=>{e.preventDefault();try{const p={name:formData.name,password:formData.password,department:formData.department};const r=await makeApiRequest('/register_teacher','POST',p);showToast(r.message||"Registered!",'success');setView('login');resetForm(false);}catch(e){/*error handled*/}};
+            const handleStudentLogin=async(e)=>{e.preventDefault();try{const p={roll_no:formData.rollNo,password:formData.password};const r=await makeApiRequest('/login_student','POST',p);showToast(r.message||"Logged In!",'success');setFormData(p=>({...p,name:r.student_name}));setView('subject_select');}catch(e){/*error handled*/}};
+            const handleTeacherLogin=async(e)=>{e.preventDefault();try{const p={name:formData.name,password:formData.password};const r=await makeApiRequest('/login_teacher','POST',p);showToast(r.message||"Logged In!",'success');setFormData(p=>({...p,name:r.teacher_name}));setView('teacher_dashboard');}catch(e){/*error handled*/}};
+            const fetchQuestions = async() => {
+              try {
+                const s = formData.subject;
+                if(!s) {
+                  showToast('Select subject!', 'warning');
+                  return;
+                }
+                showToast('Loading questions...', 'info');
+                const r = await makeApiRequest(`/questions?subject=${encodeURIComponent(s)}`);
+                if(!r.questions || r.questions.length === 0) {
+                  showToast("No questions found for this subject.", 'warning');
+                  setFormData(p => ({...p, questions: []})); // Ensure questions is an empty array
+                  // Maybe stay on subject select or show a message page
+                  setView('subject_select');
+                  return;
+                }
+                // Ensure questions always has ID and default answer field
+                const questionsWithDefaults = r.questions.map((q, index) => ({
+                    id: q.id || `temp-${index}`, // Provide a fallback ID if missing
+                    question: q.question || '[Question Text Missing]',
+                    marks: q.marks !== undefined ? q.marks : null, // Use marks if present
+                }));
+                const initialAnswers = questionsWithDefaults.reduce((acc, q) => {
+                    acc[q.id] = ''; // Initialize empty answer for each question
+                    return acc;
+                }, {});
+
+                setFormData(p => ({...p, questions: questionsWithDefaults, answers: initialAnswers }));
+                setView('exam');
+              } catch(e) {
+                // Error handled by makeApiRequest, which shows a toast
+                 setFormData(p => ({...p, questions: []})); // Reset questions on error
+              }
+            };
+            const submitExam=async(e)=>{e.preventDefault();console.log("Submitting Exam Data:", formData); const qA=Object.keys(formData.answers).filter(k=>formData.answers[k] && formData.answers[k].trim()!=='').length;const qT=formData.questions.length;if(qT>0 && qA<qT&&!window.confirm(`You have answered ${qA} out of ${qT} questions. Are you sure you want to submit?`))return;if(qT === 0){ showToast("No questions to submit.", "warning"); return;} const p={roll_no:formData.rollNo,subject:formData.subject,answers:formData.answers};try{const r=await makeApiRequest('/submit_exam','POST',p);showToast(r.message||"Submitted!",'success');setLastSubmissionId(r.submission_id);setView('submission_success');}catch(err){/*error handled by makeApiRequest*/}};
+            const handleQuestionUpload=async(e)=>{e.preventDefault();const p={question_id:formData.uploadQid,subject_name:formData.uploadSubject,question_text:formData.uploadQText,correct_answer_text:formData.uploadCorrectAnswer,max_marks:formData.uploadMarks,concepts:formData.uploadConcepts.split(',').map(c=>c.trim()).filter(Boolean)};try{const r=await makeApiRequest('/upload_question','POST',p);showToast(r.message||"Processed!",'success');setFormData(p=>({...p,isLoading:false,uploadQid:'',uploadQText:'',uploadCorrectAnswer:'',uploadMarks:5.0,uploadConcepts:''}));fetchSubjects();}catch(err){/*error handled*/}};
+            const handleFetchTeacherResults=async(e)=>{e.preventDefault();const rN=formData.viewStudentRollNo;if(!rN){showToast('Enter Roll No','warning');return;}try{const r=await makeApiRequest(`/teacher/student_results/${rN}`);if(r.evaluations&&Array.isArray(r.evaluations)){setFormData(p=>({...p,studentResults:r.evaluations,viewStudentRollNo:r.student_roll_no}));setView('view_results_display');if(r.evaluations.length===0){showToast('No evaluated results found.','info');}}else{throw new Error("Invalid data received from server.");}}catch(err){/*error handled*/}};
+            const fetchMyExamResult=async()=>{if(!lastSubmissionId){showToast("Submission ID missing.",'error');return;}try{const r=await makeApiRequest(`/student/exam_result/${lastSubmissionId}`);setExamResultData(r);setView('view_my_exam_result');}catch(err){showToast(`Could not fetch result: ${err.message}`, 'error'); /* Don't redirect automatically setView('subject_select'); */ }};
+            const handleLogout=()=>{resetForm();setView('home');showToast('Logged out.','info');};
+
+            // --- *** File Upload Handler (Placeholder/Basic Implementation) *** ---
+            // --- *** File Upload Handler (Modified to match Backend Path) *** ---
+            // --- *** File Upload Handler (UPDATED to Populate Textarea) *** ---
+            const handleFileUpload = async (event, qid) => {
                 const file = event.target.files[0];
-                if (!file) return;
+                if (!file) {
+                    console.log("No file selected for question:", qid);
+                    return;
+                }
+                const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf']; // Keep frontend check
+                const maxSize = 5 * 1024 * 1024; // 5 MB
+                if (!allowedTypes.includes(file.type)) {
+                    const backendAllowedTypes = ["image/jpeg", "image/png", "image/jpg", "application/pdf"]; // Match backend message
+                    showToast(`Invalid file type: ${file.type}. Supported: ${backendAllowedTypes.join(', ')}`, 'error');
+                    event.target.value = null; return;
+                }
+                if (file.size > maxSize) {
+                    showToast(`File for Q${qid} is too large (max 5MB).`, 'error');
+                    event.target.value = null; return;
+                }
 
-                const fileFormData = new FormData();
-                fileFormData.append("file", file);
+                console.log(`File selected for question ${qid}:`, file.name, file.type, file.size);
+                showToast(`Selected: ${file.name} for Q${qid}. Uploading & Processing...`, 'info'); // Updated toast
 
+                const formDataUpload = new FormData();
+                formDataUpload.append('file', file);
+                // NOTE: Backend needs to be updated to accept these for full association
+                formDataUpload.append('roll_no', formData.rollNo);
+                formDataUpload.append('subject', formData.subject);
+                formDataUpload.append('question_id', qid);
+
+                setFormData(prev => ({ ...prev, isLoading: true })); // Indicate loading
                 try {
+                    // Use the correct backend path
                     const response = await fetch(`${API_URL}/upload-answer`, {
-                        method: "POST",
-                        body: fileFormData
+                        method: 'POST',
+                        body: formDataUpload,
                     });
 
-                    const data = await response.json();
-                    console.log("Extracted text:", data);
-
-                    if (data.status === "success") {
-                        handleAnswerChange(questionId, data.extracted_text);
-                    } else {
-                        alert("Failed to extract text from file.");
+                    let result;
+                    try {
+                        result = await response.json();
+                         console.log("Raw API Response:", response.status, result); // Log status and parsed body
+                    } catch (jsonError) {
+                        console.error("Failed to parse JSON response:", jsonError, response.status, response.statusText);
+                        if (!response.ok) {
+                            throw new Error(`Upload failed: ${response.statusText || response.status}`);
+                        }
+                         // Handle cases where server returns 200 OK but invalid JSON (unlikely with FastAPI)
+                        throw new Error("Upload successful, but received invalid response format.");
                     }
 
+                    if (!response.ok) {
+                        // Use detail from parsed JSON error if available
+                        const errorDetail = result?.detail || `Upload failed: ${response.statusText || response.status}`;
+                        console.error(`File Upload Error for Q${qid}: Error ${response.status} - ${errorDetail}`);
+                        throw new Error(errorDetail);
+                    }
+
+                    // --- SUCCESS HANDLING ---
+                    console.log("Upload success response:", result);
+
+                    // ** NEW: Update the answer box with extracted text **
+                    if (result?.extracted_text) {
+                        setFormData(prevFormData => ({
+                            ...prevFormData,
+                            answers: {
+                                ...prevFormData.answers, // Copy other answers
+                                [qid]: result.extracted_text // Overwrite/set answer for the current question ID
+                            }
+                        }));
+                        // Specific success toast for text insertion
+                        showToast(`Text extracted from ${result?.file_name || file.name} and inserted into answer box for QID ${qid}.`, 'success');
+                    } else {
+                        // Upload was OK, but no text extracted or returned
+                         showToast(`File ${result?.file_name || file.name} uploaded successfully, but no text was extracted/inserted.`, 'info');
+                         // You might want to log this scenario for debugging backend issues
+                         console.log(`Upload OK for ${qid}, but no 'extracted_text' found in response.`, result);
+                    }
+                     // ** END NEW **
+
                 } catch (error) {
-                    console.error("Error uploading file:", error);
-                    alert("Error processing file.");
+                    console.error(`File Upload Error Catch Block for Q${qid}:`, error);
+                    // Ensure error message is displayed
+                    showToast(`Upload Error for Q${qid}: ${error.message}`, 'error');
+                } finally {
+                    setFormData(prev => ({ ...prev, isLoading: false })); // Stop loading indicator
+                    event.target.value = null; // Clear the file input value regardless of success/failure
                 }
             };
 
-            const submitExam = async (e) => {
-                e.preventDefault();
-                try {
-                    const response = await fetch(`${API_URL}/submit_exam`, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({
-                            roll_no: formData.rollNo,
-                            subject: formData.subject,
-                            answers: formData.answers
-                        })
-                    });
-                    const result = await response.json();
-                    alert(result.message);
-                    setView('login');
-                } catch (error) {
-                    console.error('Error submitting exam');
-                    alert('Failed to submit exam');
-                }
-            };
 
-            // Home Page
-            const renderHome = () => (
-                <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md text-center">
-                    <h1 className="text-3xl font-bold mb-8">Exam Portal</h1>
-                    <div className="space-y-4">
-                        <div>
-                            <h2 className="text-xl font-semibold mb-4">Login As</h2>
-                            <div className="flex justify-center space-x-4 mb-6">
-                                <button 
-                                    onClick={() => {setUserType('student'); setView('login');}}
-                                    className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                                >
-                                    Student
-                                </button>
-                                <button 
-                                    onClick={() => {setUserType('teacher'); setView('login');}}
-                                    className="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                                >
-                                    Teacher
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-
-            // Login Page (Dynamic based on userType)
-            const renderLogin = () => (
-                <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-                    <h2 className="text-2xl font-bold mb-6 text-center">
-                        {userType === 'student' ? 'Student Login' : 'Teacher Login'}
-                    </h2>
-                    <form onSubmit={userType === 'student' ? handleStudentLogin : handleTeacherLogin}>
-                        {userType === 'student' ? (
-                            <input
-                                type="text"
-                                name="rollNo"
-                                placeholder="Roll Number"
-                                value={formData.rollNo}
-                                onChange={handleInputChange}
-                                className="w-full p-2 mb-4 border rounded"
-                                required
-                            />
-                        ) : (
-                            <input
-                                type="text"
-                                name="name"
-                                placeholder="Teacher Name"
-                                value={formData.name}
-                                onChange={handleInputChange}
-                                className="w-full p-2 mb-4 border rounded"
-                                required
-                            />
-                        )}
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="Password"
-                            value={formData.password}
-                            onChange={handleInputChange}
-                            className="w-full p-2 mb-4 border rounded"
-                            required
-                        />
-                        <button 
-                            type="submit" 
-                            className={`w-full ${userType === 'student' ? 'bg-blue-500 hover:bg-blue-600' : 'bg-green-500 hover:bg-green-600'} text-white p-2 rounded`}
-                        >
-                            Login
-                        </button>
-                        <div className="flex justify-between mt-4">
-                            <p className="text-center">
-                                Don't have an account? 
-                                <button 
-                                    type="button"
-                                    onClick={() => {resetForm(); setView('register');}}
-                                    className="text-blue-500 ml-2"
-                                >
-                                    Register
-                                </button>
-                            </p>
-                            <button 
-                                type="button"
-                                onClick={() => {resetForm(); setView('home');}}
-                                className="text-gray-500 hover:text-gray-700"
-                            >
-                                Back
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            );
-
-            // Registration Page (Dynamic based on userType)
-            const renderRegister = () => (
-                <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-                    <h2 className="text-2xl font-bold mb-6 text-center">
-                        {userType === 'student' ? 'Student Registration' : 'Teacher Registration'}
-                    </h2>
-                    <form onSubmit={userType === 'student' ? handleStudentRegister : handleTeacherRegister}>
-                        <div className="mb-4">
-                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                                {userType === 'student' ? 'Full Name' : 'Teacher Name'}
-                            </label>
-                            <input
-                                id="name"
-                                type="text"
-                                name="name"
-                                placeholder={userType === 'student' ? 'Full Name' : 'Teacher Name'}
-                                value={formData.name}
-                                onChange={handleInputChange}
-                                className="w-full p-2 mt-1 border rounded"
-                                required
-                            />
-                        </div>
-                        
-                        {userType === 'student' && (
-                            <div className="mb-4">
-                                <label htmlFor="rollNo" className="block text-sm font-medium text-gray-700">Roll Number</label>
-                                <input
-                                    id="rollNo"
-                                    type="text"
-                                    name="rollNo"
-                                    placeholder="Roll Number"
-                                    value={formData.rollNo}
-                                    onChange={handleInputChange}
-                                    className="w-full p-2 mt-1 border rounded"
-                                    required
-                                />
-                            </div>
-                        )}
-                        
-                        <div className="mb-4">
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-                            <input
-                                id="password"
-                                type="password"
-                                name="password"
-                                placeholder="Password"
-                                value={formData.password}
-                                onChange={handleInputChange}
-                                className="w-full p-2 mt-1 border rounded"
-                                required
-                            />
-                        </div>
-                        
-                        <div className="mb-4">
-                            <label htmlFor="department" className="block text-sm font-medium text-gray-700">Department</label>
-                            <select
-                                id="department"
-                                name="department"
-                                value={formData.department}
-                                onChange={handleInputChange}
-                                className="w-full p-2 mt-1 border rounded"
-                                required
-                            >
-                                <option value="">Select Department</option>
-                                {departments.map(dept => (
-                                    <option key={dept} value={dept}>{dept}</option>
-                                ))}
-                            </select>
-                        </div>
-                        
-                        {userType === 'student' && (
-                            <div className="mb-4">
-                                <label htmlFor="semester" className="block text-sm font-medium text-gray-700">Semester</label>
-                                <select
-                                    id="semester"
-                                    name="semester"
-                                    value={formData.semester}
-                                    onChange={handleInputChange}
-                                    className="w-full p-2 mt-1 border rounded"
-                                    required
-                                >
-                                    {[1,2,3,4,5,6,7,8].map(sem => (
-                                        <option key={sem} value={sem}>Semester {sem}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        )}
-                        
-                        <button
-                            type="submit"
-                            className={`w-full ${userType === 'student' ? 'bg-blue-500 hover:bg-blue-600' : 'bg-green-500 hover:bg-green-600'} text-white p-2 rounded`}
-                        >
-                            Register
-                        </button>
-                        <div className="flex justify-between mt-4">
-                            <p className="text-center">
-                                Already have an account? 
-                                <button 
-                                    type="button"
-                                    onClick={() => {resetForm(); setView('login');}}
-                                    className="text-blue-500 ml-2"
-                                >
-                                    Login
-                                </button>
-                            </p>
-                            <button 
-                                type="button"
-                                onClick={() => {resetForm(); setView('home');}}
-                                className="text-gray-500 hover:text-gray-700"
-                            >
-                                Back
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            );
-
-            const renderSubjectSelect = () => (
-                <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-                    <h2 className="text-2xl font-bold mb-6 text-center">Select Subject</h2>
-                    <select 
-                        name="subject" 
-                        value={formData.subject} 
-                        onChange={handleInputChange} 
-                        className="w-full p-2 mb-4 border rounded" 
-                        required
-                    >
-                        <option value="">Select a Subject</option>
-                        {subjects.map(subject => (
-                            <option key={subject.name} value={subject.name}>
-                                {subject.name} ({subject.department})
-                            </option>
-                        ))}
-                    </select>
-                    <button
-                        onClick={fetchQuestions}
-                        className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-                        disabled={!formData.subject}
-                    >
-                        Start Exam
-                    </button>
-                    <button
-                        onClick={() => {resetForm(); setView('home');}}
-                        className="w-full mt-4 bg-gray-300 text-gray-700 p-2 rounded hover:bg-gray-400"
-                    >
-                        Logout
-                    </button>
-                </div>
-            );
-
-            const renderTeacherDashboard = () => (
-                <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-                    <h2 className="text-2xl font-bold mb-6 text-center">Teacher Dashboard</h2>
-                    <div className="text-center p-8">
-                        <p className="text-lg mb-4">Welcome, {formData.name}!</p>
-                        <p className="text-gray-600 mb-6">This is your dashboard where you can manage exams and review submissions.</p>
-                        
-                        {/* Placeholder for teacher features */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                            <div className="border p-4 rounded bg-blue-50 hover:bg-blue-100 cursor-pointer">
-                                <h3 className="font-semibold mb-2">Create Exam</h3>
-                                <p className="text-sm text-gray-600">Create new exams for your subjects</p>
-                            </div>
-                            <div className="border p-4 rounded bg-green-50 hover:bg-green-100 cursor-pointer">
-                                <h3 className="font-semibold mb-2">Review Submissions</h3>
-                                <p className="text-sm text-gray-600">Review and grade student submissions</p>
-                            </div>
-                            <div className="border p-4 rounded bg-purple-50 hover:bg-purple-100 cursor-pointer">
-                                <h3 className="font-semibold mb-2">Manage Questions</h3>
-                                <p className="text-sm text-gray-600">Add or edit exam questions</p>
-                            </div>
-                            <div className="border p-4 rounded bg-yellow-50 hover:bg-yellow-100 cursor-pointer">
-                                <h3 className="font-semibold mb-2">View Results</h3>
-                                <p className="text-sm text-gray-600">View examination results</p>
-                            </div>
-                        </div>
-                        
-                        <button
-                            onClick={() => {resetForm(); setView('home');}}
-                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                        >
-                            Logout
-                        </button>
-                    </div>
-                </div>
-            );
-
-            const renderExam = () => (
-                <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-                    <h2 className="text-2xl font-bold mb-6 text-center">Exam: {formData.subject}</h2>
-                    <form onSubmit={submitExam}>
-                        {formData.questions.map((q) => (
-                            <div key={q.id} className="mb-6 p-4 border rounded">
-                                <p className="font-bold mb-2">
-                                    Q{q.id}: {q.question} ({q.marks} Marks)
-                                </p>
-                                <textarea
-                                    className="w-full p-2 border rounded"
-                                    placeholder="Type your answer here"
-                                    value={formData.answers[q.id] || ""}
-                                    onChange={(e) => handleAnswerChange(q.id, e.target.value)}
-                                    required
-                                />
-                                <div className="mt-2">
-                                    <p className="text-sm text-gray-600 mb-1">Or upload an image/PDF with your answer:</p>
-                                    <input 
-                                        type="file" 
-                                        accept="image/*,application/pdf" 
-                                        onChange={(e) => handleFileUpload(e, q.id)} 
+            // --- Render Functions (Using direct Tailwind Classes) ---
+            const RenderHome = () => (<div className="max-w-md mx-auto mt-20 p-8 bg-white rounded-xl shadow-lg text-center"><h1 className="text-3xl font-bold mb-8 text-gray-800">Exam Portal</h1><div><h2 className="text-xl font-semibold mb-4 text-gray-600">Login As:</h2><div className="flex justify-center space-x-4"><button onClick={()=>{setUserType('student');resetForm();setView('login');}} className="py-2 px-6 rounded font-semibold transition-colors duration-150 bg-blue-600 text-white hover:bg-blue-700 shadow">Student</button><button onClick={()=>{setUserType('teacher');resetForm();setView('login');}} className="py-2 px-6 rounded font-semibold transition-colors duration-150 bg-purple-600 text-white hover:bg-purple-700 shadow">Teacher</button></div></div></div>);
+            const RenderLogin = () => (<div className="max-w-sm mx-auto mt-16 p-6 bg-white rounded-lg shadow-xl"><h2 className="text-2xl font-bold mb-6 text-center text-gray-700">{userType==='student'?'Student Login':'Teacher Login'}</h2><form onSubmit={userType==='student'?handleStudentLogin:handleTeacherLogin} className="space-y-4">{userType==='student'?<input type="text" name="rollNo" placeholder="Roll Number*" className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" value={formData.rollNo} onChange={handleInputChange} required/>:<input type="text" name="name" placeholder="Teacher Name*" className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-purple-500" value={formData.name} onChange={handleInputChange} required/>}<input type="password" name="password" placeholder="Password*" value={formData.password} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"/>{formData.isLoading&&<div className="spinner"></div>}{formData.errorMsg&&<p className="text-red-500 text-xs text-center">{formData.errorMsg}</p>}<button type="submit" disabled={formData.isLoading} className={`w-full py-2 px-4 rounded font-medium text-center transition duration-150 disabled:opacity-60 ${userType==='student'?'bg-blue-600 text-white hover:bg-blue-700':'bg-purple-600 text-white hover:bg-purple-700'}`}>{formData.isLoading?'Logging In...':'Login'}</button><div className="flex justify-between items-center mt-4 text-sm"><p>No account? <button type="button" onClick={()=>{resetForm(false);setView('register');}} className="text-blue-600 hover:underline font-medium">Register</button></p><button type="button" onClick={()=>{resetForm();setView('home');}} className="text-gray-500 hover:text-gray-700 text-sm">Back</button></div></form></div>);
+            const RenderRegister = () => (<div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl"><h2 className="text-2xl font-bold mb-6 text-center text-gray-700">{userType === 'student' ? 'Student Registration' : 'Teacher Registration'}</h2><form onSubmit={userType === 'student' ? handleStudentRegister : handleTeacherRegister} className="space-y-3"><input type="text" name="name" placeholder={userType === 'student' ? 'Full Name*' : 'Teacher Name*'} value={formData.name} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" />{userType === 'student' && <input type="text" name="rollNo" placeholder="Roll Number*" value={formData.rollNo} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" /> }<input type="password" name="password" placeholder="Password*" value={formData.password} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" /><select name="department" value={formData.department} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8"><option value="">Select Department*</option>{departments.map(d=><option key={d} value={d}>{d}</option>)}</select>{userType === 'student' && <select name="semester" value={formData.semester} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8">{[...Array(8)].map((_,i)=><option key={i+1} value={i+1}>Semester {i+1}</option>)}</select>}{formData.isLoading && <div className="spinner"></div>}{formData.errorMsg && <p className="text-red-500 text-xs text-center">{formData.errorMsg}</p>}<button type="submit" disabled={formData.isLoading} className={`w-full py-2 px-4 rounded font-semibold text-center transition duration-150 ease-in-out disabled:opacity-60 ${userType === 'student' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-purple-600 hover:bg-purple-700'}`}>{formData.isLoading ? 'Registering...' : 'Register'}</button><div className="flex justify-between items-center mt-4 text-sm"><p>Have account? <button type="button" onClick={()=>{resetForm(false);setView('login');}} className="text-blue-600 hover:underline font-medium">Login</button></p><button type="button" onClick={()=>{resetForm();setView('home');}} className="text-sm text-gray-500 hover:text-gray-700">Back</button></div></form></div>);
+            const RenderSubjectSelect = () => (<div className="max-w-md mx-auto mt-16 p-6 bg-white rounded-lg shadow-xl"><h2 className="text-2xl font-bold mb-6 text-center text-gray-700">Select Subject</h2><p className="text-center text-sm text-gray-600 mb-4">Welcome, {formData.name}!</p><form onSubmit={e=>{e.preventDefault();fetchQuestions();}} className="space-y-4"><select name="subject" value={formData.subject} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8"><option value="">-- Select Subject --</option>{/* Subjects now only contains names */ Array.isArray(subjects)&&subjects.map(name=><option key={name} value={name}>{name}</option>)}</select>{formData.isLoading&&<div className="spinner"></div>}{formData.errorMsg&&<p className="text-red-500 text-xs text-center">{formData.errorMsg}</p>}<button type="submit" disabled={!formData.subject||formData.isLoading} className="w-full py-2 px-4 rounded font-medium text-center transition duration-150 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed bg-blue-600 text-white hover:bg-blue-700 shadow">{formData.isLoading?'Loading...':'Start Exam'}</button><button type="button" onClick={handleLogout} className="w-full py-2 px-4 rounded font-medium text-center transition duration-150 ease-in-out bg-gray-500 text-white hover:bg-gray-600 shadow-sm">Logout</button></form></div>);
+            const RenderExam = () => (
+                 <div className="max-w-3xl mx-auto mt-6 p-6 bg-white rounded-lg shadow-xl">
+                     <div className="flex justify-between items-center mb-8 pb-3 border-b">
+                         <h2 className="text-2xl font-bold text-gray-700">Exam: {formData.subject}</h2>
+                         <div className="text-sm text-gray-600">Student: {formData.name} ({formData.rollNo})</div>
+                     </div>
+                    <form onSubmit={submitExam} className="space-y-6">
+                        {Array.isArray(formData.questions) && formData.questions.length > 0 ? (
+                             formData.questions.map((q, idx) => (
+                                <div key={q.id} className="p-4 border rounded-lg bg-gray-50 shadow-sm">
+                                    <div className="flex justify-between mb-2">
+                                        <h3 className="font-medium text-lg">Question {idx + 1}</h3>
+                                        <span className="text-sm font-medium text-gray-600">Marks: {q.marks != null ? q.marks : 'N/A'}</span>
+                                    </div>
+                                    <p className="mb-3 whitespace-pre-wrap text-gray-800">{q.question}</p>
+                                    <textarea
+                                        name={`answer_${q.id}`}
+                                        value={formData.answers[q.id] || ""}
+                                        onChange={e => handleAnswerChange(q.id, e.target.value)}
+                                        placeholder="Type your answer here, or upload a file below..."
+                                        className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[100px]"
                                     />
+                                    <div className="mt-2">
+                                        <label className="text-xs text-gray-600 hover:text-black cursor-pointer">
+                                            Upload File (Optional Image/PDF, Max 5MB):
+                                            <input
+                                                type="file"
+                                                accept="image/jpeg,image/png,application/pdf"
+                                                onChange={e => handleFileUpload(e, q.id)}
+                                                className="ml-2 text-xs file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
+                                                disabled={formData.isLoading}
+                                            />
+                                        </label>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                        <button
-                            type="submit"
-                            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-                        >
-                            Submit Exam
-                        </button>
-                    </form>
-                </div>
-            );
+                             ))
+                        ) : (
+                            <p className="text-center text-gray-500 my-6">No questions loaded for this exam.</p>
+                        )}
+                        {formData.isLoading && <div className="text-center my-4"><div className="spinner"></div><p className="text-sm text-gray-600">Processing...</p></div>}
+                         {formData.errorMsg && !formData.isLoading && <p className="text-red-500 text-xs text-center mb-4">{formData.errorMsg}</p>}
+                         <div className="flex justify-end mt-8 pt-4 border-t">
+                             <button
+                                 type="submit"
+                                 disabled={formData.isLoading || !formData.questions || formData.questions.length === 0}
+                                 className="py-2 px-6 rounded font-semibold transition duration-150 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed bg-blue-600 text-white hover:bg-blue-700 shadow"
+                            >
+                                 {formData.isLoading ? 'Submitting...' : 'Submit Exam'}
+                             </button>
+                         </div>
+                     </form>
+                </div>);
+            const RenderSubmissionSuccess = () => (<div className="max-w-md mx-auto mt-16 p-8 bg-white rounded-lg shadow-xl text-center"><div className="mb-4 text-green-500"><svg className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><h2 className="text-xl font-bold text-gray-700 mb-3">Submission Successful!</h2><p className="text-sm text-gray-600 mb-6">Your answers have been recorded. Evaluation may take some time.</p>{lastSubmissionId && (<button onClick={fetchMyExamResult} disabled={formData.isLoading} className="w-full py-2 px-4 rounded font-semibold transition duration-150 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed bg-purple-600 text-white hover:bg-purple-700 shadow mb-3">{formData.isLoading ? 'Loading Result...' : 'Check My Result Now'}</button>)}<button onClick={()=>{resetForm(true);setView('subject_select');}} className="block w-full text-sm text-gray-600 hover:underline">Select Another Subject</button>{formData.errorMsg && <p className="text-red-500 text-xs text-center mt-4">{formData.errorMsg}</p>}</div>);
+             // --- Render Display for Student's Own Exam Result (FIXED SYNTAX) ---
+             const RenderMyExamResult = () => {
+                 if(formData.isLoading && !examResultData) return <div className="p-10 text-center"><div className="spinner"></div><p>Loading results...</p></div>;
+                 if(!examResultData) return <div className="max-w-md mx-auto mt-16 p-8 bg-white rounded-lg shadow-xl text-center"><p className="text-gray-600 my-5">Result data not available or loading failed.</p><p className="text-xs text-red-500 mb-4">{formData.errorMsg || 'Could not retrieve result data.'}</p><button onClick={() => setView('submission_success')} className="py-2 px-4 rounded font-medium border border-gray-400 bg-white text-gray-700 hover:bg-gray-100 shadow-sm mr-2">Try Again</button><button onClick={() => setView('subject_select')} className="py-2 px-4 rounded font-medium border border-gray-400 bg-white text-gray-700 hover:bg-gray-100 shadow-sm">Back to Subjects</button></div>;
 
+                 const summary = examResultData.overall_summary || {};
+                 const details = examResultData.details || [];
+                 const totalMarksObtained = details.reduce((sum, d) => sum + (d.marks_obtained || 0), 0);
+                 const totalMaxMarks = details.reduce((sum, d) => sum + (d.max_marks_possible || 0), 0);
+
+                 return (
+                     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl">
+                        <div className="flex justify-between items-center mb-6 pb-3 border-b">
+                            <h2 className="text-2xl font-bold text-gray-800">Exam Result: {examResultData.subject_name || formData.subject}</h2>
+                            <span className="text-sm text-gray-500">Roll No: {examResultData.roll_no || formData.rollNo}</span>
+                        </div>
+
+                        {/* Overall Summary Section */}
+                         <div className="bg-indigo-50 p-4 rounded-lg mb-6 border border-indigo-200">
+                            <h3 className="text-lg font-semibold text-indigo-800 mb-3">Overall Summary</h3>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                <div className="text-center p-2 bg-white rounded border"><strong className="block text-indigo-700 text-xl">{summary.final_score != null ? summary.final_score.toFixed(2) : 'N/A'}</strong>Score</div>
+                                <div className="text-center p-2 bg-white rounded border"><strong className="block text-indigo-700 text-xl">{totalMarksObtained} / {totalMaxMarks}</strong>Total Marks</div>
+                                <div className="text-center p-2 bg-white rounded border"><strong className="block text-indigo-700 text-xl">{summary.final_percentage != null ? summary.final_percentage.toFixed(1) + '%' : 'N/A'}</strong>Percentage</div>
+                                <div className="text-center p-2 bg-white rounded border"><strong className={`block text-xl ${summary.final_status === 'Pass' ? 'text-green-600' : 'text-red-600'}`}>{summary.final_status || 'N/A'}</strong>Status</div>
+                            </div>
+                            {summary.overall_feedback && <p className="mt-4 text-sm text-gray-700 italic"><strong className="font-medium not-italic">Overall Feedback:</strong> {summary.overall_feedback}</p>}
+                        </div>
+
+                        {/* Detailed Question Breakdown */}
+                        <h3 className="text-lg font-semibold text-gray-700 mb-4">Question Details</h3>
+                        <div className="space-y-4">
+                            {details.map((detail, index) => (
+                                <div key={detail.question_id || index} className="p-4 border rounded-lg bg-gray-50 shadow-sm">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <h4 className="font-medium text-gray-800">Q{index + 1}: {detail.question_text || '[Question text missing]'}</h4>
+                                        <span className="text-sm font-semibold whitespace-nowrap pl-4">
+                                            {detail.marks_obtained != null ? detail.marks_obtained : '-'}/{detail.max_marks_possible || '?'} Marks
+                                        </span>
+                                    </div>
+                                     <div className="mb-2 p-2 border rounded bg-white text-sm">
+                                        <p className="font-medium text-gray-600 text-xs mb-1">Your Answer:</p>
+                                        <p className="whitespace-pre-wrap">{detail.submitted_answer || '[Not Answered / File Upload]'}</p> {/* Adjust if file info is available */}
+                                    </div>
+                                    <div className="p-2 bg-blue-50 border border-blue-100 rounded text-sm">
+                                        <p className="font-medium text-blue-800 text-xs mb-1">Evaluation:</p>
+                                        {detail.evaluation_error ?
+                                            <p className="text-red-600 font-semibold">⚠️ Evaluation Error: {detail.evaluation_error}</p>
+                                         : // <-- Colon for the ternary
+                                            // *** FIX: Parentheses removed from around the fragment ***
+                                            <>
+                                                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs mb-1">
+                                                    <span>Score: <strong className="text-gray-800">{detail.score_str || 'N/A'}</strong></span>
+                                                     <span className={`font-semibold ${detail.status==='Pass'?'text-green-600':detail.status==='Fail'?'text-red-600':'text-gray-700'}`}>Status: {detail.status||'N/A'}</span>
+                                                    <span>Grade: <strong className="text-gray-800">{detail.letter_grade||'N/A'}</strong></span>
+                                                    <span>Percentage: <strong className="text-gray-800">{detail.percentage!=null?detail.percentage:'N/A'}%</strong></span>
+                                                </div>
+                                                {detail.feedback && <p className="whitespace-pre-wrap italic text-gray-700 mt-1">{detail.feedback}</p>}
+                                                 {!detail.feedback && <p className="text-gray-500 text-xs italic mt-1">[No specific feedback provided]</p>}
+                                            </>
+                                        } {/* Closing curly brace for the ternary's value_if_false */}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="mt-8 text-center">
+                            <button onClick={() => { setView('subject_select'); }} className="py-2 px-6 rounded font-medium text-center transition duration-150 ease-in-out bg-gray-500 text-white hover:bg-gray-600 shadow-sm">Back to Subjects</button>
+                        </div>
+                     </div>
+                );
+             };
+            const RenderTeacherDashboard = () => (<div className="max-w-4xl mx-auto mt-10 p-8 bg-white rounded-lg shadow-xl"><div className="flex justify-between items-center mb-8 pb-4 border-b"><h2 className="text-3xl font-bold text-gray-800">Teacher Dashboard</h2><button onClick={handleLogout} className="py-2 px-4 rounded font-medium text-center transition duration-150 ease-in-out bg-red-500 text-white hover:bg-red-600 shadow-sm text-sm">Logout</button></div><p className="text-xl mb-6 text-gray-700">Welcome, {formData.name||'Teacher'}!</p><p className="text-gray-500 mb-10">Manage questions and view student results.</p><div className="grid grid-cols-1 md:grid-cols-2 gap-6"><div className="border p-6 rounded-lg shadow hover:shadow-lg cursor-pointer flex items-center space-x-4 transition duration-150 ease-in-out border-purple-200 bg-purple-50 hover:bg-purple-100" onClick={()=>setView('upload_question')}><div className="text-purple-600 p-2 bg-purple-100 rounded-full"><svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div><div><h3 className="font-semibold text-lg text-purple-800">Add / Update Questions</h3><p className="text-sm text-gray-600">Create new questions or modify existing ones.</p></div></div><div className="border p-6 rounded-lg shadow hover:shadow-lg cursor-pointer flex items-center space-x-4 transition duration-150 ease-in-out border border-teal-200 bg-teal-50 hover:bg-teal-100" onClick={()=>{resetForm(true);setView('view_results_prompt');}}><div className="text-teal-600 p-2 bg-teal-100 rounded-full"><svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div><div><h3 className="font-semibold text-lg text-teal-800">View Student Results</h3><p className="text-sm text-gray-600">Check evaluated submissions.</p></div></div></div></div>);
+            const RenderUploadQuestionForm = () => {const names=Array.isArray(subjects)?subjects:[];return(<div className="max-w-2xl mx-auto mt-10 p-8 bg-white rounded-lg shadow-xl"><h2 className="text-2xl font-bold mb-8 text-center text-gray-800">Add / Update Question</h2><form onSubmit={handleQuestionUpload} className="space-y-4"><div className="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label className="block text-sm font-medium text-gray-600 mb-1">Question ID*</label><input name="uploadQid" placeholder="Unique ID (e.g., MATH101_Q5)" value={formData.uploadQid} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"/></div><div><label className="block text-sm font-medium text-gray-600 mb-1">Subject*</label><select name="uploadSubject" value={formData.uploadSubject} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 pr-8"><option value="">-- Select --</option>{names.map(n=><option key={n} value={n}>{n}</option>)}</select></div></div><div><label className="block text-sm font-medium text-gray-600 mb-1">Question Text*</label><textarea name="uploadQText" value={formData.uploadQText} onChange={handleInputChange} rows="4" required placeholder="Enter the full question text here." className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[100px]"/></div><div><label className="block text-sm font-medium text-gray-600 mb-1">Correct Answer / Rubric*</label><textarea name="uploadCorrectAnswer" value={formData.uploadCorrectAnswer} onChange={handleInputChange} rows="4" required placeholder="Provide the ideal answer or detailed evaluation criteria/rubric." className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[100px]"/></div><div className="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label className="block text-sm font-medium text-gray-600 mb-1">Max Marks*</label><input name="uploadMarks" type="number" step="0.5" min="0.1" value={formData.uploadMarks} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"/></div><div><label className="block text-sm font-medium text-gray-600 mb-1">Concepts (comma-separated)</label><input name="uploadConcepts" placeholder="e.g., differentiation, integration" value={formData.uploadConcepts} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"/></div></div>{formData.isLoading&&<div className="spinner"></div>}{formData.errorMsg&&<p className="text-red-500 text-sm text-center">{formData.errorMsg}</p>}<div className="flex justify-between items-center mt-6 pt-4 border-t"><button type="button" onClick={()=>setView('teacher_dashboard')} className="py-2 px-4 rounded font-medium text-center transition duration-150 ease-in-out border border-gray-400 bg-white text-gray-700 hover:bg-gray-100 shadow-sm">Back</button><button type="submit" disabled={formData.isLoading} className="py-2 px-6 rounded font-medium text-center transition duration-150 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed bg-purple-600 text-white hover:bg-purple-700 shadow">{formData.isLoading?'Saving...':'Submit Question'}</button></div></form></div>);};
+            const RenderViewResultsPrompt = () => (<div className="max-w-md mx-auto mt-16 p-8 bg-white rounded-lg shadow-xl"><h2 className="text-2xl font-bold mb-6 text-center text-gray-700">View Student Submissions</h2><form onSubmit={handleFetchTeacherResults} className="space-y-4"><label className="block text-sm font-medium text-gray-600 mb-1">Enter Student Roll No.*</label><input name="viewStudentRollNo" placeholder="Roll Number" value={formData.viewStudentRollNo} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"/>{formData.isLoading&&<div className="spinner"></div>}{formData.errorMsg&&<p className="text-red-500 text-xs text-center">{formData.errorMsg}</p>}<div className="flex justify-between items-center mt-6 pt-4 border-t"><button type="button" onClick={()=>{resetForm(true);setView('teacher_dashboard');}} className="py-2 px-4 rounded font-medium text-center transition duration-150 ease-in-out border border-gray-400 bg-white text-gray-700 hover:bg-gray-100 shadow-sm">Back</button><button type="submit" disabled={formData.isLoading} className="py-2 px-6 rounded font-medium text-center transition duration-150 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed bg-teal-600 text-white hover:bg-teal-700 shadow">{formData.isLoading?'Fetching...':'Fetch Results'}</button></div></form></div>);
+            const RenderStudentResultsDisplay = () => (<div className="max-w-4xl mx-auto mt-10 p-6 bg-gray-50 rounded-lg shadow-md"><div className="flex justify-between items-center mb-6 pb-3 border-b"><h2 className="text-xl font-bold text-gray-800">Evaluations for Roll No: {formData.viewStudentRollNo}</h2><button onClick={()=>{resetForm(true);setView('view_results_prompt');}} className="py-1 px-3 rounded font-medium text-center transition duration-150 ease-in-out border border-gray-400 bg-white text-gray-700 hover:bg-gray-100 shadow-sm text-sm">Check Another</button></div>{formData.isLoading&&<div className="spinner"></div>}{formData.errorMsg&&<p className="text-red-500 text-center my-4">Error: {formData.errorMsg}</p>}{!formData.isLoading&&formData.studentResults.length===0&&!formData.errorMsg&&<p className="text-center text-gray-500 my-6">No evaluated submissions found for this student.</p>}{!formData.isLoading&&formData.studentResults.length>0&&(<div className="space-y-5">{formData.studentResults.map((sub,index)=>(<div key={`${sub.submission_id}-${sub.question_id}-${index}`||index} className="p-4 border bg-white rounded-lg shadow-sm"><div className="flex justify-between items-center text-xs text-gray-500 mb-2 pb-2 border-b"><span>Subject: <span className="font-medium">{sub.subject_name||'N/A'}</span></span><span>Evaluated: <span className="font-medium">{sub.evaluated_time?new Date(sub.evaluated_time).toLocaleString():'Pending'}</span></span></div><p className="font-semibold mt-2 mb-1 text-gray-900">Q{sub.question_id}: {sub.question_text||'[?]'}</p><p className="text-xs text-gray-600 mb-3">Max Marks Possible: {sub.max_marks_possible||'N/A'}</p><div className="mb-3 p-3 border rounded bg-gray-50 text-sm"><p className="font-medium text-gray-800 mb-1">Submitted Answer:</p><p className="whitespace-pre-wrap">{sub.submitted_answer||'[No answer provided]'}</p></div><div className="p-3 bg-blue-50 border border-blue-100 rounded"><h5 className="text-sm font-semibold text-blue-800 mb-2">Evaluation Result</h5>{sub.evaluation_error?<p className="text-red-600 font-medium text-sm">⚠️ Eval Error: {sub.evaluation_error}</p>:(sub.status?<React.Fragment><div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-1 text-sm mb-2"><span><strong className="text-gray-600">Score:</strong> {sub.score_str||'N/A'}</span><span><strong className="text-gray-600">Marks:</strong> {sub.marks_obtained!=null?sub.marks_obtained:'N/A'} / {sub.max_marks_possible||'N/A'}</span> <span className={`font-semibold ${sub.status==='Pass'?'text-green-600':sub.status==='Fail'?'text-red-600':'text-gray-700'}`}><strong className="font-medium text-gray-600">Status:</strong> {sub.status||'N/A'}</span><span><strong className="text-gray-600">Grade:</strong> {sub.letter_grade||'N/A'}</span><span className="col-span-2 sm:col-span-1"><strong className="text-gray-600">Percentage:</strong> {sub.percentage!=null?sub.percentage.toFixed(1):'N/A'}%</span></div><div><p className="text-sm font-medium text-gray-600 mt-2">Feedback:</p><p className="text-sm whitespace-pre-wrap italic mt-1">{sub.feedback||'[No feedback provided]'}</p></div></React.Fragment>:<p className="text-sm text-gray-500 italic">Evaluation pending...</p>)}</div></div>))}</div>)}{<div className="mt-8 text-center"><button onClick={()=>setView('teacher_dashboard')} className="py-2 px-4 rounded font-medium text-center transition duration-150 ease-in-out bg-gray-500 text-white hover:bg-gray-600 shadow-sm">Back to Dashboard</button></div>}</div>);
+
+             // --- Define Toast Component ---
+             const Toast = ({ message, type, visible }) => { if (!visible) return null; const typeClass = `toast-${type}`; return (<div className={`toast ${typeClass}`}>{message}</div>);};
+
+             // --- Main View Router ---
             return (
-                <div className="min-h-screen bg-gray-100">
-                    {view === 'home' && renderHome()}
-                    {view === 'login' && renderLogin()}
-                    {view === 'register' && renderRegister()}
-                    {view === 'subject_select' && renderSubjectSelect()}
-                    {view === 'exam' && renderExam()}
-                    {view === 'teacher_dashboard' && renderTeacherDashboard()}
-                </div>
-            );
+                 <React.Fragment>
+                     {/* Overall page structure and styles */}
+                     <div className="min-h-screen bg-gray-100 font-sans">
+                         {/* Consistent Header */}
+                         <header className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white shadow-lg p-4 sticky top-0 z-50">
+                             <h1 className="text-2xl font-bold text-center tracking-tight">AI Powered Evaluation Portal</h1>
+                         </header>
+                         {/* Main Content Area - dynamically renders the current view */}
+                         <main className="p-4 md:p-6 lg:p-8">
+                             {view==='home'&&<RenderHome/>}
+                             {view==='login'&&<RenderLogin/>}
+                             {view==='register'&&<RenderRegister/>}
+                             {/* Student */}
+                             {view==='subject_select'&&userType==='student'&&<RenderSubjectSelect/>}
+                             {view==='exam'&&userType==='student'&&<RenderExam/>}
+                             {view==='submission_success'&&userType==='student'&&<RenderSubmissionSuccess/>}
+                             {view==='view_my_exam_result'&&userType==='student'&&<RenderMyExamResult/>}
+                             {/* Teacher */}
+                             {view==='teacher_dashboard'&&userType==='teacher'&&<RenderTeacherDashboard/>}
+                             {view==='upload_question'&&userType==='teacher'&&<RenderUploadQuestionForm/>}
+                             {view==='view_results_prompt'&&userType==='teacher'&&<RenderViewResultsPrompt/>}
+                             {view==='view_results_display'&&userType==='teacher'&&<RenderStudentResultsDisplay/>}
+                         </main>
+                         {/* Global Toast Notification Area */}
+                         <Toast message={toast.message} type={toast.type} visible={toast.visible} />
+                         {/* Consistent Footer */}
+                         <footer className="text-center text-xs text-gray-400 p-4 mt-8 border-t">© {new Date().getFullYear()} AI Eval System</footer>
+                    </div>
+                </React.Fragment>
+             );
         }
 
+        // Final Render call
         ReactDOM.render(<App />, document.getElementById('root'));
+
     </script>
 </body>
 </html>

@@ -131,3 +131,139 @@
 [2025-04-27 00:35:46] neo4j.notifications:337 - WARNING - Received notification from DBMS server: {severity: WARNING} {code: Neo.ClientNotification.Statement.UnknownPropertyKeyWarning} {category: UNRECOGNIZED} {title: The provided property key is not in the database} {description: One of the property names in your query is not available in the database, make sure you didn't misspell it or that the label is available when you run this statement in your application (the missing property name is: evaluation_error)} {position: line: 23, column: 15, offset: 1443} for query: '\n        MATCH (s:Student {roll_no: $p_roll_no})-[:SUBMITTED]->(e:ExamSubmission)\n              -[:HAS_ANSWER]->(a:Answer)-[:ANSWERS_QUESTION]->(q:Question)\n        MATCH (e)-[:FOR_SUBJECT]->(sub:Subject)\n        // Ensure evaluation has been done - check for a specific property like evaluated_at or evaluation_status\n        WHERE a.evaluated_at IS NOT NULL OR a.evaluation_status IS NOT NULL\n        \n        RETURN\n            s.roll_no as student_roll_no,\n            s.name as student_name,\n            sub.name as subject_name,\n            q.id as question_id,\n            q.text as question_text,\n            a.text as submitted_answer,\n            COALESCE(q.max_marks, 5.0) as max_marks_possible, // Max marks from Question node\n            a.evaluation_numeric_score AS numeric_score,    // Evaluation results from Answer node\n            a.evaluation_score_str AS score_str,           // Evaluation results from Answer node\n            a.evaluation_marks_obtained AS marks_obtained,   // Evaluation results from Answer node\n            a.evaluation_percentage AS percentage,        // Evaluation results from Answer node\n            a.evaluation_letter_grade AS letter_grade,       // Evaluation results from Answer node\n            a.evaluation_status AS status,                // Evaluation results from Answer node\n            a.evaluation_feedback AS feedback,              // Evaluation results from Answer node\n            a.evaluation_error AS eval_error,             // Potential errors during eval\n            a.evaluated_at as evaluated_time            // Timestamp of evaluation\n        ORDER BY e.submitted_at DESC, q.id\n        '
 [2025-04-27 00:35:46] AIAnswerEvaluationSystem.neo4j_Manager:447 - INFO - Found 7 evaluated answers for student 2115500009.
 [2025-04-27 00:35:46] AIAnswerEvaluationSystem:738 - INFO - Processor: Returning 7 stored evaluations for S:2115500009
+[2025-04-27 12:08:00] root:156 - INFO - Logging configured. Level: INFO. File: /home/gola/GRAPH_RAG/Exam_Portal/An-AI-powered-answer-evaluation-system-/logs/app_log_2025-04-27.log
+[2025-04-27 12:08:00] AIAnswerEvaluationSystem:179 - INFO - Logger 'AIAnswerEvaluationSystem' obtained and ready for import.
+[2025-04-27 12:08:03] datasets:54 - INFO - PyTorch version 2.6.0 available.
+[2025-04-27 12:08:08] AIAnswerEvaluationSystem:788 - INFO - Starting AI Answer Evaluation System API
+[2025-04-27 12:08:08] AIAnswerEvaluationSystem:77 - INFO - App startup: Initializing resources...
+[2025-04-27 12:08:08] AIAnswerEvaluationSystem.neo4j_Manager:235 - INFO - Creating new Neo4jManager instance for ('neo4j://localhost:7687', 'neo4j')
+[2025-04-27 12:08:08] AIAnswerEvaluationSystem.neo4j_Manager:213 - INFO - Neo4jManager instance configured for URI: neo4j://localhost:7687
+[2025-04-27 12:08:08] AIAnswerEvaluationSystem:88 - INFO - Neo4jManager initialized.
+[2025-04-27 12:08:08] neo4j.pool:1010 - ERROR - Unable to retrieve routing information
+[2025-04-27 12:08:08] AIAnswerEvaluationSystem.question_answer_store:21 - ERROR - FATAL: Failed to initialize/verify Neo4j connection to neo4j://localhost:7687
+Traceback (most recent call last):
+  File "/home/gola/GRAPH_RAG/Exam_Portal/An-AI-powered-answer-evaluation-system-/src/AIAnswerEvaluationSystem/question_answer_store.py", line 18, in __init__
+    self._driver.verify_connectivity()
+  File "/home/gola/anaconda3/envs/GRAPH_RAG/lib/python3.10/site-packages/neo4j/_sync/driver.py", line 1082, in verify_connectivity
+    self._get_server_info(session_config)
+  File "/home/gola/anaconda3/envs/GRAPH_RAG/lib/python3.10/site-packages/neo4j/_sync/driver.py", line 1297, in _get_server_info
+    return session._get_server_info()
+  File "/home/gola/anaconda3/envs/GRAPH_RAG/lib/python3.10/site-packages/neo4j/_sync/work/session.py", line 183, in _get_server_info
+    self._connect(READ_ACCESS, liveness_check_timeout=0)
+  File "/home/gola/anaconda3/envs/GRAPH_RAG/lib/python3.10/site-packages/neo4j/_sync/work/session.py", line 136, in _connect
+    super()._connect(
+  File "/home/gola/anaconda3/envs/GRAPH_RAG/lib/python3.10/site-packages/neo4j/_sync/work/workspace.py", line 186, in _connect
+    target_db = self._get_routing_target_database(
+  File "/home/gola/anaconda3/envs/GRAPH_RAG/lib/python3.10/site-packages/neo4j/_sync/work/workspace.py", line 260, in _get_routing_target_database
+    self._pool.update_routing_table(
+  File "/home/gola/anaconda3/envs/GRAPH_RAG/lib/python3.10/site-packages/neo4j/_sync/io/_pool.py", line 1011, in update_routing_table
+    raise ServiceUnavailable("Unable to retrieve routing information")
+neo4j.exceptions.ServiceUnavailable: Unable to retrieve routing information
+[2025-04-27 12:08:08] AIAnswerEvaluationSystem:125 - CRITICAL - FATAL: Startup initialization failed: Unable to retrieve routing information
+Traceback (most recent call last):
+  File "/home/gola/GRAPH_RAG/Exam_Portal/An-AI-powered-answer-evaluation-system-/app.py", line 91, in lifespan
+    neo4j_conn = Neo4jConnection(NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD)
+  File "/home/gola/GRAPH_RAG/Exam_Portal/An-AI-powered-answer-evaluation-system-/src/AIAnswerEvaluationSystem/question_answer_store.py", line 18, in __init__
+    self._driver.verify_connectivity()
+  File "/home/gola/anaconda3/envs/GRAPH_RAG/lib/python3.10/site-packages/neo4j/_sync/driver.py", line 1082, in verify_connectivity
+    self._get_server_info(session_config)
+  File "/home/gola/anaconda3/envs/GRAPH_RAG/lib/python3.10/site-packages/neo4j/_sync/driver.py", line 1297, in _get_server_info
+    return session._get_server_info()
+  File "/home/gola/anaconda3/envs/GRAPH_RAG/lib/python3.10/site-packages/neo4j/_sync/work/session.py", line 183, in _get_server_info
+    self._connect(READ_ACCESS, liveness_check_timeout=0)
+  File "/home/gola/anaconda3/envs/GRAPH_RAG/lib/python3.10/site-packages/neo4j/_sync/work/session.py", line 136, in _connect
+    super()._connect(
+  File "/home/gola/anaconda3/envs/GRAPH_RAG/lib/python3.10/site-packages/neo4j/_sync/work/workspace.py", line 186, in _connect
+    target_db = self._get_routing_target_database(
+  File "/home/gola/anaconda3/envs/GRAPH_RAG/lib/python3.10/site-packages/neo4j/_sync/work/workspace.py", line 260, in _get_routing_target_database
+    self._pool.update_routing_table(
+  File "/home/gola/anaconda3/envs/GRAPH_RAG/lib/python3.10/site-packages/neo4j/_sync/io/_pool.py", line 1011, in update_routing_table
+    raise ServiceUnavailable("Unable to retrieve routing information")
+neo4j.exceptions.ServiceUnavailable: Unable to retrieve routing information
+[2025-04-27 12:08:39] AIAnswerEvaluationSystem:131 - INFO - App shutdown: Cleaning up resources...
+[2025-04-27 12:08:39] AIAnswerEvaluationSystem:135 - INFO - Shutdown complete.
+[2025-04-27 12:08:43] root:156 - INFO - Logging configured. Level: INFO. File: /home/gola/GRAPH_RAG/Exam_Portal/An-AI-powered-answer-evaluation-system-/logs/app_log_2025-04-27.log
+[2025-04-27 12:08:43] AIAnswerEvaluationSystem:179 - INFO - Logger 'AIAnswerEvaluationSystem' obtained and ready for import.
+[2025-04-27 12:08:48] datasets:54 - INFO - PyTorch version 2.6.0 available.
+[2025-04-27 12:08:53] AIAnswerEvaluationSystem:788 - INFO - Starting AI Answer Evaluation System API
+[2025-04-27 12:08:53] AIAnswerEvaluationSystem:77 - INFO - App startup: Initializing resources...
+[2025-04-27 12:08:53] AIAnswerEvaluationSystem.neo4j_Manager:235 - INFO - Creating new Neo4jManager instance for ('neo4j://localhost:7687', 'neo4j')
+[2025-04-27 12:08:53] AIAnswerEvaluationSystem.neo4j_Manager:213 - INFO - Neo4jManager instance configured for URI: neo4j://localhost:7687
+[2025-04-27 12:08:53] AIAnswerEvaluationSystem:88 - INFO - Neo4jManager initialized.
+[2025-04-27 12:08:53] AIAnswerEvaluationSystem.question_answer_store:19 - INFO - Neo4j connection initialized and verified for URI: neo4j://localhost:7687
+[2025-04-27 12:08:53] AIAnswerEvaluationSystem.question_answer_store:124 - INFO - QuestionUploader initialized.
+[2025-04-27 12:08:53] AIAnswerEvaluationSystem:94 - INFO - QuestionUploader initialized.
+[2025-04-27 12:08:53] AIAnswerEvaluationSystem.llmss:73 - INFO - LLMEvaluator configured for model: /home/gola/GRAPH_RAG/Exam_Portal/llama-3.2-3b-qa-finetuned/final_model on device cuda
+[2025-04-27 12:08:53] AIAnswerEvaluationSystem:99 - INFO - FineTunedLLMEvaluator configured.
+[2025-04-27 12:08:53] AIAnswerEvaluationSystem:80 - INFO - EvaluationProcessor initialized successfully.
+[2025-04-27 12:08:53] AIAnswerEvaluationSystem:105 - INFO - EvaluationProcessor initialized.
+[2025-04-27 12:08:53] AIAnswerEvaluationSystem.database_login_rigister:31 - INFO - ExamService initialized.
+[2025-04-27 12:08:53] AIAnswerEvaluationSystem:113 - INFO - ExamService initialized.
+[2025-04-27 12:08:53] AIAnswerEvaluationSystem:122 - INFO - All core services initialized successfully.
+[2025-04-27 12:09:05] AIAnswerEvaluationSystem.neo4j_Manager:256 - INFO - Attempting Neo4j Driver connection to neo4j://localhost:7687...
+[2025-04-27 12:09:05] AIAnswerEvaluationSystem.neo4j_Manager:262 - INFO - ✅ Neo4j Driver connected and verified.
+[2025-04-27 12:09:05] AIAnswerEvaluationSystem:489 - INFO - Retrieved 5 subjects
+[2025-04-27 12:09:12] AIAnswerEvaluationSystem:467 - INFO - Student login successful: 2115500007
+[2025-04-27 12:09:20] root:140 - INFO - 📚 Fetching questions for subject: 'Physics' (Limit: 50)...
+[2025-04-27 12:09:20] root:162 - INFO - ✅ Successfully fetched 1 questions for 'Physics'
+[2025-04-27 12:09:20] AIAnswerEvaluationSystem:517 - INFO - Retrieved 1 questions for subject: Physics
+[2025-04-27 12:13:31] AIAnswerEvaluationSystem.database_login_rigister:64 - INFO - Attempting to save submission SUB_2115500007_Physics_1745736211_ae14b4...
+[2025-04-27 12:13:32] AIAnswerEvaluationSystem.database_login_rigister:79 - INFO - Submission SUB_2115500007_Physics_1745736211_ae14b4 saved successfully to DB.
+[2025-04-27 12:13:32] AIAnswerEvaluationSystem.database_login_rigister:84 - INFO - Starting automatic evaluation for 1 answers in submission SUB_2115500007_Physics_1745736211_ae14b4...
+[2025-04-27 12:13:32] AIAnswerEvaluationSystem:181 - INFO - Processing evaluation request: S='2115500007', Q='PHYSICS_NEWTON_Q1'
+[2025-04-27 12:13:32] AIAnswerEvaluationSystem.llmss:82 - INFO - Attempting to load model and tokenizer from: /home/gola/GRAPH_RAG/Exam_Portal/llama-3.2-3b-qa-finetuned/final_model
+[2025-04-27 12:13:51] AIAnswerEvaluationSystem.llmss:146 - INFO - Successfully loaded model and tokenizer (device assigned by framework) in 18.81s.
+[2025-04-27 12:13:55] AIAnswerEvaluationSystem.llmss:215 - INFO - Generation completed in 3.97s
+[2025-04-27 12:13:55] AIAnswerEvaluationSystem:169 - INFO - Successfully stored evaluation results for Answer ID: SUB_2115500007_Physics_1745736211_ae14b4_PHYSICS_NEWTON_Q1
+[2025-04-27 12:13:55] AIAnswerEvaluationSystem:250 - INFO - Processed evaluation request (stored) S:2115500007, Q:PHYSICS_NEWTON_Q1 in 23.20s. Grade: C
+[2025-04-27 12:13:55] AIAnswerEvaluationSystem.database_login_rigister:104 - INFO - Automatic evaluation finished for SUB_2115500007_Physics_1745736211_ae14b4. Errors: 0. Total time: 21.26s
+[2025-04-27 12:18:26] AIAnswerEvaluationSystem:131 - INFO - App shutdown: Cleaning up resources...
+[2025-04-27 12:18:26] AIAnswerEvaluationSystem.neo4j_Manager:287 - INFO - Closing Neo4j Driver for ('neo4j://localhost:7687', 'neo4j')...
+[2025-04-27 12:18:26] AIAnswerEvaluationSystem.neo4j_Manager:290 - INFO - 🔒 Neo4j Driver closed.
+[2025-04-27 12:18:26] AIAnswerEvaluationSystem.neo4j_Manager:299 - INFO - Removed instance ('neo4j://localhost:7687', 'neo4j') from registry.
+[2025-04-27 12:18:26] AIAnswerEvaluationSystem:135 - INFO - Shutdown complete.
+[2025-04-27 12:18:35] root:156 - INFO - Logging configured. Level: INFO. File: /home/gola/GRAPH_RAG/Exam_Portal/An-AI-powered-answer-evaluation-system-/logs/app_log_2025-04-27.log
+[2025-04-27 12:18:35] AIAnswerEvaluationSystem:179 - INFO - Logger 'AIAnswerEvaluationSystem' obtained and ready for import.
+[2025-04-27 12:18:41] datasets:54 - INFO - PyTorch version 2.6.0 available.
+[2025-04-27 12:18:50] AIAnswerEvaluationSystem:788 - INFO - Starting AI Answer Evaluation System API
+[2025-04-27 12:18:50] AIAnswerEvaluationSystem:77 - INFO - App startup: Initializing resources...
+[2025-04-27 12:18:50] AIAnswerEvaluationSystem.neo4j_Manager:235 - INFO - Creating new Neo4jManager instance for ('neo4j://localhost:7687', 'neo4j')
+[2025-04-27 12:18:50] AIAnswerEvaluationSystem.neo4j_Manager:213 - INFO - Neo4jManager instance configured for URI: neo4j://localhost:7687
+[2025-04-27 12:18:50] AIAnswerEvaluationSystem:88 - INFO - Neo4jManager initialized.
+[2025-04-27 12:18:50] AIAnswerEvaluationSystem.question_answer_store:19 - INFO - Neo4j connection initialized and verified for URI: neo4j://localhost:7687
+[2025-04-27 12:18:50] AIAnswerEvaluationSystem.question_answer_store:124 - INFO - QuestionUploader initialized.
+[2025-04-27 12:18:50] AIAnswerEvaluationSystem:94 - INFO - QuestionUploader initialized.
+[2025-04-27 12:18:50] AIAnswerEvaluationSystem.llmss:73 - INFO - LLMEvaluator configured for model: /home/gola/GRAPH_RAG/Exam_Portal/llama-3.2-3b-qa-finetuned/final_model on device cuda
+[2025-04-27 12:18:50] AIAnswerEvaluationSystem:99 - INFO - FineTunedLLMEvaluator configured.
+[2025-04-27 12:18:50] AIAnswerEvaluationSystem:80 - INFO - EvaluationProcessor initialized successfully.
+[2025-04-27 12:18:50] AIAnswerEvaluationSystem:105 - INFO - EvaluationProcessor initialized.
+[2025-04-27 12:18:50] AIAnswerEvaluationSystem.database_login_rigister:31 - INFO - ExamService initialized.
+[2025-04-27 12:18:50] AIAnswerEvaluationSystem:113 - INFO - ExamService initialized.
+[2025-04-27 12:18:50] AIAnswerEvaluationSystem:122 - INFO - All core services initialized successfully.
+[2025-04-27 12:18:59] AIAnswerEvaluationSystem.neo4j_Manager:256 - INFO - Attempting Neo4j Driver connection to neo4j://localhost:7687...
+[2025-04-27 12:18:59] AIAnswerEvaluationSystem.neo4j_Manager:262 - INFO - ✅ Neo4j Driver connected and verified.
+[2025-04-27 12:18:59] AIAnswerEvaluationSystem:489 - INFO - Retrieved 5 subjects
+[2025-04-27 12:19:02] AIAnswerEvaluationSystem:467 - INFO - Student login successful: 2115500007
+[2025-04-27 12:19:06] root:140 - INFO - 📚 Fetching questions for subject: 'Chemistry' (Limit: 50)...
+[2025-04-27 12:19:06] root:162 - INFO - ✅ Successfully fetched 2 questions for 'Chemistry'
+[2025-04-27 12:19:06] AIAnswerEvaluationSystem:517 - INFO - Retrieved 2 questions for subject: Chemistry
+[2025-04-27 12:19:24] AIAnswerEvaluationSystem.database_login_rigister:64 - INFO - Attempting to save submission SUB_2115500007_Chemistry_1745736564_d4eed6...
+[2025-04-27 12:19:24] AIAnswerEvaluationSystem.database_login_rigister:79 - INFO - Submission SUB_2115500007_Chemistry_1745736564_d4eed6 saved successfully to DB.
+[2025-04-27 12:19:24] AIAnswerEvaluationSystem.database_login_rigister:84 - INFO - Starting automatic evaluation for 2 answers in submission SUB_2115500007_Chemistry_1745736564_d4eed6...
+[2025-04-27 12:19:24] AIAnswerEvaluationSystem:181 - INFO - Processing evaluation request: S='2115500007', Q='CHEM_ACIDBASE_Q1'
+[2025-04-27 12:19:24] AIAnswerEvaluationSystem.llmss:82 - INFO - Attempting to load model and tokenizer from: /home/gola/GRAPH_RAG/Exam_Portal/llama-3.2-3b-qa-finetuned/final_model
+[2025-04-27 12:19:45] AIAnswerEvaluationSystem.llmss:146 - INFO - Successfully loaded model and tokenizer (device assigned by framework) in 20.48s.
+[2025-04-27 12:19:49] AIAnswerEvaluationSystem.llmss:215 - INFO - Generation completed in 4.33s
+[2025-04-27 12:19:49] AIAnswerEvaluationSystem:169 - INFO - Successfully stored evaluation results for Answer ID: SUB_2115500007_Chemistry_1745736564_d4eed6_CHEM_ACIDBASE_Q1
+[2025-04-27 12:19:49] AIAnswerEvaluationSystem:250 - INFO - Processed evaluation request (stored) S:2115500007, Q:CHEM_ACIDBASE_Q1 in 24.96s. Grade: F
+[2025-04-27 12:19:49] AIAnswerEvaluationSystem:181 - INFO - Processing evaluation request: S='2115500007', Q='CHEM_ACIDBASE_Q2'
+[2025-04-27 12:19:51] AIAnswerEvaluationSystem.llmss:215 - INFO - Generation completed in 1.89s
+[2025-04-27 12:19:51] AIAnswerEvaluationSystem:169 - INFO - Successfully stored evaluation results for Answer ID: SUB_2115500007_Chemistry_1745736564_d4eed6_CHEM_ACIDBASE_Q2
+[2025-04-27 12:19:51] AIAnswerEvaluationSystem:250 - INFO - Processed evaluation request (stored) S:2115500007, Q:CHEM_ACIDBASE_Q2 in 1.93s. Grade: F
+[2025-04-27 12:19:51] AIAnswerEvaluationSystem.database_login_rigister:104 - INFO - Automatic evaluation finished for SUB_2115500007_Chemistry_1745736564_d4eed6. Errors: 0. Total time: 24.71s
+[2025-04-27 12:21:48] AIAnswerEvaluationSystem:760 - INFO - Successfully generated result summary for submission SUB_2115500007_Chemistry_1745736564_d4eed6
+[2025-04-27 12:22:20] AIAnswerEvaluationSystem:131 - INFO - App shutdown: Cleaning up resources...
+[2025-04-27 12:22:20] AIAnswerEvaluationSystem.neo4j_Manager:287 - INFO - Closing Neo4j Driver for ('neo4j://localhost:7687', 'neo4j')...
+[2025-04-27 12:22:20] AIAnswerEvaluationSystem.neo4j_Manager:290 - INFO - 🔒 Neo4j Driver closed.
+[2025-04-27 12:22:20] AIAnswerEvaluationSystem.neo4j_Manager:299 - INFO - Removed instance ('neo4j://localhost:7687', 'neo4j') from registry.
+[2025-04-27 12:22:20] AIAnswerEvaluationSystem:135 - INFO - Shutdown complete.

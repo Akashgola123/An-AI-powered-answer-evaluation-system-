@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Portal with Student Canvas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@17.0.2/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <style>
+        /* Styles for spinner, toast, whitespace */
+        .spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: #09f; animation: spin 1s ease infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .whitespace-pre-wrap { white-space: pre-wrap; }
+        .toast { position: fixed; top: 20px; right: 20px; padding: 12px 20px; border-radius: 6px; z-index: 1000; color: white; animation: fadeOutToast 5s ease-out forwards; box-shadow: 0 2px 10px rgba(0,0,0,0.2); font-size: 0.9rem; }
+        .toast-success { background-color: #2f855a; } .toast-error { background-color: #c53030; } .toast-warning { background-color: #dd6b20; color: #333 } .toast-info { background-color: #3182ce; }
+        @keyframes fadeOutToast { 0%, 80% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-20px); } }
+
+        /* Basic Canvas Styles */
+        .drawing-canvas-container {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            position: relative;
+            touch-action: none;
+            background-color: #fff; /* Ensure container has background */
+            overflow: hidden; /* Clip controls if needed */
+        }
+        .drawing-canvas {
+             display: block;
+             background-color: #fff;
+             cursor: crosshair;
+             border-radius: 4px;
+        }
+        .canvas-controls {
+             position: absolute;
+             bottom: 5px; /* Position at bottom */
+             right: 5px;
+             display: flex;
+             gap: 5px;
+             background-color: rgba(230, 230, 230, 0.85); /* Slightly less transparent */
+             padding: 4px 6px;
+             border-radius: 3px;
+        }
+         .canvas-controls button {
+             padding: 3px 8px; /* Slightly bigger buttons */
+             font-size: 0.85em;
+             border: 1px solid #999;
+             background-color: #f0f0f0;
+             cursor: pointer;
+             border-radius: 3px;
+             box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+         }
+         .canvas-controls button:hover { background-color: #e0e0e0; }
+         .canvas-controls input[type="color"] {
+             width: 30px; /* Slightly bigger */
+             height: 24px;
+             border: 1px solid #999;
+             padding: 0;
+             cursor: pointer;
+             vertical-align: middle; /* Align better with button */
+         }
+    </style>
+</head>
+<body>
+    <div id="root" class="container mx-auto p-0"></div>
+
+    <script type="text/babel"> // Use text/babel type
+
+        // --- Constants and Initial State ---
+        const API_URL = "http://127.0.0.1:8000";
+        // reverted: uploadCorrectAnswerDrawing, added back uploadCorrectAnswer (text)
+        const initialFormData = { name: '', rollNo: '', password: '', department: '', semester: 1, subject: '', questions: [], answers: {}, uploadQid: '', uploadSubject: '', uploadQText: '', uploadCorrectAnswer: '', uploadMarks: 5.0, uploadConcepts: '', viewStudentRollNo: '', studentResults: [], lastSubmissionId: null, examResultData: null, isLoading: false, errorMsg: null };
+
+        // --- Drawing Canvas Component (Keep As Is) ---
+        function DrawingInputCanvas({ width = 400, height = 200, onChange, initialDataUrl = null }) {
+            const canvasRef = React.useRef(null);
+            const contextRef = React.useRef(null);
+            const [isDrawing, setIsDrawing] = React.useState(false);
+            const [brushColor, setBrushColor] = React.useState('#000000');
+            const [lineWidth, setLineWidth] = React.useState(2);
+            const [canvasBgColor] = React.useState('#FFFFFF'); // Fixed background
+
+            React.useEffect(() => {
+                const canvas = canvasRef.current;
+                if (!canvas) return;
+                const context = canvas.getContext('2d');
+                context.lineCap = 'round';
+                context.lineJoin = 'round';
+                context.globalAlpha = 1.0;
+                contextRef.current = context;
+
+                 // Function to set background and redraw initial image
+                 const initializeCanvas = (imageUrl) => {
+                     context.fillStyle = canvasBgColor;
+                     context.fillRect(0, 0, canvas.width, canvas.height); // Fill background first
+
+                     if (imageUrl) {
+                        const img = new Image();
+                        img.onload = () => {
+                            // Don't clear here, just draw image over background
+                            context.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        };
+                        img.onerror = () => console.error("Failed to load initial image data.");
+                        img.src = imageUrl;
+                    }
+                 };
+
+                initializeCanvas(initialDataUrl); // Initialize with or without data
+
+            }, [initialDataUrl, width, height, canvasBgColor]); // Include bgColor if it becomes dynamic
+
+            React.useEffect(() => {
+                if (contextRef.current) {
+                    contextRef.current.strokeStyle = brushColor;
+                    contextRef.current.lineWidth = lineWidth;
+                }
+            }, [brushColor, lineWidth]);
+
+            const getCoords = (event) => {
+                const canvas = canvasRef.current;
+                const rect = canvas.getBoundingClientRect();
+                let clientX, clientY;
+                if (event.touches && event.touches.length > 0) {
+                    clientX = event.touches[0].clientX;
+                    clientY = event.touches[0].clientY;
+                } else { clientX = event.clientX; clientY = event.clientY; }
+                return { x: clientX - rect.left, y: clientY - rect.top };
+            };
+
+            const startDrawing = (event) => { event.preventDefault(); const { x, y } = getCoords(event); contextRef.current.beginPath(); contextRef.current.moveTo(x, y); setIsDrawing(true); };
+            const draw = (event) => { if (!isDrawing) return; event.preventDefault(); const { x, y } = getCoords(event); contextRef.current.lineTo(x, y); contextRef.current.stroke(); };
+            const stopDrawing = () => { if (!isDrawing) return; contextRef.current.closePath(); setIsDrawing(false); if (onChange) { onChange(canvasRef.current.toDataURL('image/png')); } };
+            const handleClear = () => {
+                const canvas = canvasRef.current; const context = contextRef.current;
+                if(canvas && context) {
+                    context.fillStyle = canvasBgColor;
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+                    context.fillRect(0, 0, canvas.width, canvas.height);
+                    if (onChange) { onChange(canvas.toDataURL('image/png')); } // Notify parent of cleared state
+                }
+            };
+
+            return (
+                <div className="drawing-canvas-container" style={{ width: width, height: height }}>
+                    <canvas ref={canvasRef} width={width} height={height}
+                        onMouseDown={startDrawing} onMouseMove={draw} onMouseUp={stopDrawing} onMouseLeave={stopDrawing}
+                        onTouchStart={startDrawing} onTouchMove={draw} onTouchEnd={stopDrawing}
+                        className="drawing-canvas"
+                    />
+                    <div className="canvas-controls">
+                         <input type="color" value={brushColor} onChange={(e) => setBrushColor(e.target.value)} title="Brush Color"/>
+                         <button onClick={handleClear} title="Clear Canvas">Clear</button>
+                         {/* Add line width control maybe? */}
+                         {/* <input type="range" min="1" max="10" value={lineWidth} onChange={e => setLineWidth(parseInt(e.target.value,10))} title="Line Width"/> */}
+                    </div>
+                </div>
+            );
+        }
+
+
+        // --- Main React Application ---
+        function App() {
+            // --- State Hooks --- (initialFormData is reverted)
+            const [view, setView] = React.useState('home');
+            const [userType, setUserType] = React.useState('student');
+            const [subjects, setSubjects] = React.useState([]);
+            const [departments] = React.useState(['Computer Science', 'Electrical', 'Mechanical', 'Civil', 'Other']);
+            const [formData, setFormData] = React.useState({...initialFormData});
+            const [lastSubmissionId, setLastSubmissionId] = React.useState(null);
+            const [examResultData, setExamResultData] = React.useState(null);
+            const [toast, setToast] = React.useState({ message: '', type: '', visible: false });
+
+            // --- Effects ---
+            React.useEffect(() => { fetchSubjects(); }, []);
+            React.useEffect(() => { let timer; if (toast.visible) { timer = setTimeout(() => setToast(p => ({...p, visible: false})), 4500); } return () => clearTimeout(timer); }, [toast.visible]);
+
+            // --- Helper Functions ---
+            const showToast = (message, type = 'info') => { setToast({ message: '', type:'', visible: false}); setTimeout(() => setToast({ message, type, visible: true }), 50); };
+            const fetchSubjects = async () => { /* ... keep existing ... */ setFormData(prev => ({...prev, isLoading: true})); try {const r=await fetch(`${API_URL}/subjects`); if(!r.ok) throw new Error(`HTTP ${r.status}`); const d=await r.json(); setSubjects(Array.isArray(d)?d.map(s=>s.name||'?'):[]); } catch(e){console.error('Subject fetch err:',e);showToast(`Cannot fetch subjects: ${e.message}`,'error'); setSubjects([]);} finally { setFormData(prev => ({...prev, isLoading: false}));}};
+            const handleInputChange = (e) => { const {name, value, type} = e.target; setFormData(p => ({...p, [name]: type === 'number' ? parseFloat(value) || 0 : value})); };
+
+            // --- MODIFIED: Handler for Student Answer Canvas Change ---
+             const handleAnswerChange = (qid, dataUrl) => {
+                 // This now receives the Data URL from the DrawingInputCanvas
+                 console.log(`Updating drawn answer for QID ${qid}`);
+                 setFormData(p => ({
+                     ...p,
+                     answers: {
+                         ...p.answers,
+                         [qid]: dataUrl // Store the Data URL
+                     }
+                 }));
+             };
+
+            // Removed handleDrawingChange (renamed to handleAnswerChange)
+            const resetForm = (keepUser = false) => { const currentUser = keepUser ? { name: formData.name, rollNo: formData.rollNo } : {}; setFormData({...initialFormData, ...currentUser, userType}); setLastSubmissionId(null); setExamResultData(null); };
+            const makeApiRequest = async (endpoint, method = 'GET', body = null) => { /* ... keep existing ... */ setFormData(prev => ({ ...prev, isLoading: true, errorMsg: null })); console.log(`API Call Start: ${method} ${API_URL}${endpoint}`); try { const options = { method, headers: {'Content-Type': 'application/json'} }; if (body) { options.body = JSON.stringify(body); } const response = await fetch(`${API_URL}${endpoint}`, options); let result; try { result = await response.json(); console.log(`API Response (${response.status}):`, result); } catch (jsonError) { console.error("Failed to parse API JSON response:", jsonError); throw new Error(response.statusText || `Request failed with status ${response.status} (Invalid Response Body)`); } if (!response.ok) throw new Error(result.detail || `Request failed: ${response.statusText || 'Unknown error'}`); setFormData(prev => ({ ...prev, isLoading: false })); return result; } catch (error) { console.error(`API Request Error (${method} ${endpoint}):`, error); const errorMsg = `API Error: ${error.message}`; setFormData(prev => ({ ...prev, isLoading: false, errorMsg: errorMsg })); showToast(errorMsg, 'error'); throw error; } };
+
+            // --- Event Handlers ---
+            // ... (Student/Teacher Register/Login handlers remain the same) ...
+            const handleStudentRegister=async(e)=>{e.preventDefault();try{const p={name:formData.name,roll_no:formData.rollNo,password:formData.password,department:formData.department,semester:formData.semester};const r=await makeApiRequest('/register_student','POST',p);showToast(r.message||"Registered!",'success');setView('login');resetForm(false);}catch(e){/*error handled*/}};
+            const handleTeacherRegister=async(e)=>{e.preventDefault();try{const p={name:formData.name,password:formData.password,department:formData.department};const r=await makeApiRequest('/register_teacher','POST',p);showToast(r.message||"Registered!",'success');setView('login');resetForm(false);}catch(e){/*error handled*/}};
+            const handleStudentLogin=async(e)=>{e.preventDefault();try{const p={roll_no:formData.rollNo,password:formData.password};const r=await makeApiRequest('/login_student','POST',p);showToast(r.message||"Logged In!",'success');setFormData(p=>({...p,name:r.student_name}));setView('subject_select');}catch(e){/*error handled*/}};
+            const handleTeacherLogin=async(e)=>{e.preventDefault();try{const p={name:formData.name,password:formData.password};const r=await makeApiRequest('/login_teacher','POST',p);showToast(r.message||"Logged In!",'success');setFormData(p=>({...p,name:r.teacher_name}));setView('teacher_dashboard');}catch(e){/*error handled*/}};
+
+            const fetchQuestions = async() => { /* ... keep existing ... */ try { const s = formData.subject; if(!s) { showToast('Select subject!', 'warning'); return; } showToast('Loading questions...', 'info'); const r = await makeApiRequest(`/questions?subject=${encodeURIComponent(s)}`); if(!r.questions || r.questions.length === 0) { showToast("No questions found.", 'warning'); setFormData(p => ({...p, questions: []})); return; } setFormData(p => ({...p, questions: r.questions, answers: {} })); /* Clear old answers */ setView('exam'); } catch(e) { /*error handled*/ } };
+
+             // --- MODIFIED: Submit Exam (sends drawing Data URLs) ---
+             const submitExam = async (e) => {
+                 e.preventDefault();
+                 console.log("Submitting Exam Answers:", formData.answers); // Now contains data URLs
+
+                 // Check how many questions have *some* answer provided (key exists)
+                 const answeredQuestionIds = Object.keys(formData.answers);
+                 const answeredCount = answeredQuestionIds.length;
+                 const totalQuestions = formData.questions.length;
+
+                 // Optional: Add check for empty canvas (more complex, skipped for now)
+                 // We'll just count if an entry exists for the question ID in answers
+
+                 if (answeredCount < totalQuestions && !window.confirm(`You have answered ${answeredCount} out of ${totalQuestions} questions. Submit anyway?`)) {
+                     return; // User cancelled
+                 }
+
+                 const payload = {
+                     roll_no: formData.rollNo,
+                     subject: formData.subject,
+                     answers: formData.answers // Send the object containing qid: dataUrl pairs
+                 };
+
+                 try {
+                     // !! IMPORTANT: Ensure your backend endpoint `/submit_exam`
+                     // !! is updated to accept an 'answers' object where values
+                     // !! are base64 Data URLs (image data) instead of text.
+                     const r = await makeApiRequest('/submit_exam', 'POST', payload);
+                     showToast(r.message || "Exam Submitted Successfully!", 'success');
+                     setLastSubmissionId(r.submission_id); // Store ID for result fetching
+                     setView('submission_success');
+                 } catch (err) {
+                     /* error already handled by makeApiRequest */
+                     showToast(`Failed to submit exam: ${err.message}`, 'error');
+                 }
+             };
+
+
+             // --- REVERTED: Handle Question Upload (uses text for correct answer) ---
+             const handleQuestionUpload = async (e) => {
+                 e.preventDefault();
+                 const payload = {
+                     question_id: formData.uploadQid,
+                     subject_name: formData.uploadSubject,
+                     question_text: formData.uploadQText,
+                     correct_answer_text: formData.uploadCorrectAnswer, // Send TEXT answer
+                     max_marks: formData.uploadMarks,
+                     concepts: formData.uploadConcepts.split(',').map(c => c.trim()).filter(Boolean)
+                 };
+                 try {
+                     // Backend endpoint `/upload_question` should expect `correct_answer_text`
+                     const r = await makeApiRequest('/upload_question', 'POST', payload);
+                     showToast(r.message || "Question Processed!", 'success');
+                     setFormData(p => ({
+                         ...p,
+                         isLoading: false, uploadQid: '', uploadQText: '',
+                         uploadCorrectAnswer: '', // Clear TEXT field
+                         uploadMarks: 5.0, uploadConcepts: ''
+                     }));
+                     fetchSubjects();
+                 } catch (err) { /* error handled */ }
+             };
+
+            // ... (Keep handleFetchTeacherResults, fetchMyExamResult, handleLogout) ...
+            const handleFetchTeacherResults=async(e)=>{e.preventDefault();const rN=formData.viewStudentRollNo;if(!rN){showToast('Enter Roll No','warning');return;}try{const r=await makeApiRequest(`/teacher/student_results/${rN}`);if(r.evaluations&&Array.isArray(r.evaluations)){setFormData(p=>({...p,studentResults:r.evaluations,viewStudentRollNo:r.student_roll_no}));setView('view_results_display');if(r.evaluations.length===0){showToast('No evaluated results found.','info');}}else{throw new Error("Invalid data format.");}}catch(err){showToast(`Error fetching results: ${err.message}`, 'error');}};
+            const fetchMyExamResult=async()=>{if(!lastSubmissionId){showToast("No Submission ID.",'error');return;}try{const r=await makeApiRequest(`/student/exam_result/${lastSubmissionId}`);setExamResultData(r);setView('view_my_exam_result');}catch(err){setView('subject_select');}};
+            const handleLogout=()=>{resetForm();setView('home');showToast('Logged out.','info');};
+
+
+            // --- Render Functions ---
+            // ... (RenderHome, RenderLogin, RenderRegister, RenderSubjectSelect are unchanged) ...
+            const RenderHome = () => (<div className="max-w-md mx-auto mt-20 p-8 bg-white rounded-xl shadow-lg text-center"><h1 className="text-3xl font-bold mb-8 text-gray-800">Exam Portal</h1><div><h2 className="text-xl font-semibold mb-4 text-gray-600">Login As:</h2><div className="flex justify-center space-x-4"><button onClick={()=>{setUserType('student');resetForm();setView('login');}} className="py-2 px-6 rounded font-semibold transition-colors duration-150 bg-blue-600 text-white hover:bg-blue-700 shadow">Student</button><button onClick={()=>{setUserType('teacher');resetForm();setView('login');}} className="py-2 px-6 rounded font-semibold transition-colors duration-150 bg-purple-600 text-white hover:bg-purple-700 shadow">Teacher</button></div></div></div>);
+            const RenderLogin = () => (<div className="max-w-sm mx-auto mt-16 p-6 bg-white rounded-lg shadow-xl"><h2 className="text-2xl font-bold mb-6 text-center text-gray-700">{userType==='student'?'Student Login':'Teacher Login'}</h2><form onSubmit={userType==='student'?handleStudentLogin:handleTeacherLogin} className="space-y-4">{userType==='student'?<input type="text" name="rollNo" placeholder="Roll Number*" className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" value={formData.rollNo} onChange={handleInputChange} required/>:<input type="text" name="name" placeholder="Teacher Name*" className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-purple-500" value={formData.name} onChange={handleInputChange} required/>}<input type="password" name="password" placeholder="Password*" value={formData.password} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"/>{formData.isLoading&&<div className="spinner"></div>}{formData.errorMsg&&<p className="text-red-500 text-xs text-center">{formData.errorMsg}</p>}<button type="submit" disabled={formData.isLoading} className={`w-full py-2 px-4 rounded font-medium text-center transition duration-150 disabled:opacity-60 ${userType==='student'?'bg-blue-600 text-white hover:bg-blue-700':'bg-purple-600 text-white hover:bg-purple-700'}`}>{formData.isLoading?'Logging In...':'Login'}</button><div className="flex justify-between items-center mt-4 text-sm"><p>No account? <button type="button" onClick={()=>{resetForm(false);setView('register');}} className="text-blue-600 hover:underline font-medium">Register</button></p><button type="button" onClick={()=>{resetForm();setView('home');}} className="text-gray-500 hover:text-gray-700 text-sm">Back</button></div></form></div>);
+            const RenderRegister = () => (<div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl"><h2 className="text-2xl font-bold mb-6 text-center text-gray-700">{userType === 'student' ? 'Student Registration' : 'Teacher Registration'}</h2><form onSubmit={userType === 'student' ? handleStudentRegister : handleTeacherRegister} className="space-y-3"><input type="text" name="name" placeholder={userType === 'student' ? 'Full Name*' : 'Teacher Name*'} value={formData.name} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" />{userType === 'student' && <input type="text" name="rollNo" placeholder="Roll Number*" value={formData.rollNo} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" /> }<input type="password" name="password" placeholder="Password*" value={formData.password} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" /><select name="department" value={formData.department} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8"><option value="">Select Department*</option>{departments.map(d=><option key={d} value={d}>{d}</option>)}</select>{userType === 'student' && <select name="semester" value={formData.semester} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8">{[...Array(8)].map((_,i)=><option key={i+1} value={i+1}>Semester {i+1}</option>)}</select>}{formData.isLoading && <div className="spinner"></div>}{formData.errorMsg && <p className="text-red-500 text-xs text-center">{formData.errorMsg}</p>}<button type="submit" disabled={formData.isLoading} className={`w-full py-2 px-4 rounded font-semibold text-center transition duration-150 ease-in-out disabled:opacity-60 ${userType === 'student' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-purple-600 hover:bg-purple-700'}`}>{formData.isLoading ? 'Registering...' : 'Register'}</button><div className="flex justify-between items-center mt-4 text-sm"><p>Have account? <button type="button" onClick={()=>{resetForm(false);setView('login');}} className="text-blue-600 hover:underline font-medium">Login</button></p><button type="button" onClick={()=>{resetForm();setView('home');}} className="text-sm text-gray-500 hover:text-gray-700">Back</button></div></form></div>);
+            const RenderSubjectSelect = () => (<div className="max-w-md mx-auto mt-16 p-6 bg-white rounded-lg shadow-xl"><h2 className="text-2xl font-bold mb-6 text-center text-gray-700">Select Subject</h2><p className="text-center text-sm text-gray-600 mb-4">Welcome, {formData.name}!</p><form onSubmit={e=>{e.preventDefault();fetchQuestions();}} className="space-y-4"><select name="subject" value={formData.subject} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8"><option value="">-- Select Subject --</option>{ Array.isArray(subjects)&&subjects.map(name=><option key={name} value={name}>{name}</option>)}</select>{formData.isLoading&&<div className="spinner"></div>}{formData.errorMsg&&<p className="text-red-500 text-xs text-center">{formData.errorMsg}</p>}<button type="submit" disabled={!formData.subject||formData.isLoading} className="w-full py-2 px-4 rounded font-medium text-center transition duration-150 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed bg-blue-600 text-white hover:bg-blue-700 shadow">{formData.isLoading?'Loading...':'Start Exam'}</button><button type="button" onClick={handleLogout} className="w-full py-2 px-4 rounded font-medium text-center transition duration-150 ease-in-out bg-gray-500 text-white hover:bg-gray-600 shadow-sm">Logout</button></form></div>);
+
+             // --- MODIFIED: Render Exam with Canvas Input for Student ---
+             const RenderExam = () => (
+                 <div className="max-w-3xl mx-auto mt-6 p-6 bg-white rounded-lg shadow-xl">
+                     <div className="flex justify-between items-center mb-8 pb-3 border-b">
+                         <h2 className="text-2xl font-bold text-gray-700">Exam: {formData.subject}</h2>
+                         <div className="text-sm text-gray-600">Student: {formData.name} ({formData.rollNo})</div>
+                     </div>
+                    <form onSubmit={submitExam} className="space-y-6">
+                        {Array.isArray(formData.questions) && formData.questions.map((q, idx) => (
+                            <div key={q.id || idx} className="p-4 border rounded-lg bg-gray-50 shadow-sm">
+                                 <div className="flex justify-between mb-2">
+                                     <h3 className="font-medium text-lg">Question {idx + 1}</h3>
+                                     <span className="text-sm font-medium text-gray-600">Marks: {q.marks || 'N/A'}</span>
+                                 </div>
+                                <p className="mb-3 whitespace-pre-wrap text-gray-800">{q.question || '[Question text unavailable]'}</p>
+
+                                {/* Replace textarea with DrawingInputCanvas */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-600 mb-1">Your Answer (Draw Below):</label>
+                                    <DrawingInputCanvas
+                                        key={q.id} // Add key for potential stability
+                                        width={550} // Adjust size as needed for answers
+                                        height={300}
+                                        // Pass the handler, ensuring q.id is included
+                                        onChange={(dataUrl) => handleAnswerChange(q.id, dataUrl)}
+                                        // Optional: Load existing answer if needed for resuming?
+                                        initialDataUrl={formData.answers[q.id] || null}
+                                    />
+                                </div>
+                                {/* Removed optional file upload for simplicity */}
+                             </div>
+                         ))}
+                        {formData.isLoading && <div className="spinner"></div>}
+                         {formData.errorMsg && <p className="text-red-500 text-xs text-center">{formData.errorMsg}</p>}
+                         <div className="flex justify-end mt-8">
+                             <button type="submit" disabled={formData.isLoading} className="py-2 px-6 rounded font-semibold transition duration-150 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed bg-blue-600 text-white hover:bg-blue-700 shadow">
+                                 {formData.isLoading ? 'Submitting...' : 'Submit Exam'}
+                             </button>
+                         </div>
+                     </form>
+                </div>);
+
+             // ... (RenderSubmissionSuccess, RenderMyExamResult, RenderTeacherDashboard unchanged) ...
+            const RenderSubmissionSuccess = () => (<div className="max-w-md mx-auto mt-16 p-8 bg-white rounded-lg shadow-xl text-center"><div className="mb-4 text-green-500"><svg className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><h2 className="text-xl font-bold text-gray-700 mb-3">Submission Successful!</h2><p className="text-sm text-gray-600 mb-6">Evaluation is processing...</p>{lastSubmissionId && (<button onClick={fetchMyExamResult} disabled={formData.isLoading} className="w-full py-2 px-4 rounded font-semibold transition duration-150 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed bg-purple-600 text-white hover:bg-purple-700 shadow">{formData.isLoading ? 'Loading...' : 'View My Result'}</button>)}<button onClick={()=>{resetForm(true);setView('home');}} className="block w-full mt-3 text-sm text-gray-600 hover:underline">Back to Home</button>{formData.errorMsg && <p className="text-red-500 text-xs text-center mt-4">{formData.errorMsg}</p>}</div>);
+            const RenderMyExamResult = () => { /* ... Keep existing ... */ if(formData.isLoading) return <div className="p-10 text-center"><div className="spinner"></div><p>Loading results...</p></div>; if(!examResultData) return <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl text-center"><p className="text-gray-600 my-10">Result data not found or loading failed.</p><button onClick={()=>setView('subject_select')} className="py-2 px-4 rounded font-medium border border-gray-400 bg-white text-gray-700 hover:bg-gray-100 shadow-sm">Back to Subjects</button></div>; const summary = examResultData.overall_summary || {}; const details = examResultData.details || []; return ( <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl"> <div className="flex justify-between items-center mb-6 pb-3 border-b"> <h2 className="text-2xl font-bold text-gray-800">Your Exam Result</h2> <span className="text-sm text-gray-500">Submission ID: {examResultData.submission_id}</span> </div> {/* Summary Section */} <div className="mb-8 p-4 bg-blue-50 rounded-lg border border-blue-100 grid grid-cols-2 md:grid-cols-4 gap-4 text-center"> <div><p className="text-xs text-blue-700 uppercase tracking-wider">Total Score</p><p className="text-xl font-semibold text-blue-900">{summary.total_score_str || 'N/A'}</p></div> <div><p className="text-xs text-blue-700 uppercase tracking-wider">Total Marks</p><p className="text-xl font-semibold text-blue-900">{summary.total_marks_obtained != null ? `${summary.total_marks_obtained} / ${summary.total_max_marks}` : 'N/A'}</p></div> <div><p className="text-xs text-blue-700 uppercase tracking-wider">Overall %</p><p className="text-xl font-semibold text-blue-900">{summary.overall_percentage != null ? `${summary.overall_percentage}%` : 'N/A'}</p></div> <div><p className="text-xs text-blue-700 uppercase tracking-wider">Overall Grade</p><p className="text-xl font-semibold text-blue-900">{summary.overall_grade || 'N/A'}</p></div> </div> {/* Detailed Results */} <h3 className="text-lg font-semibold text-gray-700 mb-4">Detailed Breakdown:</h3> <div className="space-y-5"> {details.length > 0 ? details.map((item, index) => ( <div key={item.question_id || index} className="p-4 border rounded-lg bg-gray-50 shadow-sm"> <p className="font-medium text-gray-800 mb-1">Q{item.question_id}: <span className="font-normal">{item.question_text || '[Question Text Missing]'}</span></p> {/* Display submitted answer - Needs update if answer is drawing */} {/* <p className="text-sm text-gray-600 mb-3 whitespace-pre-wrap">Your Answer: {item.submitted_answer || '[No Answer]'}</p> */} {/* --- TODO: Render submitted drawing answer if available --- */} { item.submitted_answer_drawing_url ? ( <div className="mt-2 mb-3"> <p className="text-sm text-gray-600 mb-1">Your Drawn Answer:</p> <img src={item.submitted_answer_drawing_url} alt={`Your drawing for Q${item.question_id}`} className="border max-w-xs max-h-48 object-contain"/> </div> ) : ( <p className="text-sm text-gray-600 mb-3 whitespace-pre-wrap">Your Answer (Text): {item.submitted_answer || '[No Answer]'}</p> ) } <div className="p-3 bg-green-50 border border-green-100 rounded text-sm"> {item.evaluation_error ? <p className="text-red-600 font-medium">Evaluation Error: {item.evaluation_error}</p> : <React.Fragment> <div className="grid grid-cols-2 gap-x-4 gap-y-1 mb-2"> <span><strong className="text-gray-600">Score:</strong> {item.score_str || 'N/A'}</span> <span><strong className="text-gray-600">Marks:</strong> {item.marks_obtained != null ? `${item.marks_obtained} / ${item.max_marks_possible}` : 'N/A'}</span> <span className={`font-semibold ${item.status==='Pass'?'text-green-700':item.status==='Fail'?'text-red-700':'text-gray-700'}`}> <strong className="font-medium text-gray-600">Status:</strong> {item.status || 'N/A'} </span> <span><strong className="text-gray-600">Grade:</strong> {item.letter_grade || 'N/A'}</span> </div> <div> <p className="text-sm font-medium text-gray-600">Feedback:</p> <p className="text-sm whitespace-pre-wrap italic mt-1">{item.feedback || '[No feedback provided]'}</p> </div> </React.Fragment> } </div> </div> )) : <p className="text-center text-gray-500">No detailed results available.</p>} </div> <div className="mt-8 text-center"> <button onClick={() => { resetForm(true); setView('home'); }} className="py-2 px-6 rounded font-medium text-center transition duration-150 ease-in-out bg-gray-500 text-white hover:bg-gray-600 shadow-sm"> Back to Home </button> </div> </div> ); };
+            const RenderTeacherDashboard = () => (<div className="max-w-4xl mx-auto mt-10 p-8 bg-white rounded-lg shadow-xl"><div className="flex justify-between items-center mb-8 pb-4 border-b"><h2 className="text-3xl font-bold text-gray-800">Teacher Dashboard</h2><button onClick={handleLogout} className="py-2 px-4 rounded font-medium text-center transition duration-150 ease-in-out bg-red-500 text-white hover:bg-red-600 shadow-sm text-sm">Logout</button></div><p className="text-xl mb-6 text-gray-700">Welcome, {formData.name||'Teacher'}!</p><p className="text-gray-500 mb-10">Manage questions and view student results.</p><div className="grid grid-cols-1 md:grid-cols-2 gap-6"><div className="border p-6 rounded-lg shadow hover:shadow-lg cursor-pointer flex items-center space-x-4 transition duration-150 ease-in-out border-purple-200 bg-purple-50 hover:bg-purple-100" onClick={()=>setView('upload_question')}><div className="text-purple-600 p-2 bg-purple-100 rounded-full"><svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div><div><h3 className="font-semibold text-lg text-purple-800">Add / Update Questions</h3><p className="text-sm text-gray-600">Create new questions or modify existing ones.</p></div></div><div className="border p-6 rounded-lg shadow hover:shadow-lg cursor-pointer flex items-center space-x-4 transition duration-150 ease-in-out border border-teal-200 bg-teal-50 hover:bg-teal-100" onClick={()=>{resetForm(false);setView('view_results_prompt');}}><div className="text-teal-600 p-2 bg-teal-100 rounded-full"><svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div><div><h3 className="font-semibold text-lg text-teal-800">View Student Results</h3><p className="text-sm text-gray-600">Check evaluated submissions.</p></div></div></div></div>);
+
+
+             // --- REVERTED: Upload Question Form (uses TEXTAREA for correct answer) ---
+             const RenderUploadQuestionForm = () => {
+                 const names = Array.isArray(subjects) ? subjects : [];
+                 return (
+                     <div className="max-w-2xl mx-auto mt-10 p-8 bg-white rounded-lg shadow-xl">
+                         <h2 className="text-2xl font-bold mb-8 text-center text-gray-800">Add / Update Question</h2>
+                         <form onSubmit={handleQuestionUpload} className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label className="block text-sm font-medium text-gray-600 mb-1">Question ID*</label><input name="uploadQid" placeholder="Unique ID (for update/add)" value={formData.uploadQid} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"/></div><div><label className="block text-sm font-medium text-gray-600 mb-1">Subject*</label><select name="uploadSubject" value={formData.uploadSubject} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 pr-8"><option value="">-- Select --</option>{names.map(n=><option key={n} value={n}>{n}</option>)}</select></div></div>
+                            <div><label className="block text-sm font-medium text-gray-600 mb-1">Question Text*</label><textarea name="uploadQText" value={formData.uploadQText} onChange={handleInputChange} rows="4" required className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[100px]"/></div>
+
+                             {/* Reverted back to Textarea for Correct Answer */}
+                             <div>
+                                 <label className="block text-sm font-medium text-gray-600 mb-1">Correct Answer (Text)*</label>
+                                 <textarea
+                                     name="uploadCorrectAnswer"
+                                     value={formData.uploadCorrectAnswer}
+                                     onChange={handleInputChange}
+                                     rows="4"
+                                     required
+                                     className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[100px]"
+                                     placeholder="Enter the correct answer text here..."
+                                 />
+                             </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label className="block text-sm font-medium text-gray-600 mb-1">Max Marks*</label><input name="uploadMarks" type="number" step="0.5" min="0.1" value={formData.uploadMarks} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"/></div><div><label className="block text-sm font-medium text-gray-600 mb-1">Concepts (comma-sep.)</label><input name="uploadConcepts" placeholder="concept1, concept2" value={formData.uploadConcepts} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"/></div></div>
+                             {formData.isLoading && <div className="spinner"></div>}
+                             {formData.errorMsg && <p className="text-red-500 text-sm text-center">{formData.errorMsg}</p>}
+                             <div className="flex justify-between items-center mt-6 pt-4 border-t">
+                                 <button type="button" onClick={() => setView('teacher_dashboard')} className="py-2 px-4 rounded font-medium text-center transition duration-150 ease-in-out border border-gray-400 bg-white text-gray-700 hover:bg-gray-100 shadow-sm">Back</button>
+                                 <button type="submit" disabled={formData.isLoading} className="py-2 px-6 rounded font-medium text-center transition duration-150 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed bg-purple-600 text-white hover:bg-purple-700 shadow">
+                                     {formData.isLoading ? 'Saving...' : 'Submit Question'}
+                                 </button>
+                             </div>
+                         </form>
+                     </div>
+                 );
+             };
+
+             // --- MODIFIED: Render Student Results Display (Teacher View) - To show DRAWN answers ---
+             const RenderStudentResultsDisplay = () => (
+                 <div className="max-w-4xl mx-auto mt-10 p-6 bg-gray-50 rounded-lg shadow-md">
+                     <div className="flex justify-between items-center mb-6 pb-3 border-b">
+                         <h2 className="text-xl font-bold text-gray-800">Evaluations for Roll No: {formData.viewStudentRollNo}</h2>
+                         <button onClick={()=>{resetForm(false);setView('view_results_prompt');}} className="py-1 px-3 rounded font-medium text-center transition duration-150 ease-in-out border border-gray-400 bg-white text-gray-700 hover:bg-gray-100 shadow-sm text-sm">Check Another</button>
+                     </div>
+                    {/* ... (loading/error/no results checks) ... */}
+                    {formData.isLoading&&<div className="spinner"></div>}
+                    {formData.errorMsg&&<p className="text-red-500 text-center my-4">Error: {formData.errorMsg}</p>}
+                    {!formData.isLoading&&formData.studentResults.length===0&&!formData.errorMsg&&<p className="text-center text-gray-500 my-6">No evaluated submissions found.</p>}
+
+                    {!formData.isLoading && formData.studentResults.length > 0 && (
+                         <div className="space-y-5">
+                             {formData.studentResults.map((sub, index) => (
+                                 <div key={`${sub.submission_id}-${sub.question_id}-${index}` || index} className="p-4 border bg-white rounded-lg shadow-sm">
+                                     {/* ... (Header info: Subject, Time, Question Text, Max Marks) ... */}
+                                     <div className="flex justify-between items-center text-xs text-gray-500 mb-2 pb-2 border-b"><span>Subject: <span className="font-medium">{sub.subject_name||'N/A'}</span></span><span>Evaluated: <span className="font-medium">{sub.evaluated_time?new Date(sub.evaluated_time).toLocaleString():'Pending'}</span></span></div>
+                                     <p className="font-semibold mt-2 mb-1 text-gray-900">Q{sub.question_id}: {sub.question_text||'[?]'}</p>
+                                     <p className="text-xs text-gray-600 mb-3">Max Marks Possible: {sub.max_marks_possible||'N/A'}</p>
+
+                                     {/* Display Submitted Answer (Image or Text) */}
+                                     <div className="mb-3 p-3 border rounded bg-gray-50 text-sm">
+                                         <p className="font-medium text-gray-800 mb-1">Submitted Answer:</p>
+                                         {/* Check if the backend provided a drawing URL */}
+                                         {sub.submitted_answer_drawing_url ? (
+                                             <img
+                                                 src={sub.submitted_answer_drawing_url}
+                                                 alt={`Student drawing for Q${sub.question_id}`}
+                                                 className="border max-w-full md:max-w-md max-h-60 object-contain my-2 bg-white" // Added bg-white
+                                                 onError={(e) => e.target.alt = 'Error loading drawing'}
+                                             />
+                                         ) : (
+                                             // Fallback to text if no drawing URL
+                                             <p className="whitespace-pre-wrap">{sub.submitted_answer || '[No answer provided]'}</p>
+                                         )}
+                                     </div>
+
+                                     {/* Evaluation Result Section */}
+                                     <div className="p-3 bg-blue-50 border border-blue-100 rounded">
+                                        {/* ... (Keep existing evaluation display logic: score, marks, status, feedback etc.) ... */}
+                                        <h5 className="text-sm font-semibold text-blue-800 mb-2">Evaluation Result</h5>{sub.evaluation_error?<p className="text-red-600 font-medium text-sm">⚠️ Eval Error: {sub.evaluation_error}</p>:(sub.status?<React.Fragment><div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-1 text-sm mb-2"><span><strong className="text-gray-600">Score:</strong> {sub.score_str||'N/A'}</span><span><strong className="text-gray-600">Marks:</strong> {sub.marks_obtained!=null?sub.marks_obtained:'N/A'} / {sub.max_marks_possible||'N/A'}</span> <span className={`font-semibold ${sub.status==='Pass'?'text-green-600':sub.status==='Fail'?'text-red-600':'text-gray-700'}`}><strong className="font-medium text-gray-600">Status:</strong> {sub.status||'N/A'}</span><span><strong className="text-gray-600">Grade:</strong> {sub.letter_grade||'N/A'}</span><span className="col-span-2 sm:col-span-1"><strong className="text-gray-600">Percentage:</strong> {sub.percentage!=null?sub.percentage:'N/A'}%</span></div><div><p className="text-sm font-medium text-gray-600 mt-2">Feedback:</p><p className="text-sm whitespace-pre-wrap italic mt-1">{sub.feedback||'[No feedback provided]'}</p></div></React.Fragment>:<p className="text-sm text-gray-500 italic">Evaluation pending...</p>)}
+                                    </div>
+                                 </div>
+                             ))}
+                         </div>
+                     )}
+                    {/* Back Button */}
+                    <div className="mt-8 text-center"><button onClick={()=>setView('teacher_dashboard')} className="py-2 px-4 rounded font-medium text-center transition duration-150 ease-in-out bg-gray-500 text-white hover:bg-gray-600 shadow-sm">Back to Dashboard</button></div>
+                </div>
+             );
+             const RenderViewResultsPrompt = () => (<div className="max-w-md mx-auto mt-16 p-8 bg-white rounded-lg shadow-xl"><h2 className="text-2xl font-bold mb-6 text-center text-gray-700">View Student Submissions</h2><form onSubmit={handleFetchTeacherResults} className="space-y-4"><label className="block text-sm font-medium text-gray-600 mb-1">Enter Student Roll No.*</label><input name="viewStudentRollNo" placeholder="Roll Number" value={formData.viewStudentRollNo} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"/>{formData.isLoading&&<div className="spinner"></div>}{formData.errorMsg&&<p className="text-red-500 text-xs text-center">{formData.errorMsg}</p>}<div className="flex justify-between items-center mt-6 pt-4 border-t"><button type="button" onClick={()=>{resetForm(false);setView('teacher_dashboard');}} className="py-2 px-4 rounded font-medium text-center transition duration-150 ease-in-out border border-gray-400 bg-white text-gray-700 hover:bg-gray-100 shadow-sm">Back</button><button type="submit" disabled={formData.isLoading} className="py-2 px-6 rounded font-medium text-center transition duration-150 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed bg-teal-600 text-white hover:bg-teal-700 shadow">{formData.isLoading?'Fetching...':'Fetch Results'}</button></div></form></div>);
+
+             // --- Define Toast Component ---
+             const Toast = ({ message, type, visible }) => { if (!visible) return null; const typeClass = `toast-${type}`; return (<div className={`toast ${typeClass}`}>{message}</div>);};
+
+             // --- Main View Router ---
+            return (
+                 <React.Fragment>
+                     <div className="min-h-screen bg-gray-100 font-sans">
+                         <header className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white shadow-lg p-4 sticky top-0 z-50"><h1 className="text-2xl font-bold text-center tracking-tight">AI Powered Evaluation Portal</h1></header>
+                         <main className="p-4 md:p-6 lg:p-8">
+                             {view==='home'&&<RenderHome/>} {view==='login'&&<RenderLogin/>} {view==='register'&&<RenderRegister/>}
+                             {view==='subject_select'&&userType==='student'&&<RenderSubjectSelect/>} {view==='exam'&&userType==='student'&&<RenderExam/>} {view==='submission_success'&&userType==='student'&&<RenderSubmissionSuccess/>} {view==='view_my_exam_result'&&userType==='student'&&<RenderMyExamResult/>}
+                             {view==='teacher_dashboard'&&userType==='teacher'&&<RenderTeacherDashboard/>} {view==='upload_question'&&userType==='teacher'&&<RenderUploadQuestionForm/>} {view==='view_results_prompt'&&userType==='teacher'&&<RenderViewResultsPrompt/>} {view==='view_results_display'&&userType==='teacher'&&<RenderStudentResultsDisplay/>}
+                         </main>
+                         <Toast message={toast.message} type={toast.type} visible={toast.visible} />
+                         <footer className="text-center text-xs text-gray-400 p-4 mt-8 border-t">© {new Date().getFullYear()} AI Eval System</footer>
+                    </div>
+                </React.Fragment>
+             );
+        }
+
+        // Final Render call
+        ReactDOM.render(<App />, document.getElementById('root'));
+
+    </script>
+</body>
+</html>
